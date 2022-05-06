@@ -17,3 +17,5 @@ social: true  # includes social icons at the bottom of the page
 사진은 귀여운 누리에요!!
 
 다들 귀여운 누리 보고 가세요!~
+
+참고로 저는 누리의 집사는 아닙니다!
