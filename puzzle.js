@@ -20,6 +20,7 @@
     let isDragging = false;
     let selectedPiece = null;
     let dragOffsetX = 0, dragOffsetY = 0;
+    let dpr = 1;
 
     let eventsAttached = false;
     let resizeRaf = null;
@@ -42,7 +43,7 @@
 
     // ----- 레이아웃: 뷰포트에 맞춰 보드+트레이 영역 산출 + DPR 적용 -----
     function computeLayout() {
-        const dpr = window.devicePixelRatio || 1;
+        dpr = window.devicePixelRatio || 1;
 
         const availW = Math.max(280, Math.min(window.innerWidth - 24, 1000));
         const topOffset = canvas.offsetTop || 0;
@@ -241,7 +242,9 @@
             const p = pieces[i];
             if (p.isLocked) continue;
             createPiecePath(ctx, p.x, p.y, pieceW, pieceH, p.shape);
-            if (ctx.isPointInPath(mouseX, mouseY)) {
+            // isPointInPath는 CTM의 영향을 받지 않는 device 픽셀 좌표로 판정하므로
+            // path가 dpr 배율로 그려진 만큼 터치/마우스 좌표도 dpr을 곱해 맞춘다.
+            if (ctx.isPointInPath(mouseX * dpr, mouseY * dpr)) {
                 selectedPiece = p;
                 isDragging = true;
                 dragOffsetX = mouseX - p.x;
