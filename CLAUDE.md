@@ -19,6 +19,12 @@
 | `memory.css` | 메모리 게임 | 카드판·3D 뒤집기 전용 스타일 (puzzle.css 위에 얹음) |
 | `puzzle.js` | 공통 | 퍼즐 엔진 (`window.JigsawPuzzle.init(...)`) |
 | `puzzle.css` | 공통 | maker·study 페이지가 함께 쓰는 스타일 |
+| `math-test.html` | **학생** | 수학 레벨 진단 페이지 (문제 풀기 → 레포트 → 결과 JSON 저장/불러오기) |
+| `math-diagnostic.js` | 수학 진단 | 진단 엔진 (`window.MathDiagnostic.init(...)`) — 출제·채점·학년추정·약점분석·레포트 |
+| `math.css` | 수학 진단 | 시작화면·문제카드·결과막대 전용 스타일 (puzzle.css 위에 얹음) |
+| `data/math-curriculum.json` | 공통 | 학년/단원/세부기능 구조 (1~6학년 전 단원) |
+| `data/math-questions.json` | 공통 | 수학 진단 문제 은행 (mc·numeric, grade/unitId/skillId 태깅) |
+| `data/math-question-builder.html` | 선생님 | 진단 문제를 추가해 `math-questions.json` 생성 |
 | `data/dataset-builder.html` | 선생님 | 교과 이미지 URL을 모아 `curriculum-images.json` 생성 |
 | `data/curriculum-images.json` | 공통 | 교과 과정 이미지 데이터셋 |
 
@@ -27,6 +33,17 @@
   조각 수를 정함 → "학습용 링크 만들기"로 `study.html?img=...&cols=..&rows=..` 링크 생성.
 - 학생은 그 링크를 열어 `study.html`에서 퍼즐을 풂 (locked 모드).
 - 빌드/번들러 없음. 파일을 직접 열거나 정적 서버로 서빙.
+
+### 수학 레벨 진단 동작 방식
+- **DB 없음**: 결과 영속화는 레포트 JSON 파일(다운로드/업로드)이 전부. 학생이 파일을 들고 다님.
+- 학생이 `math-test.html`을 열어 **전 학년(1~6)·전 단원을 골고루 섞은** 문제를 풂.
+  선생님이 학년·단원 범위를 고르지 않는다 — 시스템이 답을 보고 **학년 수준을 역추정**
+  (하위부터 연속 정답률 ≥70%인 최고 학년)하고 **약점 단원**(오답률 ≥50%, 2문항 이상)을 뽑음.
+- 평가 끝 → "결과 저장하기"로 누적 이력이 담긴 레포트 JSON 다운로드.
+- 재평가 때 그 파일을 업로드하면 누적 오답률로 약한 단원에 가중치(`1 + 3×오답률`)를 줘
+  그 단원 문제가 더 자주 나옴(적응형). 레포트 업로드 유무로 자동 전환.
+- 문제 은행/단원 구조는 정적 JSON. 선생님이 `data/math-question-builder.html`(GUI),
+  직접 편집, 또는 Claude에게 요청해 등록·확장.
 
 ## 디자인 원칙 — 아기자기하게 (초등학생 대상)
 
