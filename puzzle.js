@@ -45,12 +45,15 @@
     function computeLayout() {
         dpr = window.devicePixelRatio || 1;
 
-        const availW = Math.max(280, Math.min(window.innerWidth - 24, 1000));
-        const topOffset = canvas.offsetTop || 0;
-        const availH = Math.max(320, window.innerHeight - topOffset - 16);
+        // 모바일 주소창/툴바 뒤 영역까지 포함하는 innerHeight 대신
+        // 실제로 보이는 visualViewport 크기를 사용 (트레이가 화면 밖으로 밀리는 문제 방지)
+        const vv = window.visualViewport;
+        const vw = vv ? vv.width : window.innerWidth;
+        const vh = vv ? vv.height : window.innerHeight;
 
-        const cssW = availW;
-        const cssH = availH;
+        const cssW = Math.max(280, Math.min(vw - 16, 1100));
+        const rectTop = Math.max(0, canvas.getBoundingClientRect().top);
+        const cssH = Math.max(300, vh - rectTop - 12);
 
         // CSS 크기와 백킹스토어 크기 분리 (선명도)
         canvas.style.width = cssW + 'px';
@@ -59,26 +62,37 @@
         canvas.height = Math.round(cssH * dpr);
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // 이후 모든 좌표는 CSS px 단위
 
-        // 보드 / 트레이 영역 분할: 가로형이면 우측 트레이, 세로형이면 하단 트레이
-        const pad = 10;
-        let boardRegion;
-        if (cssW >= cssH) {
-            const boardW = cssW * 0.65;
-            boardRegion = { x: pad, y: pad, w: boardW - pad * 1.5, h: cssH - pad * 2 };
-            trayRegion = { x: boardW + pad * 0.5, y: pad, w: cssW - boardW - pad * 1.5, h: cssH - pad * 2 };
+        const pad = 8;
+        const gap = 10;
+        const imgAR = img.naturalWidth / img.naturalHeight;
+        const portrait = cssW < cssH;
+
+        let sWidth, sHeight;
+        if (portrait) {
+            // 세로: 보드는 위쪽(이미지 비율대로, 높이는 최대 60%까지), 나머지는 전부 트레이
+            const innerW = cssW - pad * 2;
+            const maxBoardH = cssH * 0.60;
+            sWidth = innerW;
+            sHeight = sWidth / imgAR;
+            if (sHeight > maxBoardH) { sHeight = maxBoardH; sWidth = sHeight * imgAR; }
+            boardStartX = (cssW - sWidth) / 2;
+            boardStartY = pad;
+            trayRegion = { x: pad, y: sHeight + pad + gap, w: cssW - pad * 2, h: cssH - sHeight - pad * 2 - gap };
         } else {
-            const boardH = cssH * 0.62;
-            boardRegion = { x: pad, y: pad, w: cssW - pad * 2, h: boardH - pad * 1.5 };
-            trayRegion = { x: pad, y: boardH + pad * 0.5, w: cssW - pad * 2, h: cssH - boardH - pad * 1.5 };
+            // 가로: 보드는 왼쪽, 트레이는 오른쪽
+            const trayW = Math.max(140, cssW * 0.34);
+            const boardSlotW = cssW - trayW - pad * 2 - gap;
+            const boardSlotH = cssH - pad * 2;
+            const fit = Math.min(boardSlotW / img.naturalWidth, boardSlotH / img.naturalHeight);
+            sWidth = img.naturalWidth * fit;
+            sHeight = img.naturalHeight * fit;
+            boardStartX = pad + (boardSlotW - sWidth) / 2;
+            boardStartY = pad + (boardSlotH - sHeight) / 2;
+            trayRegion = { x: cssW - trayW - pad, y: pad, w: trayW, h: cssH - pad * 2 };
         }
 
-        // 이미지를 보드 영역 안에 비율 유지로 fit + 중앙 정렬
-        const fit = Math.min(boardRegion.w / img.naturalWidth, boardRegion.h / img.naturalHeight);
-        const sWidth = Math.max(1, Math.floor(img.naturalWidth * fit));
-        const sHeight = Math.max(1, Math.floor(img.naturalHeight * fit));
-
-        boardStartX = boardRegion.x + (boardRegion.w - sWidth) / 2;
-        boardStartY = boardRegion.y + (boardRegion.h - sHeight) / 2;
+        sWidth = Math.max(1, Math.floor(sWidth));
+        sHeight = Math.max(1, Math.floor(sHeight));
 
         // 스케일된 이미지를 오프스크린 캔버스에 렌더 (조각 그릴 때 소스로 사용)
         scaledImgCanvas.width = sWidth;
@@ -322,6 +336,10 @@
 
         window.addEventListener('resize', onResize);
         window.addEventListener('orientationchange', onResize);
+        // 모바일 주소창/툴바가 접히거나 펼쳐질 때도 다시 맞춤
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', onResize);
+        }
     }
 
     // ----- 공개 진입점 -----
