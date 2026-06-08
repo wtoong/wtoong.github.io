@@ -1,0 +1,25 @@
+{
+  "_meta": {
+    "description": "초등 교과 과정 이미지 데이터셋 (NRICH 국립수학과학교육원)",
+    "source": "https://portal.nrich.go.kr/kor/textbookUseCulturalUsrList.do?menuIdx=1229",
+    "updated": "2026-06-08",
+    "schema": {
+      "id": "고유 식별자 (예: nrich-001)",
+      "title": "이미지 제목",
+      "url": "직접 접근 가능한 이미지 URL",
+      "grade": "학년 (1~6, 0=공통)",
+      "subject": "과목 (국어/수학/과학/사회/도덕/미술/음악/체육/영어)",
+      "tags": "검색용 태그 배열"
+    }
+  },
+  "images": [
+    {
+      "id": "nrich-001",
+      "title": "예시 이미지 (실제 URL로 교체 필요)",
+      "url": "https://portal.nrich.go.kr/example.jpg",
+      "grade": 1,
+      "subject": "수학",
+      "tags": ["수 세기", "덧셈"]
+    }
+  ]
+}
