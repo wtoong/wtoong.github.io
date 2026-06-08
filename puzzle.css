@@ -1,27 +1,68 @@
-/* 직소 퍼즐 공유 스타일 (maker 페이지 + study 페이지 공통) */
+/* 직소 퍼즐 공유 스타일 (maker 페이지 + study 페이지 공통)
+   🎨 초등학생을 위한 아기자기 디자인 */
+
+/* 둥글둥글 귀여운 무료 폰트 */
+@import url('https://fonts.googleapis.com/css2?family=Jua&family=Gaegu:wght@400;700&display=swap');
+
+:root {
+    --candy-pink:   #ff8fb1;
+    --candy-yellow: #ffd86b;
+    --candy-mint:   #7fd8be;
+    --candy-sky:    #8ec5ff;
+    --candy-purple: #c79bff;
+    --ink:          #5a4a6a;
+}
+
+* { box-sizing: border-box; }
+
 body {
-    font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
-    background-color: #f0f2f5;
+    font-family: 'Jua', 'Gaegu', 'Malgun Gothic', sans-serif;
+    /* 하늘색 → 분홍색으로 이어지는 알록달록 배경 */
+    background:
+        radial-gradient(circle at 12% 18%, #fff6c2 0 4px, transparent 5px) 0 0/120px 120px,
+        radial-gradient(circle at 70% 60%, #ffd1e3 0 4px, transparent 5px) 0 0/150px 150px,
+        linear-gradient(160deg, #cdedff 0%, #e7d9ff 55%, #ffe1ee 100%);
+    background-attachment: fixed;
+    color: var(--ink);
     margin: 0;
-    padding: 12px;
+    padding: 16px 12px 40px;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
+
+/* 둥실둥실 떠다니는 구름/별 느낌의 헤더 타이틀에 쓰는 클래스 */
+.page-title {
+    font-size: 2rem;
+    color: var(--ink);
+    text-align: center;
+    margin: 8px 0 4px;
+    text-shadow: 2px 2px 0 #fff, 4px 4px 0 rgba(199,155,255,0.35);
+}
+.page-subtitle {
+    font-family: 'Gaegu', sans-serif;
+    font-size: 1.05rem;
+    color: #8a7aa0;
+    text-align: center;
+    margin: 0 0 18px;
+}
+
 .controls {
-    background: white;
-    padding: 16px 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    margin-bottom: 14px;
+    background: #fffdf7;
+    padding: 20px 22px;
+    border-radius: 26px;
+    /* 폭신폭신한 그림자 + 점선 테두리 */
+    border: 3px dashed #ffd1e3;
+    box-shadow: 0 10px 0 rgba(199,155,255,0.18), 0 14px 24px rgba(120,90,160,0.15);
+    margin-bottom: 18px;
     display: flex;
     gap: 12px;
     align-items: center;
     flex-wrap: wrap;
     justify-content: center;
     width: 100%;
-    max-width: 640px;
-    box-sizing: border-box;
+    max-width: 660px;
 }
 .controls .row {
     display: flex;
@@ -31,46 +72,86 @@ body {
     justify-content: center;
     width: 100%;
 }
+
+label {
+    font-size: 1.05rem;
+    color: var(--ink);
+}
+
 input[type="number"] {
-    width: 50px;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    width: 60px;
+    padding: 8px;
+    border: 2px solid #ffd86b;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 1rem;
+    text-align: center;
+    background: #fffef9;
 }
 input[type="text"], input[type="url"] {
     flex: 1;
     min-width: 180px;
-    padding: 7px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    padding: 10px 14px;
+    border: 2px solid #8ec5ff;
+    border-radius: 14px;
+    font-family: 'Gaegu', sans-serif;
+    font-size: 0.95rem;
+    background: #fffef9;
 }
+input[type="file"] {
+    font-family: 'Gaegu', sans-serif;
+    font-size: 0.95rem;
+}
+input:focus {
+    outline: none;
+    border-color: var(--candy-pink);
+    box-shadow: 0 0 0 4px rgba(255,143,177,0.25);
+}
+
 button {
-    background-color: #4CAF50;
-    color: white;
+    background: var(--candy-mint);
+    color: #fff;
     border: none;
-    padding: 10px 18px;
-    border-radius: 6px;
+    padding: 12px 22px;
+    border-radius: 999px;
     cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.2s;
+    font-family: 'Jua', sans-serif;
+    font-size: 1.05rem;
+    /* 입체감을 주는 아래쪽 그림자 (눌리는 느낌) */
+    box-shadow: 0 5px 0 #56b89c;
+    transition: transform 0.12s, box-shadow 0.12s, background-color 0.2s;
 }
 button:hover {
-    background-color: #45a049;
+    background: #6fd0b3;
+    transform: translateY(-2px);
+    box-shadow: 0 7px 0 #56b89c;
+}
+button:active {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 #56b89c;
 }
 button:disabled {
-    background-color: #ccc;
+    background: #d8d0e0;
+    box-shadow: 0 5px 0 #bcb2cc;
     cursor: not-allowed;
 }
 button.secondary {
-    background-color: #2196F3;
+    background: var(--candy-sky);
+    box-shadow: 0 5px 0 #5fa3e8;
 }
 button.secondary:hover {
-    background-color: #1976D2;
+    background: #7bb8ff;
+    box-shadow: 0 7px 0 #5fa3e8;
 }
+button.secondary:active {
+    box-shadow: 0 2px 0 #5fa3e8;
+}
+
 canvas {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    background: #fffdf7;
+    border-radius: 20px;
+    border: 4px solid #fff;
+    box-shadow: 0 10px 26px rgba(120,90,160,0.22);
     cursor: grab;
     /* 크기는 JS의 layout()에서 px 단위로 직접 지정한다 (반응형 + DPR) */
     touch-action: none;
@@ -79,14 +160,16 @@ canvas {
 canvas:active {
     cursor: grabbing;
 }
+
 .message {
-    margin-top: 12px;
-    font-size: 1.15rem;
-    font-weight: bold;
-    color: #ff5722;
+    margin-top: 14px;
+    font-size: 1.25rem;
+    color: #ff5fa2;
     text-align: center;
     min-height: 1.2em;
+    line-height: 1.5;
 }
+
 .link-output {
     width: 100%;
     display: none;
@@ -97,4 +180,14 @@ canvas:active {
 }
 .link-output.show {
     display: flex;
+}
+
+/* 완성! 같은 축하 메시지가 통통 튀는 애니메이션 */
+@keyframes pop-bounce {
+    0%   { transform: scale(0.6); opacity: 0; }
+    60%  { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); }
+}
+.message:not(:empty) {
+    animation: pop-bounce 0.4s ease;
 }

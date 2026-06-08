@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>직소 퍼즐 풀기</title>
+    <title>🧩 퍼즐 풀기</title>
     <link rel="stylesheet" href="puzzle.css">
 </head>
 <body>
+
+    <h1 class="page-title">🧩 퍼즐 맞추기</h1>
+    <p class="page-subtitle">조각을 콕 집어서 제자리에 쏙! 넣어보자 ✨</p>
 
     <canvas id="puzzleCanvas" width="800" height="600"></canvas>
     <div id="message" class="message"></div>
@@ -22,9 +25,9 @@
     const rows = Math.min(15, Math.max(2, parseInt(q.get('rows')) || 4));
 
     if (!imgUrl) {
-        messageEl.innerText = "잘못된 링크입니다. (이미지 정보가 없어요)";
+        messageEl.innerText = "앗! 링크가 이상해요 😢 (그림 정보가 없어요)";
     } else {
-        messageEl.innerText = "이미지를 불러오는 중...";
+        messageEl.innerText = "그림을 가져오는 중이에요... 🎨";
         JigsawPuzzle.init({
             canvas,
             messageEl,
@@ -35,7 +38,7 @@
         }).then(() => {
             messageEl.innerText = "";
         }).catch(() => {
-            messageEl.innerText = "이미지를 불러올 수 없습니다. 선생님께 링크를 다시 확인해주세요.";
+            messageEl.innerText = "그림을 못 가져왔어요 😢 선생님께 링크를 다시 여쭤보세요!";
         });
     }
 </script>

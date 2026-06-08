@@ -3,26 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>직소 퍼즐</title>
+    <title>🧩 신나는 퍼즐 놀이터</title>
     <link rel="stylesheet" href="puzzle.css">
     <style>
-        .landing { background:#fff; padding:32px; border-radius:12px; box-shadow:0 4px 6px rgba(0,0,0,0.1); text-align:center; max-width:480px; margin-top:40px; }
-        .landing h1 { font-size:1.4rem; }
-        .landing p { color:#555; line-height:1.6; }
-        .landing a { display:inline-block; margin-top:12px; }
+        /* 둥실둥실 떠다니는 마스코트 이모지 */
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(-4deg); }
+            50%      { transform: translateY(-12px) rotate(4deg); }
+        }
+        .mascot {
+            font-size: 3.4rem;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+        .card-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            width: 100%;
+            max-width: 440px;
+        }
+        .landing {
+            background: #fffdf7;
+            padding: 28px 26px;
+            border-radius: 28px;
+            border: 3px dashed #ffd1e3;
+            box-shadow: 0 10px 0 rgba(199,155,255,0.18), 0 14px 24px rgba(120,90,160,0.15);
+            text-align: center;
+            transition: transform 0.15s;
+        }
+        .landing:hover { transform: translateY(-4px) rotate(-0.5deg); }
+        .landing.teacher { border-color: #b8e6d4; }
+        .landing .emoji { font-size: 2.8rem; display: block; margin-bottom: 6px; }
+        .landing h1 { font-family: 'Jua', sans-serif; font-size: 1.5rem; color: var(--ink); margin: 0 0 10px; }
+        .landing p { font-family: 'Gaegu', sans-serif; color: #8a7aa0; line-height: 1.7; font-size: 1.02rem; margin: 6px 0; }
+        .landing a { display: inline-block; margin-top: 14px; text-decoration: none; }
+        .landing .hint { font-size: 0.92rem; color: #b0a4c2; }
     </style>
 </head>
 <body>
-    <div class="landing">
-        <h1>🧩 직소 퍼즐</h1>
-        <p>선생님은 사진과 크기를 정해 퍼즐을 만들고,<br>학생에게 공유할 학습용 링크를 생성할 수 있습니다.</p>
-        <p><a href="jigsaw-puzzle.html"><button>퍼즐 만들기 (선생님용)</button></a></p>
-        <p style="font-size:0.9rem; color:#888;">학생은 선생님이 보내준 링크로 바로 퍼즐을 풀 수 있어요.</p>
+    <div style="text-align:center;">
+        <span class="mascot">🧩</span>
+        <h1 class="page-title">신나는 퍼즐 놀이터</h1>
+        <p class="page-subtitle">친구들아, 퍼즐 조각을 맞춰볼까? 🌈</p>
     </div>
-    <div class="landing" style="margin-top:16px;">
-        <h1>📚 이미지 데이터셋</h1>
-        <p>교과 과정 이미지 URL을 모아 공용 데이터셋을 관리합니다.<br>퍼즐·카드게임 등 여러 활동에서 공통으로 참조합니다.</p>
-        <p><a href="data/dataset-builder.html"><button>데이터셋 빌더</button></a></p>
+
+    <div class="card-grid">
+        <div class="landing">
+            <span class="emoji">🧩</span>
+            <h1>직소 퍼즐</h1>
+            <p>선생님이 사진과 크기를 골라 퍼즐을 만들고,<br>친구들에게 보낼 놀이 링크를 만들 수 있어요!</p>
+            <a href="jigsaw-puzzle.html"><button>퍼즐 만들기 (선생님용) ✏️</button></a>
+            <p class="hint">📨 친구들은 선생님이 보내준 링크로 바로 퍼즐을 풀 수 있어요!</p>
+        </div>
+
+        <div class="landing teacher">
+            <span class="emoji">📚</span>
+            <h1>이미지 데이터셋</h1>
+            <p>교과서 그림 주소를 모아 공용 그림 상자를 관리해요.<br>퍼즐·카드게임 등 여러 놀이에서 함께 써요.</p>
+            <a href="data/dataset-builder.html"><button class="secondary">데이터셋 빌더 🗂️</button></a>
+        </div>
     </div>
 </body>
 </html>
