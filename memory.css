@@ -1,5 +1,5 @@
 /* 카드 뒤집기 메모리 게임 전용 스타일
-   🎴 puzzle.css의 캔디 색·폰트·버튼을 그대로 쓰고, 카드판과 3D 뒤집기만 추가 */
+   🧠 puzzle.css의 캔디 색·폰트·버튼을 그대로 쓰고, 카드판과 3D 뒤집기만 추가 */
 
 /* 컨트롤 패널 안내 글씨 */
 .control-label {
@@ -119,17 +119,17 @@
     transform: translateY(-4px) scale(1.03);
 }
 
-/* 짝을 맞춘 카드: 통통 튀고 살짝 연하게, 초록 테두리로 완료 표시 */
+/* 짝을 맞춘 카드: 열린 상태 그대로 두고, 통통 튀며 초록 테두리로 완료 표시.
+   주의: .card-inner(preserve-3d)에 opacity/filter를 주면 3D가 평면화돼
+   앞면이 좌우 반전돼 보인다. 완료 표시는 앞면 테두리·배경으로만 한다. */
 .card.matched {
     cursor: default;
     animation: pop-bounce 0.45s ease;
 }
 .card.matched .card-front {
     border-color: var(--candy-mint);
+    background: #f3fffb;
     box-shadow: 0 0 0 4px rgba(127,216,190,0.5);
-}
-.card.matched .card-inner {
-    opacity: 0.78;
 }
 
 /* 비교 중에는 카드판 클릭 잠금 */
