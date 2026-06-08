@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>나만의 직소 퍼즐 만들기</title>
-    <!-- 최신 libheif (libheif-js) - 신형 아이폰 HEIC 포맷 지원 -->
-    <script src="https://cdn.jsdelivr.net/npm/libheif-js@1.18.2/libheif-wasm/libheif-bundle.js"></script>
+    <!-- libheif는 HEIC 파일 선택 시에만 lazy load -->
     <style>
         body {
             font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
@@ -110,11 +109,22 @@
     let dragOffsetX = 0;
     let dragOffsetY = 0;
 
-    // libheif 디코더 인스턴스 (최초 1회만 초기화)
     let heifDecoder = null;
+
+    function loadLibHeif() {
+        return new Promise((resolve, reject) => {
+            if (window.libheif) { resolve(); return; }
+            const s = document.createElement('script');
+            s.src = 'https://cdn.jsdelivr.net/npm/libheif-js@1.18.2/libheif-wasm/libheif-bundle.js';
+            s.onload = resolve;
+            s.onerror = () => reject(new Error('libheif 스크립트 로드 실패'));
+            document.head.appendChild(s);
+        });
+    }
+
     async function getHeifDecoder() {
         if (heifDecoder) return heifDecoder;
-        // libheif-bundle.js는 전역 libheif() 팩토리를 노출
+        await loadLibHeif();
         const lib = await libheif();
         heifDecoder = new lib.HeifDecoder();
         return heifDecoder;
