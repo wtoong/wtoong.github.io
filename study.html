@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>직소 퍼즐 풀기</title>
+    <link rel="stylesheet" href="puzzle.css">
+</head>
+<body>
+
+    <canvas id="puzzleCanvas" width="800" height="600"></canvas>
+    <div id="message" class="message"></div>
+
+<script src="puzzle.js"></script>
+<script>
+    const canvas = document.getElementById('puzzleCanvas');
+    const messageEl = document.getElementById('message');
+
+    const q = new URLSearchParams(location.search);
+    const imgUrl = q.get('img');
+    const cols = Math.min(15, Math.max(2, parseInt(q.get('cols')) || 4));
+    const rows = Math.min(15, Math.max(2, parseInt(q.get('rows')) || 4));
+
+    if (!imgUrl) {
+        messageEl.innerText = "잘못된 링크입니다. (이미지 정보가 없어요)";
+    } else {
+        messageEl.innerText = "이미지를 불러오는 중...";
+        JigsawPuzzle.init({
+            canvas,
+            messageEl,
+            imageSource: imgUrl,
+            cols,
+            rows,
+            locked: true
+        }).then(() => {
+            messageEl.innerText = "";
+        }).catch(() => {
+            messageEl.innerText = "이미지를 불러올 수 없습니다. 선생님께 링크를 다시 확인해주세요.";
+        });
+    }
+</script>
+</body>
+</html>

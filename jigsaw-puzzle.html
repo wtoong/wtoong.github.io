@@ -3,112 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>나만의 직소 퍼즐 만들기</title>
+    <title>직소 퍼즐 만들기 (선생님용)</title>
     <!-- libheif는 HEIC 파일 선택 시에만 lazy load -->
-    <style>
-        body {
-            font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
-            background-color: #f0f2f5;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .controls {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            flex-wrap: wrap;
-            justify-content: center;
-            width: 100%;
-            max-width: 600px;
-        }
-        input[type="number"] {
-            width: 50px;
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.2s;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-        canvas {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            cursor: grab;
-            /* 모바일 화면에 맞게 캔버스 크기 자동 조절 및 기본 터치 액션 방지 */
-            max-width: 100%;
-            height: auto;
-            touch-action: none; 
-        }
-        canvas:active {
-            cursor: grabbing;
-        }
-        .message {
-            margin-top: 15px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #ff5722;
-            text-align: center;
-        }
-    </style>
+    <link rel="stylesheet" href="puzzle.css">
 </head>
 <body>
 
     <div class="controls">
-        <input type="file" id="imageInput" accept="image/*,.heic,.heif">
-        <label>가로: <input type="number" id="colsInput" value="4" min="2" max="15"></label>
-        <label>세로: <input type="number" id="rowsInput" value="4" min="2" max="15"></label>
-        <button id="startBtn">퍼즐 만들기</button>
+        <div class="row">
+            <input type="file" id="imageInput" accept="image/*,.heic,.heif">
+            <label>가로: <input type="number" id="colsInput" value="4" min="2" max="15"></label>
+            <label>세로: <input type="number" id="rowsInput" value="4" min="2" max="15"></label>
+            <button id="startBtn">퍼즐 만들기</button>
+        </div>
+        <div class="row">
+            <input type="url" id="studyUrlInput" placeholder="학생에게 낼 공개 이미지 URL (https://...)">
+            <button id="makeLinkBtn" class="secondary">학습용 링크 만들기</button>
+        </div>
+        <div class="row link-output" id="linkOutput">
+            <input type="text" id="studyLink" readonly>
+            <button id="copyBtn" class="secondary">복사</button>
+        </div>
     </div>
 
     <canvas id="puzzleCanvas" width="800" height="600"></canvas>
     <div id="message" class="message"></div>
 
+<script src="puzzle.js"></script>
 <script>
-    const canvas = document.getElementById('puzzleCanvas');
-    const ctx = canvas.getContext('2d');
     const imageInput = document.getElementById('imageInput');
     const startBtn = document.getElementById('startBtn');
     const colsInput = document.getElementById('colsInput');
     const rowsInput = document.getElementById('rowsInput');
     const messageEl = document.getElementById('message');
+    const canvas = document.getElementById('puzzleCanvas');
 
-    let img = new Image();
-    let scaledImgCanvas = document.createElement('canvas');
-    let scaledCtx = scaledImgCanvas.getContext('2d');
-    
-    let pieces = [];
-    let pieceW, pieceH;
-    let cols, rows;
-    let boardStartX = 0, boardStartY = 0; // 전역 변수로 분리 (이미지 오프셋 계산용)
-    
-    let isDragging = false;
-    let selectedPiece = null;
-    let dragOffsetX = 0;
-    let dragOffsetY = 0;
+    const studyUrlInput = document.getElementById('studyUrlInput');
+    const makeLinkBtn = document.getElementById('makeLinkBtn');
+    const linkOutput = document.getElementById('linkOutput');
+    const studyLink = document.getElementById('studyLink');
+    const copyBtn = document.getElementById('copyBtn');
 
+    let uploadedSrc = null; // 업로드/변환된 이미지 dataURL
+
+    // ---------------- HEIC / 파일 업로드 (maker 전용) ----------------
     let heifDecoder = null;
 
     function loadLibHeif() {
@@ -140,7 +78,6 @@
             throw new Error("디코딩 결과가 비어 있습니다 (지원하지 않는 HEIF 구조)");
         }
 
-        // 여러 장이 들어있어도 첫 번째(대표) 이미지 사용
         const image = data[0];
         const w = image.get_width();
         const h = image.get_height();
@@ -151,7 +88,6 @@
         const tmpCtx = tmpCanvas.getContext('2d');
         const imageData = tmpCtx.createImageData(w, h);
 
-        // libheif가 RGBA 픽셀을 imageData.data 버퍼에 직접 채워줌
         await new Promise((resolve, reject) => {
             image.display(imageData, (displayData) => {
                 if (!displayData) {
@@ -166,43 +102,26 @@
         return tmpCanvas.toDataURL("image/jpeg", 0.85);
     }
 
-    // 이미지 업로드 및 HEIF 변환 처리 (디버깅용 상세 로그 포함)
     imageInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-
         const fileName = file.name.toLowerCase();
-
-        // 1. 선택된 파일 기본 정보 확인
-        console.log("=== 파일 업로드 시작 ===");
-        console.log("파일명:", fileName);
-        console.log("파일 크기:", (file.size / 1024 / 1024).toFixed(2) + " MB");
-        console.log("파일 타입:", file.type);
-        console.log("현재 접속 주소(Protocol):", window.location.protocol);
 
         if (fileName.endsWith('.heic') || fileName.endsWith('.heif')) {
             messageEl.innerHTML = "아이폰(HEIF) 이미지 변환 중... 잠시만요! ⏳<br><span style='font-size:0.9rem; color:#666;'>(용량이 크면 수십 초가 걸릴 수 있습니다)</span>";
             startBtn.disabled = true;
-
             try {
-                console.log("libheif 변환 시작...");
-                const jpegDataUrl = await convertHeif(file);
-                console.log("libheif 변환 성공!");
-                img.src = jpegDataUrl;
+                uploadedSrc = await convertHeif(file);
                 messageEl.innerText = "변환 완료! 퍼즐 만들기를 눌러주세요.";
             } catch (error) {
-                console.error("🔥 libheif 변환 에러 발생 🔥", error);
+                console.error("🔥 libheif 변환 에러 🔥", error);
                 let errorDetail = error.message || error.toString() || JSON.stringify(error);
-
-                let errorHtml = `HEIF 변환 실패 😢<br><br>`;
-                errorHtml += `<b>[에러 내용]</b><br><span style='color: #d32f2f; font-size: 0.9rem;'>${errorDetail}</span><br><br>`;
-
+                let errorHtml = `HEIF 변환 실패 😢<br><br><b>[에러 내용]</b><br><span style='color: #d32f2f; font-size: 0.9rem;'>${errorDetail}</span><br><br>`;
                 if (window.location.protocol === 'file:') {
-                    errorHtml += `💡 <b>로컬 환경(file://) 감지됨:</b><br>HTML 파일을 그냥 더블클릭해서 열었나요? 브라우저 보안 정책 때문에 로컬 환경에서는 WASM 라이브러리가 막혔을 확률이 높습니다. 웹 서버를 통해 열어야 합니다.`;
+                    errorHtml += `💡 <b>로컬 환경(file://) 감지됨:</b><br>웹 서버를 통해 열어야 합니다.`;
                 } else if (file.size > 5 * 1024 * 1024) {
-                    errorHtml += `💡 <b>대용량 파일 감지됨:</b><br>파일 용량이 5MB 이상으로 커서 브라우저 메모리가 부족해 변환에 실패했을 수 있습니다.`;
+                    errorHtml += `💡 <b>대용량 파일 감지됨:</b><br>파일 용량이 5MB 이상이라 메모리 부족으로 변환에 실패했을 수 있습니다.`;
                 }
-
                 messageEl.innerHTML = errorHtml;
                 startBtn.disabled = false;
                 return;
@@ -211,220 +130,58 @@
         } else {
             messageEl.innerText = "";
             const reader = new FileReader();
-            reader.onload = (event) => {
-                console.log("FileReader로 이미지 읽기 성공");
-                img.src = event.target.result;
-            };
-            reader.onerror = (err) => {
-                console.error("🔥 FileReader 에러 🔥", err);
-                messageEl.innerText = "파일을 화면에 읽어오는 중 에러가 발생했습니다.";
-            };
+            reader.onload = (event) => { uploadedSrc = event.target.result; };
+            reader.onerror = () => { messageEl.innerText = "파일을 읽는 중 에러가 발생했습니다."; };
             reader.readAsDataURL(file);
         }
     });
 
+    // ---------------- 퍼즐 생성 (로컬 플레이) ----------------
     startBtn.addEventListener('click', () => {
-        if (!img.src) {
-            alert("먼저 이미지를 업로드해주세요!");
+        const urlVal = studyUrlInput.value.trim();
+        const source = uploadedSrc || urlVal;
+        if (!source) {
+            alert("이미지를 업로드하거나 공개 이미지 URL을 입력해주세요!");
             return;
         }
         messageEl.innerText = "";
-        cols = parseInt(colsInput.value);
-        rows = parseInt(rowsInput.value);
-        generatePuzzle();
+        JigsawPuzzle.init({
+            canvas,
+            messageEl,
+            imageSource: source,
+            cols: colsInput.value,
+            rows: rowsInput.value
+        }).catch(() => { messageEl.innerText = "이미지를 불러올 수 없습니다."; });
     });
 
-    function generatePuzzle() {
-        const maxImgWidth = 600;
-        let scale = Math.min(maxImgWidth / img.width, 1);
-        let sWidth = img.width * scale;
-        let sHeight = img.height * scale;
-
-        scaledImgCanvas.width = sWidth;
-        scaledImgCanvas.height = sHeight;
-        scaledCtx.drawImage(img, 0, 0, sWidth, sHeight);
-
-        // 메인 캔버스 크기 지정
-        canvas.width = sWidth + 200;
-        canvas.height = Math.max(sHeight + 200, 600);
-
-        pieceW = sWidth / cols;
-        pieceH = sHeight / rows;
-        pieces = [];
-
-        boardStartX = (canvas.width - sWidth) / 2;
-        boardStartY = (canvas.height - sHeight) / 2;
-
-        for (let r = 0; r < rows; r++) {
-            for (let c = 0; c < cols; c++) {
-                let shape = {
-                    t: r === 0 ? 0 : -pieces[(r - 1) * cols + c].shape.b,
-                    r: c === cols - 1 ? 0 : (Math.random() > 0.5 ? 1 : -1),
-                    b: r === rows - 1 ? 0 : (Math.random() > 0.5 ? 1 : -1),
-                    l: c === 0 ? 0 : -pieces[r * cols + (c - 1)].shape.r
-                };
-
-                pieces.push({
-                    col: c,
-                    row: r,
-                    shape: shape,
-                    correctX: boardStartX + c * pieceW,
-                    correctY: boardStartY + r * pieceH,
-                    x: Math.random() * (canvas.width - pieceW - 50) + 25,
-                    y: Math.random() * (canvas.height - pieceH - 50) + 25,
-                    isLocked: false
-                });
-            }
+    // ---------------- 학습용 링크 생성 ----------------
+    makeLinkBtn.addEventListener('click', () => {
+        const imgUrl = studyUrlInput.value.trim();
+        if (!imgUrl) {
+            alert("학생에게 낼 공개 이미지 URL을 입력해주세요.\n(업로드한 파일은 링크로 공유할 수 없어 공개 URL이 필요합니다.)");
+            return;
         }
-        drawAll();
-    }
+        const cols = Math.min(15, Math.max(2, parseInt(colsInput.value) || 4));
+        const rows = Math.min(15, Math.max(2, parseInt(rowsInput.value) || 4));
+        const base = location.origin + location.pathname.replace(/jigsaw-puzzle\.html$/, 'study.html');
+        const url = base + '?img=' + encodeURIComponent(imgUrl) + '&cols=' + cols + '&rows=' + rows;
+        studyLink.value = url;
+        linkOutput.classList.add('show');
+        // 선생님이 이미지가 잘 뜨는지 바로 확인할 수 있게 미리보기 생성
+        JigsawPuzzle.init({ canvas, messageEl, imageSource: imgUrl, cols, rows })
+            .catch(() => { messageEl.innerText = "⚠️ 이미지 URL을 불러올 수 없습니다. 주소를 확인해주세요."; });
+    });
 
-    function createPiecePath(context, x, y, w, h, shape) {
-        const neck = Math.min(w, h) * 0.15;
-        const tab = Math.min(w, h) * 0.25;
-
-        context.beginPath();
-        context.moveTo(x, y);
-
-        if (shape.t === 0) context.lineTo(x + w, y);
-        else {
-            context.lineTo(x + w / 2 - neck, y);
-            context.bezierCurveTo(x + w / 2 - neck, y - shape.t * tab, x + w / 2 + neck, y - shape.t * tab, x + w / 2 + neck, y);
-            context.lineTo(x + w, y);
+    copyBtn.addEventListener('click', async () => {
+        try {
+            await navigator.clipboard.writeText(studyLink.value);
+            copyBtn.innerText = "복사됨!";
+            setTimeout(() => { copyBtn.innerText = "복사"; }, 1500);
+        } catch (e) {
+            studyLink.select();
+            document.execCommand('copy');
         }
-        if (shape.r === 0) context.lineTo(x + w, y + h);
-        else {
-            context.lineTo(x + w, y + h / 2 - neck);
-            context.bezierCurveTo(x + w + shape.r * tab, y + h / 2 - neck, x + w + shape.r * tab, y + h / 2 + neck, x + w, y + h / 2 + neck);
-            context.lineTo(x + w, y + h);
-        }
-        if (shape.b === 0) context.lineTo(x, y + h);
-        else {
-            context.lineTo(x + w / 2 + neck, y + h);
-            context.bezierCurveTo(x + w / 2 + neck, y + h + shape.b * tab, x + w / 2 - neck, y + h + shape.b * tab, x + w / 2 - neck, y + h);
-            context.lineTo(x, y + h);
-        }
-        if (shape.l === 0) context.lineTo(x, y);
-        else {
-            context.lineTo(x, y + h / 2 + neck);
-            context.bezierCurveTo(x - shape.l * tab, y + h / 2 + neck, x - shape.l * tab, y + h / 2 - neck, x, y + h / 2 - neck);
-            context.lineTo(x, y);
-        }
-        context.closePath();
-    }
-
-    function drawAll() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // 가이드 영역
-        ctx.fillStyle = "rgba(0,0,0,0.05)";
-        ctx.fillRect(boardStartX, boardStartY, scaledImgCanvas.width, scaledImgCanvas.height);
-
-        pieces.forEach(p => { if (p !== selectedPiece) drawPiece(p); });
-        if (selectedPiece) drawPiece(selectedPiece);
-    }
-
-    function drawPiece(p) {
-        ctx.save();
-        createPiecePath(ctx, p.x, p.y, pieceW, pieceH, p.shape);
-        ctx.clip(); 
-        
-        // [버그 수정 완료] 조각 좌표에서 정답 좌표를 빼고 보드 시작 위치를 더해줘야 이미지가 딱 맞습니다.
-        ctx.drawImage(scaledImgCanvas, p.x - p.correctX + boardStartX, p.y - p.correctY + boardStartY);
-        
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = p.isLocked ? "rgba(0,0,0,0.1)" : "rgba(0,0,0,0.6)";
-        ctx.stroke();
-        
-        if (!p.isLocked) {
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
-            ctx.shadowBlur = 5;
-            ctx.shadowOffsetX = 2;
-            ctx.shadowOffsetY = 2;
-            ctx.stroke(); 
-        }
-        ctx.restore();
-    }
-
-    // --- 마우스 및 모바일 터치 이벤트 통합 ---
-    function handleStart(clientX, clientY) {
-        const rect = canvas.getBoundingClientRect();
-        // 화면에 렌더링된 크기(rect)와 실제 캔버스 해상도(canvas.width) 비율 계산
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        const mouseX = (clientX - rect.left) * scaleX;
-        const mouseY = (clientY - rect.top) * scaleY;
-
-        for (let i = pieces.length - 1; i >= 0; i--) {
-            let p = pieces[i];
-            if (p.isLocked) continue;
-
-            createPiecePath(ctx, p.x, p.y, pieceW, pieceH, p.shape);
-            if (ctx.isPointInPath(mouseX, mouseY)) {
-                selectedPiece = p;
-                isDragging = true;
-                dragOffsetX = mouseX - p.x;
-                dragOffsetY = mouseY - p.y;
-                
-                pieces.splice(i, 1);
-                pieces.push(p);
-                break;
-            }
-        }
-    }
-
-    function handleMove(clientX, clientY) {
-        if (!isDragging || !selectedPiece) return;
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        
-        selectedPiece.x = (clientX - rect.left) * scaleX - dragOffsetX;
-        selectedPiece.y = (clientY - rect.top) * scaleY - dragOffsetY;
-        drawAll();
-    }
-
-    function handleEnd() {
-        if (selectedPiece) {
-            const snapDistance = 25; // 자석처럼 붙는 판정 범위 (조금 더 넓힘)
-            const dx = selectedPiece.x - selectedPiece.correctX;
-            const dy = selectedPiece.y - selectedPiece.correctY;
-            
-            if (Math.abs(dx) < snapDistance && Math.abs(dy) < snapDistance) {
-                selectedPiece.x = selectedPiece.correctX;
-                selectedPiece.y = selectedPiece.correctY;
-                selectedPiece.isLocked = true;
-                
-                if (pieces.every(p => p.isLocked)) {
-                    messageEl.innerText = "🎉 퍼즐 완성! 축하합니다! 🎉";
-                }
-            }
-            selectedPiece = null;
-            isDragging = false;
-            drawAll();
-        }
-    }
-
-    // PC 마우스 이벤트
-    canvas.addEventListener('mousedown', (e) => handleStart(e.clientX, e.clientY));
-    canvas.addEventListener('mousemove', (e) => handleMove(e.clientX, e.clientY));
-    canvas.addEventListener('mouseup', handleEnd);
-    canvas.addEventListener('mouseleave', handleEnd);
-
-    // [추가 완료] 모바일 터치 이벤트
-    canvas.addEventListener('touchstart', (e) => {
-        e.preventDefault(); // 스크롤 등 기본 터치 동작 막기
-        handleStart(e.touches[0].clientX, e.touches[0].clientY);
-    }, { passive: false });
-    
-    canvas.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-        handleMove(e.touches[0].clientX, e.touches[0].clientY);
-    }, { passive: false });
-    
-    canvas.addEventListener('touchend', handleEnd);
-    canvas.addEventListener('touchcancel', handleEnd);
-
+    });
 </script>
 </body>
 </html>
