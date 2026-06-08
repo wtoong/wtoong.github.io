@@ -295,7 +295,7 @@
             if (idx > 0) { pieces.splice(idx, 1); pieces.unshift(selectedPiece); }
 
             if (pieces.every(p => p.isLocked)) {
-                messageEl.innerText = "🎉 퍼즐 완성! 축하합니다! 🎉";
+                messageEl.innerText = "🎉 우와! 퍼즐 완성! 정말 잘했어요! 🌈✨";
                 if (typeof onComplete === 'function') onComplete();
             }
         }
