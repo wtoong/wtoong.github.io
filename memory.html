@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎴 카드 뒤집기 메모리 게임</title>
+    <link rel="stylesheet" href="puzzle.css">
+    <link rel="stylesheet" href="memory.css">
+</head>
+<body>
+    <h1 class="page-title">🎴 카드 뒤집기</h1>
+    <p class="page-subtitle">카드를 콕! 뒤집어서 똑같은 짝을 찾아보자 🌈</p>
+
+    <div class="controls">
+        <div class="row">
+            <span class="control-label">난이도</span>
+            <button type="button" class="level-btn" data-level="easy">쉬움 🐣</button>
+            <button type="button" class="level-btn" data-level="normal">보통 🐰</button>
+            <button type="button" class="level-btn" data-level="hard">어려움 🦁</button>
+        </div>
+        <div class="row">
+            <span class="control-label">카드 그림</span>
+            <button type="button" class="mode-btn secondary" data-mode="emoji">이모지 😀</button>
+            <button type="button" class="mode-btn secondary" data-mode="image">교과 그림 🖼️</button>
+            <button type="button" id="restartBtn">다시하기 🔄</button>
+        </div>
+    </div>
+
+    <div class="stats">
+        <span class="stat">⏱ <span id="timer">0초</span></span>
+        <span class="stat">🔄 뒤집기 <span id="moves">0</span>번</span>
+        <span class="stat">⭐ 짝 <span id="matches">0</span> / <span id="totalPairs">0</span></span>
+    </div>
+
+    <div id="board" class="board" aria-label="메모리 게임 카드판"></div>
+
+    <div id="message" class="message"></div>
+
+    <p class="page-subtitle home-link"><a href="index.html">🏠 놀이터 입구로 돌아가기</a></p>
+
+    <script src="memory.js"></script>
+    <script>
+        MemoryGame.init({
+            boardEl:   document.getElementById('board'),
+            messageEl: document.getElementById('message'),
+            timerEl:   document.getElementById('timer'),
+            movesEl:   document.getElementById('moves'),
+            matchesEl: document.getElementById('matches'),
+            totalEl:   document.getElementById('totalPairs'),
+            levelButtons: document.querySelectorAll('.level-btn'),
+            modeButtons:  document.querySelectorAll('.mode-btn'),
+            restartBtn:   document.getElementById('restartBtn'),
+        });
+    </script>
+</body>
+</html>
