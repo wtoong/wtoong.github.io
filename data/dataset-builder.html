@@ -5,224 +5,322 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>이미지 데이터셋 빌더</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f5f5f5; padding: 24px; }
-    h1 { font-size: 1.3rem; margin-bottom: 20px; }
-    .container { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .card { background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
-    .card h2 { font-size: 1rem; margin-bottom: 14px; color: #333; }
-    label { display: block; font-size: 0.85rem; color: #555; margin-bottom: 4px; margin-top: 12px; }
-    label:first-of-type { margin-top: 0; }
-    input, select, textarea { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9rem; }
-    textarea { height: 80px; resize: vertical; }
-    button { margin-top: 14px; padding: 9px 18px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: 600; }
-    .btn-add { background: #3b82f6; color: #fff; width: 100%; }
-    .btn-add:hover { background: #2563eb; }
-    .btn-copy { background: #10b981; color: #fff; width: 100%; margin-top: 8px; }
-    .btn-copy:hover { background: #059669; }
-    .btn-clear { background: #ef4444; color: #fff; width: 100%; margin-top: 4px; }
-    .btn-clear:hover { background: #dc2626; }
-    .preview-img { width: 100%; height: 160px; object-fit: cover; border-radius: 6px; margin-top: 10px; display: none; background: #f0f0f0; }
-    #jsonOutput { width: 100%; height: 340px; font-family: monospace; font-size: 0.78rem; resize: vertical; }
-    .count { font-size: 0.82rem; color: #888; margin-bottom: 8px; }
-    .toast { position: fixed; bottom: 24px; right: 24px; background: #1e293b; color: #fff; padding: 10px 18px; border-radius: 8px; font-size: 0.88rem; display: none; }
-    .import-area { margin-top: 12px; }
-    .full-width { grid-column: 1 / -1; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f1f5f9; min-height: 100vh; }
+
+    header { background: #1e293b; color: #fff; padding: 16px 24px; display: flex; align-items: center; gap: 12px; }
+    header h1 { font-size: 1.1rem; font-weight: 700; }
+    header span { font-size: 0.82rem; color: #94a3b8; }
+
+    .layout { display: grid; grid-template-columns: 340px 1fr; min-height: calc(100vh - 54px); }
+
+    /* ── 왼쪽 패널 ── */
+    .sidebar { background: #fff; border-right: 1px solid #e2e8f0; padding: 20px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
+    .sidebar h2 { font-size: 0.9rem; font-weight: 700; color: #334155; }
+
+    textarea.url-input { width: 100%; height: 180px; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.82rem; font-family: monospace; resize: vertical; line-height: 1.6; }
+    textarea.url-input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+
+    .btn { padding: 9px 16px; border: none; border-radius: 7px; cursor: pointer; font-size: 0.88rem; font-weight: 600; transition: background 0.15s; }
+    .btn-primary { background: #3b82f6; color: #fff; width: 100%; }
+    .btn-primary:hover { background: #2563eb; }
+    .btn-success { background: #10b981; color: #fff; width: 100%; }
+    .btn-success:hover { background: #059669; }
+    .btn-danger  { background: #ef4444; color: #fff; }
+    .btn-danger:hover  { background: #dc2626; }
+
+    .bulk-section { border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; }
+    .bulk-section h3 { font-size: 0.82rem; font-weight: 700; color: #475569; margin-bottom: 10px; }
+    .bulk-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .bulk-row label { font-size: 0.8rem; color: #64748b; white-space: nowrap; width: 36px; flex-shrink: 0; }
+    .bulk-row select { flex: 1; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.82rem; }
+    .bulk-row button { padding: 6px 12px; background: #6366f1; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; white-space: nowrap; }
+    .bulk-row button:hover { background: #4f46e5; }
+
+    .import-section details summary { font-size: 0.85rem; font-weight: 600; color: #475569; cursor: pointer; padding: 4px 0; }
+    .import-section textarea { margin-top: 8px; width: 100%; height: 100px; padding: 8px; border: 1px solid #cbd5e1; border-radius: 7px; font-size: 0.78rem; font-family: monospace; resize: vertical; }
+    .import-section button { margin-top: 6px; padding: 7px 14px; background: #6366f1; color: #fff; border: none; border-radius: 7px; cursor: pointer; font-size: 0.82rem; font-weight: 600; }
+
+    .stat { font-size: 0.82rem; color: #64748b; }
+    .stat strong { color: #1e293b; }
+
+    /* ── 오른쪽 메인 ── */
+    .main { padding: 20px; overflow-y: auto; }
+
+    .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; color: #94a3b8; gap: 8px; }
+    .empty-state .icon { font-size: 3rem; }
+    .empty-state p { font-size: 0.9rem; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+
+    .card { background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); border: 2px solid transparent; transition: border-color 0.15s; }
+    .card:hover { border-color: #3b82f6; }
+    .card.error { border-color: #fca5a5; }
+
+    .card-img { width: 100%; height: 130px; object-fit: cover; display: block; background: #f1f5f9; }
+    .card-img.loading { filter: grayscale(1) opacity(0.4); }
+    .card-body { padding: 10px; }
+
+    .card-body input, .card-body select { width: 100%; padding: 5px 7px; border: 1px solid #e2e8f0; border-radius: 5px; font-size: 0.78rem; margin-bottom: 5px; }
+    .card-body input:focus, .card-body select:focus { outline: none; border-color: #3b82f6; }
+
+    .card-row { display: flex; gap: 5px; }
+    .card-row select { flex: 1; }
+
+    .card-del { display: block; width: 100%; margin-top: 4px; padding: 4px; background: none; border: 1px solid #fca5a5; border-radius: 5px; color: #ef4444; cursor: pointer; font-size: 0.75rem; }
+    .card-del:hover { background: #fef2f2; }
+
+    .err-badge { background: #fef2f2; color: #dc2626; font-size: 0.72rem; padding: 2px 6px; border-radius: 4px; margin-bottom: 5px; }
+
+    .output-bar { position: sticky; bottom: 0; background: #fff; border-top: 1px solid #e2e8f0; padding: 14px 20px; display: flex; gap: 10px; align-items: center; }
+    .output-bar .spacer { flex: 1; }
+
+    .toast { position: fixed; bottom: 24px; right: 24px; background: #1e293b; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 0.88rem; opacity: 0; transform: translateY(8px); transition: all 0.2s; pointer-events: none; z-index: 999; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 700px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { border-right: none; border-bottom: 1px solid #e2e8f0; }
+    }
   </style>
 </head>
 <body>
+
+<header>
   <h1>📚 교과 이미지 데이터셋 빌더</h1>
-  <div class="container">
+  <span>curriculum-images.json 생성 도구</span>
+</header>
 
-    <div class="card">
-      <h2>이미지 추가</h2>
+<div class="layout">
 
-      <label>이미지 URL *</label>
-      <input type="url" id="imgUrl" placeholder="https://portal.nrich.go.kr/..." oninput="previewImg()">
-      <img id="imgPreview" class="preview-img">
+  <!-- ─── 사이드바 ─── -->
+  <aside class="sidebar">
 
-      <label>제목 *</label>
-      <input type="text" id="imgTitle" placeholder="예: 덧셈과 뺄셈 그림">
-
-      <label>학년</label>
-      <select id="imgGrade">
-        <option value="0">공통</option>
-        <option value="1">1학년</option>
-        <option value="2">2학년</option>
-        <option value="3">3학년</option>
-        <option value="4">4학년</option>
-        <option value="5">5학년</option>
-        <option value="6">6학년</option>
-      </select>
-
-      <label>과목</label>
-      <select id="imgSubject">
-        <option value="수학">수학</option>
-        <option value="국어">국어</option>
-        <option value="과학">과학</option>
-        <option value="사회">사회</option>
-        <option value="도덕">도덕</option>
-        <option value="미술">미술</option>
-        <option value="음악">음악</option>
-        <option value="체육">체육</option>
-        <option value="영어">영어</option>
-        <option value="기타">기타</option>
-      </select>
-
-      <label>태그 (쉼표 구분)</label>
-      <input type="text" id="imgTags" placeholder="덧셈, 수 세기, 1학기">
-
-      <button class="btn-add" onclick="addEntry()">+ 목록에 추가</button>
+    <div>
+      <h2 style="margin-bottom:8px">URL 붙여넣기</h2>
+      <p style="font-size:0.8rem;color:#64748b;margin-bottom:8px">이미지 URL을 한 줄에 하나씩 붙여넣으세요.</p>
+      <textarea class="url-input" id="urlInput" placeholder="https://portal.nrich.go.kr/image1.jpg&#10;https://portal.nrich.go.kr/image2.jpg&#10;https://..."></textarea>
+      <button class="btn btn-primary" onclick="loadUrls()" style="margin-top:8px">이미지 불러오기</button>
     </div>
 
-    <div class="card">
-      <h2>JSON 출력</h2>
-      <div class="count" id="count">항목: 0개</div>
-      <textarea id="jsonOutput" readonly></textarea>
-      <button class="btn-copy" onclick="copyJson()">📋 JSON 복사</button>
-      <button class="btn-clear" onclick="clearAll()">🗑 전체 초기화</button>
-
-      <div class="import-area">
-        <label style="margin-top:16px">기존 JSON 불러오기 (curriculum-images.json 내용 붙여넣기)</label>
-        <textarea id="importInput" placeholder="기존 JSON을 여기 붙여넣고 아래 버튼 클릭"></textarea>
-        <button style="margin-top:8px; background:#6366f1; color:#fff; padding:8px 16px; border:none; border-radius:6px; cursor:pointer; font-size:0.88rem;" onclick="importJson()">불러오기</button>
+    <div class="bulk-section">
+      <h3>일괄 설정</h3>
+      <div class="bulk-row">
+        <label>학년</label>
+        <select id="bulkGrade">
+          <option value="">-</option>
+          <option value="0">공통</option>
+          <option value="1">1학년</option><option value="2">2학년</option>
+          <option value="3">3학년</option><option value="4">4학년</option>
+          <option value="5">5학년</option><option value="6">6학년</option>
+        </select>
+        <button onclick="applyBulk('grade')">적용</button>
+      </div>
+      <div class="bulk-row">
+        <label>과목</label>
+        <select id="bulkSubject">
+          <option value="">-</option>
+          <option>수학</option><option>국어</option><option>과학</option>
+          <option>사회</option><option>도덕</option><option>미술</option>
+          <option>음악</option><option>체육</option><option>영어</option><option>기타</option>
+        </select>
+        <button onclick="applyBulk('subject')">적용</button>
       </div>
     </div>
 
-    <div class="card full-width">
-      <h2>추가된 항목 미리보기</h2>
-      <div id="previewList" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); gap:10px; margin-top:8px;"></div>
+    <div class="import-section">
+      <details>
+        <summary>기존 JSON 이어서 편집</summary>
+        <textarea id="importInput" placeholder="curriculum-images.json 내용을 여기 붙여넣기"></textarea>
+        <button onclick="importJson()">불러오기</button>
+      </details>
     </div>
 
-  </div>
-  <div class="toast" id="toast"></div>
+    <div class="stat" id="stat">항목: <strong>0</strong>개</div>
 
-  <script>
-    let entries = [];
-    let counter = 1;
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-success" onclick="downloadJson()" style="flex:1">JSON 다운로드</button>
+      <button class="btn btn-danger" onclick="clearAll()">전체 삭제</button>
+    </div>
+    <button class="btn" style="background:#475569;color:#fff;" onclick="copyJson()">📋 JSON 복사</button>
 
-    function previewImg() {
-      const url = document.getElementById('imgUrl').value.trim();
-      const img = document.getElementById('imgPreview');
-      if (url) {
-        img.src = url;
-        img.style.display = 'block';
-        img.onerror = () => { img.style.display = 'none'; };
-      } else {
-        img.style.display = 'none';
-      }
-    }
+  </aside>
 
-    function addEntry() {
-      const url = document.getElementById('imgUrl').value.trim();
-      const title = document.getElementById('imgTitle').value.trim();
-      if (!url || !title) { showToast('URL과 제목은 필수입니다.'); return; }
+  <!-- ─── 메인 영역 ─── -->
+  <main class="main" id="main">
+    <div class="empty-state" id="emptyState">
+      <div class="icon">🖼️</div>
+      <p>왼쪽에 이미지 URL을 붙여넣고 <strong>불러오기</strong>를 클릭하세요.</p>
+    </div>
+    <div class="grid" id="grid"></div>
+  </main>
 
-      const tags = document.getElementById('imgTags').value
-        .split(',').map(t => t.trim()).filter(Boolean);
+</div>
 
-      const entry = {
-        id: `nrich-${String(counter).padStart(3, '0')}`,
-        title,
-        url,
-        grade: parseInt(document.getElementById('imgGrade').value),
-        subject: document.getElementById('imgSubject').value,
-        tags
-      };
-      counter++;
-      entries.push(entry);
-      updateOutput();
-      clearForm();
-      showToast('추가되었습니다!');
-    }
+<div class="toast" id="toast"></div>
 
-    function updateOutput() {
-      const dataset = {
-        _meta: {
-          description: "초등 교과 과정 이미지 데이터셋 (NRICH 국립수학과학교육원)",
-          source: "https://portal.nrich.go.kr/kor/textbookUseCulturalUsrList.do?menuIdx=1229",
-          updated: new Date().toISOString().slice(0,10),
-          schema: {
-            id: "고유 식별자 (예: nrich-001)",
-            title: "이미지 제목",
-            url: "직접 접근 가능한 이미지 URL",
-            grade: "학년 (1~6, 0=공통)",
-            subject: "과목 (국어/수학/과학/사회/도덕/미술/음악/체육/영어)",
-            tags: "검색용 태그 배열"
-          }
-        },
-        images: entries
-      };
-      document.getElementById('jsonOutput').value = JSON.stringify(dataset, null, 2);
-      document.getElementById('count').textContent = `항목: ${entries.length}개`;
-      renderPreview();
-    }
+<script>
+  let items = [];   // { id, url, title, grade, subject, imgOk }
+  let counter = 1;
 
-    function renderPreview() {
-      const list = document.getElementById('previewList');
-      list.innerHTML = entries.map((e, i) => `
-        <div style="position:relative; border:1px solid #eee; border-radius:8px; overflow:hidden; background:#f9f9f9;">
-          <img src="${e.url}" style="width:100%; height:90px; object-fit:cover; display:block;" onerror="this.style.background='#eee'">
-          <div style="padding:6px 8px;">
-            <div style="font-size:0.78rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${e.title}</div>
-            <div style="font-size:0.72rem; color:#888;">${e.grade > 0 ? e.grade+'학년 · ' : ''}${e.subject}</div>
+  /* ── URL 불러오기 ── */
+  function loadUrls() {
+    const raw = document.getElementById('urlInput').value.trim();
+    if (!raw) return;
+
+    const urls = raw.split('\n').map(u => u.trim()).filter(u => u.startsWith('http'));
+    if (!urls.length) { showToast('유효한 URL이 없습니다.'); return; }
+
+    urls.forEach(url => {
+      if (items.some(it => it.url === url)) return; // 중복 스킵
+      items.push({ id: nextId(), url, title: titleFromUrl(url), grade: 0, subject: '수학', imgOk: null });
+    });
+
+    document.getElementById('urlInput').value = '';
+    render();
+    showToast(`${urls.length}개 URL을 추가했습니다.`);
+  }
+
+  function titleFromUrl(url) {
+    try {
+      const parts = new URL(url).pathname.split('/');
+      const file = parts[parts.length - 1];
+      return decodeURIComponent(file.replace(/\.\w+$/, '').replace(/[-_]/g, ' ')) || '이미지';
+    } catch { return '이미지'; }
+  }
+
+  function nextId() {
+    return `nrich-${String(counter++).padStart(3, '0')}`;
+  }
+
+  /* ── 렌더링 ── */
+  function render() {
+    const grid = document.getElementById('grid');
+    const empty = document.getElementById('emptyState');
+    empty.style.display = items.length ? 'none' : 'flex';
+
+    grid.innerHTML = items.map((it, i) => `
+      <div class="card ${it.imgOk === false ? 'error' : ''}" id="card-${i}">
+        <img class="card-img ${it.imgOk === null ? 'loading' : ''}"
+             src="${escHtml(it.url)}"
+             onload="imgLoaded(${i},true)"
+             onerror="imgLoaded(${i},false)"
+             alt="">
+        <div class="card-body">
+          ${it.imgOk === false ? '<div class="err-badge">⚠ 이미지 로드 실패</div>' : ''}
+          <input type="text" value="${escHtml(it.title)}"
+                 placeholder="제목" oninput="items[${i}].title=this.value">
+          <div class="card-row">
+            <select onchange="items[${i}].grade=parseInt(this.value)">
+              ${gradeOptions(it.grade)}
+            </select>
+            <select onchange="items[${i}].subject=this.value">
+              ${subjectOptions(it.subject)}
+            </select>
           </div>
-          <button onclick="removeEntry(${i})" style="position:absolute; top:4px; right:4px; background:rgba(0,0,0,0.5); color:#fff; border:none; border-radius:4px; padding:2px 6px; font-size:0.72rem; cursor:pointer;">✕</button>
+          <button class="card-del" onclick="removeItem(${i})">✕ 삭제</button>
         </div>
-      `).join('');
-    }
+      </div>
+    `).join('');
 
-    function removeEntry(i) {
-      entries.splice(i, 1);
-      updateOutput();
-    }
+    document.getElementById('stat').innerHTML = `항목: <strong>${items.length}</strong>개`;
+  }
 
-    function clearForm() {
-      document.getElementById('imgUrl').value = '';
-      document.getElementById('imgTitle').value = '';
-      document.getElementById('imgTags').value = '';
-      document.getElementById('imgPreview').style.display = 'none';
-    }
+  function imgLoaded(i, ok) {
+    items[i].imgOk = ok;
+    const card = document.getElementById(`card-${i}`);
+    if (!card) return;
+    if (!ok) card.classList.add('error');
+    else card.classList.remove('error');
+    const img = card.querySelector('.card-img');
+    img.classList.remove('loading');
+  }
 
-    function clearAll() {
-      if (!entries.length || confirm('전체 초기화할까요?')) {
-        entries = [];
-        counter = 1;
-        updateOutput();
-      }
-    }
+  function gradeOptions(cur) {
+    return [[0,'공통'],[1,'1학년'],[2,'2학년'],[3,'3학년'],[4,'4학년'],[5,'5학년'],[6,'6학년']]
+      .map(([v,l]) => `<option value="${v}" ${cur==v?'selected':''}>${l}</option>`).join('');
+  }
 
-    function copyJson() {
-      navigator.clipboard.writeText(document.getElementById('jsonOutput').value)
-        .then(() => showToast('클립보드에 복사됐습니다!'));
-    }
+  function subjectOptions(cur) {
+    return ['수학','국어','과학','사회','도덕','미술','음악','체육','영어','기타']
+      .map(s => `<option ${cur===s?'selected':''}>${s}</option>`).join('');
+  }
 
-    function importJson() {
-      try {
-        const data = JSON.parse(document.getElementById('importInput').value);
-        if (data.images && Array.isArray(data.images)) {
-          entries = data.images;
-          const ids = entries.map(e => parseInt(e.id?.replace(/\D/g,''))).filter(n => !isNaN(n));
-          counter = ids.length ? Math.max(...ids) + 1 : entries.length + 1;
-          updateOutput();
-          document.getElementById('importInput').value = '';
-          showToast(`${entries.length}개 항목을 불러왔습니다!`);
-        } else {
-          showToast('유효한 데이터셋 JSON이 아닙니다.');
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  }
+
+  /* ── 일괄 설정 ── */
+  function applyBulk(field) {
+    const val = document.getElementById(field === 'grade' ? 'bulkGrade' : 'bulkSubject').value;
+    if (!val) { showToast('값을 선택하세요.'); return; }
+    items.forEach(it => { it[field] = field === 'grade' ? parseInt(val) : val; });
+    render();
+    showToast(`전체 ${field === 'grade' ? '학년' : '과목'} 적용 완료`);
+  }
+
+  /* ── 삭제 ── */
+  function removeItem(i) { items.splice(i, 1); render(); }
+  function clearAll() {
+    if (!items.length || confirm('전체 삭제할까요?')) { items = []; counter = 1; render(); }
+  }
+
+  /* ── JSON 생성 ── */
+  function buildJson() {
+    return JSON.stringify({
+      _meta: {
+        description: "초등 교과 과정 이미지 데이터셋 (NRICH 국립수학과학교육원)",
+        source: "https://portal.nrich.go.kr/kor/textbookUseCulturalUsrList.do?menuIdx=1229",
+        updated: new Date().toISOString().slice(0,10),
+        schema: { id:"고유 식별자", title:"이미지 제목", url:"이미지 URL", grade:"학년(0=공통,1~6)", subject:"과목", tags:"태그 배열" }
+      },
+      images: items.map(it => ({ id: it.id, title: it.title, url: it.url, grade: it.grade, subject: it.subject, tags: [] }))
+    }, null, 2);
+  }
+
+  function copyJson() {
+    navigator.clipboard.writeText(buildJson()).then(() => showToast('클립보드에 복사됐습니다!'));
+  }
+
+  function downloadJson() {
+    if (!items.length) { showToast('항목이 없습니다.'); return; }
+    const blob = new Blob([buildJson()], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'curriculum-images.json';
+    a.click();
+    showToast('다운로드 시작!');
+  }
+
+  /* ── 기존 JSON 불러오기 ── */
+  function importJson() {
+    try {
+      const data = JSON.parse(document.getElementById('importInput').value);
+      if (!Array.isArray(data.images)) throw new Error('images 배열 없음');
+      const before = items.length;
+      data.images.forEach(it => {
+        if (!items.some(x => x.url === it.url)) {
+          items.push({ id: it.id || nextId(), url: it.url, title: it.title || '이미지', grade: it.grade ?? 0, subject: it.subject || '기타', imgOk: null });
         }
-      } catch (e) {
-        showToast('JSON 파싱 오류: ' + e.message);
-      }
-    }
+      });
+      const nums = items.map(it => parseInt(it.id?.replace(/\D/g,''))).filter(n => !isNaN(n));
+      if (nums.length) counter = Math.max(...nums) + 1;
+      document.getElementById('importInput').value = '';
+      render();
+      showToast(`${items.length - before}개 항목 추가됨 (총 ${items.length}개)`);
+    } catch(e) { showToast('오류: ' + e.message); }
+  }
 
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.style.display = 'block';
-      setTimeout(() => { t.style.display = 'none'; }, 2500);
-    }
+  /* ── 토스트 ── */
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 2500);
+  }
 
-    updateOutput();
-  </script>
+  render();
+</script>
 </body>
 </html>
