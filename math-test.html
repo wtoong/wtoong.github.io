@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧮 수학 레벨 진단</title>
+    <link rel="stylesheet" href="puzzle.css">
+    <link rel="stylesheet" href="math.css">
+</head>
+<body>
+    <h1 class="page-title">🧮 수학 레벨 진단</h1>
+    <p class="page-subtitle">문제를 풀면 지금 몇 학년 수준인지, 어떤 단원이 약한지 알려줄게요! 🌈</p>
+
+    <!-- ── 시작 화면 ── -->
+    <div id="start" class="screen">
+        <div class="controls">
+            <div class="row">
+                <span class="control-label">이름 (선택)</span>
+                <input type="text" id="nameInput" placeholder="이름을 적어요 (안 적어도 돼요)">
+            </div>
+            <div class="row">
+                <span class="control-label">문제 수</span>
+                <button type="button" class="count-btn" data-count="20">20문제</button>
+                <button type="button" class="count-btn" data-count="30">30문제</button>
+                <button type="button" class="count-btn" data-count="40">40문제</button>
+            </div>
+            <div class="row import-box">
+                <label>📂 이전 결과 불러오기 (다시 평가할 때만)<br>
+                    <input type="file" id="importInput" accept="application/json,.json">
+                </label>
+            </div>
+        </div>
+        <button type="button" id="startBtn" class="start-big">진단 시작하기 🚀</button>
+        <div id="message" class="message"></div>
+    </div>
+
+    <!-- ── 문제 풀이 화면 ── -->
+    <div id="quiz" class="screen hidden">
+        <span class="progress" id="progress">0 / 0</span>
+        <div id="question" style="width:100%;display:flex;justify-content:center;"></div>
+    </div>
+
+    <!-- ── 결과 화면 ── -->
+    <div id="report" class="screen hidden">
+        <div class="report-body"></div>
+        <div class="row" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+            <button type="button" id="downloadBtn">결과 저장하기 💾</button>
+            <button type="button" id="restartBtn" class="secondary">다시 풀기 🔄</button>
+        </div>
+    </div>
+
+    <p class="page-subtitle home-link"><a href="index.html">🏠 놀이터 입구로 돌아가기</a></p>
+
+    <script src="math-diagnostic.js"></script>
+    <script>
+        MathDiagnostic.init({
+            startEl:      document.getElementById('start'),
+            nameInput:    document.getElementById('nameInput'),
+            countButtons: document.querySelectorAll('.count-btn'),
+            importInput:  document.getElementById('importInput'),
+            startBtn:     document.getElementById('startBtn'),
+            quizEl:       document.getElementById('quiz'),
+            progressEl:   document.getElementById('progress'),
+            questionEl:   document.getElementById('question'),
+            reportEl:     document.getElementById('report'),
+            downloadBtn:  document.getElementById('downloadBtn'),
+            restartBtn:   document.getElementById('restartBtn'),
+            messageEl:    document.getElementById('message'),
+        });
+    </script>
+</body>
+</html>

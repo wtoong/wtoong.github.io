@@ -1,0 +1,250 @@
+/* 수학 진단평가 전용 스타일
+   🧮 puzzle.css의 캔디 색·폰트·버튼을 그대로 쓰고, 시작화면·문제카드·결과막대만 추가 */
+
+.hidden { display: none !important; }
+
+/* 화면 묶음 공통 폭 */
+.screen {
+    width: 100%;
+    max-width: 620px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+/* ── 시작 화면 ──────────────────────────────────────────── */
+.control-label {
+    font-family: 'Jua', sans-serif;
+    font-size: 1.05rem;
+    color: var(--ink);
+    align-self: center;
+}
+.count-btn.active {
+    background: var(--candy-pink);
+    box-shadow: 0 5px 0 #e06a92;
+    transform: translateY(-2px);
+}
+.count-btn.active:hover { background: #ff7aa4; box-shadow: 0 7px 0 #e06a92; }
+.count-btn.active:active { box-shadow: 0 2px 0 #e06a92; }
+
+.import-box {
+    font-family: 'Gaegu', sans-serif;
+    font-size: 0.98rem;
+    color: #8a7aa0;
+    text-align: center;
+    line-height: 1.7;
+}
+.import-box input[type="file"] { margin-top: 6px; }
+
+.start-big {
+    font-size: 1.25rem;
+    padding: 14px 34px;
+}
+
+/* ── 진행 표시 ──────────────────────────────────────────── */
+.progress {
+    background: #fffdf7;
+    border: 3px dashed #ffe0b3;
+    border-radius: 999px;
+    padding: 8px 22px;
+    font-family: 'Jua', sans-serif;
+    font-size: 1.1rem;
+    color: var(--ink);
+    box-shadow: 0 4px 0 rgba(199,155,255,0.18);
+}
+
+/* ── 문제 카드 ──────────────────────────────────────────── */
+.q-card {
+    background: #fffdf7;
+    width: 100%;
+    padding: 26px 24px;
+    border-radius: 28px;
+    border: 3px dashed #ffd1e3;
+    box-shadow: 0 10px 0 rgba(199,155,255,0.18), 0 14px 24px rgba(120,90,160,0.15);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+}
+.q-grade-badge {
+    font-family: 'Gaegu', sans-serif;
+    font-size: 0.95rem;
+    color: #b0a4c2;
+    background: #f6f0ff;
+    padding: 4px 14px;
+    border-radius: 999px;
+}
+.q-prompt {
+    font-family: 'Jua', sans-serif;
+    font-size: 1.5rem;
+    color: var(--ink);
+    text-align: center;
+    line-height: 1.5;
+}
+
+.q-answers {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 360px;
+}
+.choice-btn {
+    background: var(--candy-sky);
+    box-shadow: 0 5px 0 #5fa3e8;
+    font-size: 1.2rem;
+    padding: 14px 20px;
+    width: 100%;
+}
+.choice-btn:hover { background: #7bb8ff; box-shadow: 0 7px 0 #5fa3e8; }
+.choice-btn:active { box-shadow: 0 2px 0 #5fa3e8; }
+.choice-btn:disabled { box-shadow: 0 5px 0 #bcb2cc; }
+
+.q-input-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+.q-num-input {
+    flex: 1;
+    max-width: 200px;
+    padding: 12px 16px;
+    border: 2px solid #8ec5ff;
+    border-radius: 14px;
+    font-family: 'Jua', sans-serif;
+    font-size: 1.3rem;
+    text-align: center;
+    background: #fffef9;
+}
+
+/* 정답/오답 피드백 */
+.q-feedback {
+    min-height: 1.2em;
+    font-family: 'Jua', sans-serif;
+    font-size: 1.15rem;
+    text-align: center;
+}
+.q-feedback.ok { color: #2fb98c; animation: pop-bounce 0.4s ease; }
+.q-feedback.no { color: #ff5fa2; }
+
+/* ── 결과 레포트 ────────────────────────────────────────── */
+.report-body {
+    background: #fffdf7;
+    width: 100%;
+    padding: 26px 24px;
+    border-radius: 28px;
+    border: 3px dashed #b8e6d4;
+    box-shadow: 0 10px 0 rgba(127,216,190,0.18), 0 14px 24px rgba(120,90,160,0.15);
+}
+.report-title {
+    font-family: 'Jua', sans-serif;
+    font-size: 1.5rem;
+    color: var(--ink);
+    text-align: center;
+    margin: 0 0 16px;
+}
+.report-hero {
+    text-align: center;
+    background: linear-gradient(150deg, #fff6c2, #ffe1ee);
+    border-radius: 22px;
+    padding: 18px;
+    margin-bottom: 18px;
+}
+.report-grade {
+    font-family: 'Jua', sans-serif;
+    font-size: 1.8rem;
+    color: var(--candy-pink);
+    text-shadow: 1px 1px 0 #fff;
+}
+.report-note {
+    font-family: 'Gaegu', sans-serif;
+    font-size: 1.1rem;
+    color: #7a6a90;
+    margin: 8px 0;
+    line-height: 1.6;
+}
+.report-score {
+    font-family: 'Jua', sans-serif;
+    font-size: 1.05rem;
+    color: var(--ink);
+}
+.report-h3 {
+    font-family: 'Jua', sans-serif;
+    font-size: 1.15rem;
+    color: var(--ink);
+    margin: 18px 0 10px;
+}
+
+/* 학년별 정답률 막대 */
+.bar-wrap { display: flex; flex-direction: column; gap: 8px; }
+.bar-row { display: flex; align-items: center; gap: 8px; }
+.bar-label {
+    font-family: 'Jua', sans-serif;
+    font-size: 0.95rem;
+    width: 48px;
+    flex-shrink: 0;
+    color: var(--ink);
+}
+.bar-track {
+    flex: 1;
+    height: 18px;
+    background: #f0eaf6;
+    border-radius: 999px;
+    overflow: hidden;
+}
+.bar-fill {
+    height: 100%;
+    background: var(--candy-mint);
+    border-radius: 999px;
+    transition: width 0.5s ease;
+}
+.bar-fill.mid { background: var(--candy-yellow); }
+.bar-fill.low { background: var(--candy-pink); }
+.bar-pct {
+    font-family: 'Gaegu', sans-serif;
+    font-size: 0.85rem;
+    color: #8a7aa0;
+    width: 92px;
+    flex-shrink: 0;
+    text-align: right;
+}
+
+/* 약점 단원 목록 */
+.weak-list {
+    margin: 0;
+    padding-left: 22px;
+    font-family: 'Gaegu', sans-serif;
+    font-size: 1.05rem;
+    color: #7a6a90;
+    line-height: 1.8;
+}
+.weak-none {
+    font-family: 'Gaegu', sans-serif;
+    font-size: 1.1rem;
+    color: #2fb98c;
+    text-align: center;
+}
+.report-hint {
+    margin-top: 18px;
+    font-family: 'Gaegu', sans-serif;
+    font-size: 0.95rem;
+    color: #b0a4c2;
+    text-align: center;
+    line-height: 1.7;
+}
+
+/* 입구로 돌아가는 링크 (memory.css와 동일 톤) */
+.home-link { margin-top: 24px; }
+.home-link a {
+    color: var(--candy-purple);
+    text-decoration: none;
+    font-weight: bold;
+}
+.home-link a:hover { text-decoration: underline; }
+
+@media (max-width: 480px) {
+    .q-prompt { font-size: 1.25rem; }
+    .bar-pct { width: 78px; font-size: 0.78rem; }
+}
