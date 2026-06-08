@@ -1,6 +1,7 @@
 /* 수학 진단평가(레벨 테스트) 엔진
-   🧮 전 학년(1~6)·전 단원을 골고루 섞어 출제하고, 학생의 답을 분석해
-      "대략 몇 학년 수준이고 어느 단원이 약한지"를 자동으로 진단한다.
+   🧮 선생님/학생이 고른 "학년·학기까지 누적" 범위에서 문제를 골고루(단원은 랜덤) 내고,
+      그 범위 안에서 정답률과 약한 단원을 진단한다.
+      예) 4학년 1학기를 고르면 → 1학년 1학기 ~ 4학년 1학기까지의 단원에서만 출제.
       DB가 없으므로 결과는 레포트 JSON 파일로 내보내고(다운로드),
       재평가 때 그 파일을 불러오면 자주 틀린 단원에 가중치를 줘 더 많이 출제한다.
    window.MathDiagnostic.init(...) 로 시작한다 (memory.js의 컨벤션). */
@@ -11,8 +12,6 @@
     const CURRICULUM_URL = 'data/math-curriculum.json';
 
     const WEIGHT_K = 3;     // 약점 단원 가중치 세기: w = 1 + K * 오답률
-    const MASTERY = 0.7;    // 숙달 임계 정확도
-    const MIN_GRADE_SAMPLE = 3; // 학년 추정에 필요한 학년별 최소 문항 수
 
     // ── 작은 유틸 (memory.js와 동일) ─────────────────────────────
     function shuffle(arr) { // Fisher–Yates
@@ -31,23 +30,42 @@
         return e;
     }
 
+    // 단원번호로 학기 추정 (curriculum에 semester가 없을 때 대비): 1~2번=1학기, 3번 이상=2학기
+    function deriveSemester(unitId) {
+        const n = parseInt(String(unitId).split('-')[1], 10);
+        return n >= 3 ? 2 : 1;
+    }
+    // (학년, 학기) → 누적 순위. 1학년1학기=1, 1학년2학기=2, 2학년1학기=3 ... 6학년2학기=12
+    function levelRank(grade, semester) {
+        return (grade - 1) * 2 + (semester === 2 ? 2 : 1);
+    }
+
     function init(opts) {
         const {
-            startEl, nameInput, countButtons, importInput, startBtn,
+            startEl, nameInput, countButtons, gradeButtons, semButtons,
+            importInput, startBtn,
             quizEl, progressEl, questionEl,
             reportEl, downloadBtn, restartBtn, messageEl,
         } = opts;
 
         // ── 데이터 캐시 ──────────────────────────────────────────
-        let bankCache = null;        // 문제 은행
-        let curriculumCache = null;  // 교육과정 구조
-        let unitNameMap = {};        // unitId -> 단원 이름
-        let unitGradeMap = {};       // unitId -> 학년
+        let bankCache = null;          // 문제 은행
+        let curriculumCache = null;    // 교육과정 구조
+        let unitNameMap = {};          // unitId -> 단원 이름
+        let unitGradeMap = {};         // unitId -> 학년
+        let unitSemesterMap = {};      // unitId -> 학기(1|2)
 
         // ── 진행 상태 ────────────────────────────────────────────
+        const params = new URLSearchParams(location.search);
         // ?count=30 같은 편의 파라미터로 기본 문제 수 미리 선택 (20/30/40만 허용)
-        const urlCount = parseInt(new URLSearchParams(location.search).get('count'));
+        const urlCount = parseInt(params.get('count'), 10);
         let questionCount = [20, 30, 40].includes(urlCount) ? urlCount : 20;
+        // ?grade=4&sem=1 로 출제 범위(누적 레벨) 미리 고정. 없으면 전체(6학년 2학기).
+        const urlGrade = parseInt(params.get('grade'), 10);
+        const urlSem   = parseInt(params.get('sem'), 10);
+        let targetGrade = [1, 2, 3, 4, 5, 6].includes(urlGrade) ? urlGrade : 6;
+        let targetSem   = [1, 2].includes(urlSem) ? urlSem : 2;
+
         let prevReport = null;       // 불러온 이전 레포트(재평가용)
         let quizList = [];           // 이번 회차 출제 문제
         let answers = [];            // [{qId, unitId, grade, given, correct}]
@@ -76,18 +94,26 @@
                 (g.units || []).forEach(u => {
                     unitNameMap[u.unitId] = u.unitName;
                     unitGradeMap[u.unitId] = g.grade;
+                    unitSemesterMap[u.unitId] = u.semester || deriveSemester(u.unitId);
                 });
             });
             // 문제에만 있는 단원도 보강 (커리큘럼 누락 대비)
             (bankCache.questions || []).forEach(q => {
                 if (unitGradeMap[q.unitId] == null) unitGradeMap[q.unitId] = q.grade;
                 if (unitNameMap[q.unitId] == null)  unitNameMap[q.unitId] = q.unitId;
+                if (unitSemesterMap[q.unitId] == null) unitSemesterMap[q.unitId] = deriveSemester(q.unitId);
             });
         }
 
-        // ── 문제 선택: 전 학년·전 단원 표집 (+가중치) ────────────
-        function selectQuestions(count, weights) {
-            const all = (bankCache.questions || []);
+        // 문제의 누적 순위 (학년·학기)
+        function questionRank(q) {
+            return levelRank(unitGradeMap[q.unitId] || q.grade, unitSemesterMap[q.unitId] || 1);
+        }
+
+        // ── 문제 선택: 선택한 레벨까지 누적 + 단원 랜덤(+약점 가중치) ──
+        function selectQuestions(count, weights, maxRank) {
+            // 선택 범위 안의 문제만 (1학년 1학기 ~ 목표 학년·학기)
+            const all = (bankCache.questions || []).filter(q => questionRank(q) <= maxRank);
             const pool = {};            // unitId -> 남은 문제(셔플됨)
             all.forEach(q => { (pool[q.unitId] = pool[q.unitId] || []).push(q); });
             Object.keys(pool).forEach(u => { pool[u] = shuffle(pool[u]); });
@@ -95,9 +121,8 @@
             const chosen = [];
             const unitWeight = u => 1 + WEIGHT_K * ((weights && weights[u]) || 0);
 
-            function stockUnits(filterFn) {
-                return Object.keys(pool).filter(u =>
-                    pool[u].length && (!filterFn || filterFn(u)));
+            function stockUnits() {
+                return Object.keys(pool).filter(u => pool[u].length);
             }
             function roulette(units) {
                 const total = units.reduce((s, u) => s + unitWeight(u), 0);
@@ -107,27 +132,19 @@
             }
             function take(u) { chosen.push(pool[u].pop()); }
 
-            // 1단계: 학년별 최소 표집 (학년 추정 신뢰 확보)
-            const grades = [...new Set(all.map(q => q.grade))].sort((a, b) => a - b);
-            let base = count >= 12 ? 2 : 1;
-            while (base * grades.length > count) base--;
-            for (const g of grades) {
-                for (let i = 0; i < base; i++) {
-                    const gUnits = stockUnits(u => unitGradeMap[u] === g);
-                    if (!gUnits.length) break;
-                    take(roulette(gUnits));
-                }
-            }
-            // 2단계: 남은 자리 → 전역 가중 표집 (약점 단원이 더 자주)
+            // 범위 안의 단원에서 랜덤(약점 단원이 더 자주) 표집 — 단원은 균등하게 나누지 않는다
             while (chosen.length < count) {
                 const units = stockUnits();
                 if (!units.length) break;
                 take(roulette(units));
             }
 
-            const note = chosen.length < count
-                ? `문제 은행에 문제가 ${count}개보다 적어서 ${chosen.length}개만 풀어요! 😊`
-                : '';
+            let note = '';
+            if (!all.length) {
+                note = '이 범위에는 아직 문제가 없어요 😢 선생님께 알려주세요!';
+            } else if (chosen.length < count) {
+                note = `이 범위에 문제가 ${count}개보다 적어서 ${chosen.length}개만 풀어요! 😊`;
+            }
             return { questions: shuffle(chosen), note };
         }
 
@@ -165,27 +182,12 @@
             return { perUnit, perGrade, weakUnits };
         }
 
-        // ── 학년 수준 추정 (답 → 역추정) ─────────────────────────
-        function estimateGrade(perGrade) {
-            const grades = [1, 2, 3, 4, 5, 6];
-            let mastered = 0;
-            for (const g of grades) {
-                const gd = perGrade[g];
-                if (!gd || gd.asked < MIN_GRADE_SAMPLE) break; // 표본 부족이면 그 위는 신뢰 X
-                if (gd.accuracy >= MASTERY) mastered = g; else break;
-            }
-            let est = mastered || 1, note = '';
-            if (mastered === 0) {
-                note = '기초를 조금만 더 다지면 쑥쑥 자랄 거예요! 낮은 학년 단원부터 차근차근 연습해봐요 🌱';
-            } else if (mastered === 6) {
-                note = '와! 6학년 수준까지 척척이에요. 더 어려운 문제에도 도전해봐요 🚀';
-            } else {
-                const next = perGrade[mastered + 1];
-                note = (next && next.accuracy >= 0.4)
-                    ? `${mastered}학년은 탄탄하고, ${mastered + 1}학년에 신나게 도전하는 중이에요! 💪`
-                    : `${mastered}학년 수준이에요. 이제 ${mastered + 1}학년 단원을 연습해봐요! ✨`;
-            }
-            return { estimatedGrade: est, note };
+        // ── 선택 범위 정답률에 따른 한줄평 ───────────────────────
+        function rangeNote(accuracy) {
+            if (accuracy >= 0.9) return '와! 이 범위는 완전히 자신 있어요 🚀 다음 학기에도 도전해봐요!';
+            if (accuracy >= 0.7) return '이 범위를 잘 이해하고 있어요! 👍 조금만 더 다지면 완벽해요.';
+            if (accuracy >= 0.5) return '거의 다 왔어요! 약한 단원만 더 연습하면 탄탄해질 거예요 🌱';
+            return '약한 단원부터 차근차근 연습해봐요. 할 수 있어요 💪';
         }
 
         // ── 레포트(누적) 만들기 ──────────────────────────────────
@@ -207,7 +209,7 @@
             const label = studentLabel || (prev && prev._meta && prev._meta.studentLabel) || '';
             return {
                 _meta: {
-                    kind: 'math-diagnostic-report', version: 1,
+                    kind: 'math-diagnostic-report', version: 2,
                     studentLabel: label, exported: new Date().toISOString(),
                 },
                 sessions,
@@ -287,15 +289,13 @@
         // ── 평가 종료 → 레포트 ───────────────────────────────────
         function finishQuiz() {
             const { perUnit, perGrade, weakUnits } = aggregate(answers);
-            const { estimatedGrade, note } = estimateGrade(perGrade);
             const studentLabel = (nameInput.value || '').trim();
             const totalCorrect = answers.filter(a => a.correct).length;
 
             const session = {
                 sessionId: 's-' + Date.now(),
                 date: new Date().toISOString().slice(0, 10),
-                config: { questionCount: quizList.length },
-                estimatedGrade, estimateNote: note,
+                config: { questionCount: quizList.length, targetGrade, targetSem },
                 totalCorrect, totalAnswered: answers.length,
                 perUnit, perGrade, weakUnits,
                 answers,
@@ -315,33 +315,38 @@
             const who = studentLabel ? `${studentLabel} 친구의 ` : '';
             body.appendChild(el('h2', 'report-title', `${who}진단 결과 📋`));
 
-            // 추정 학년 + 한줄평
+            const accuracy = session.totalAnswered ? session.totalCorrect / session.totalAnswered : 0;
+            const pct = Math.round(accuracy * 100);
+            const rangeLabel = `1학년 1학기 ~ ${session.config.targetGrade}학년 ${session.config.targetSem}학기`;
+
+            // 출제 범위 + 정답률 + 한줄평
             const hero = el('div', 'report-hero');
-            hero.appendChild(el('div', 'report-grade', `약 ${session.estimatedGrade}학년 수준`));
-            hero.appendChild(el('div', 'report-note', session.estimateNote));
+            hero.appendChild(el('div', 'report-range', `📚 ${rangeLabel} 범위`));
+            hero.appendChild(el('div', 'report-grade', `정답률 ${pct}%`));
+            hero.appendChild(el('div', 'report-note', rangeNote(accuracy)));
             hero.appendChild(el('div', 'report-score',
                 `맞힌 문제: ${session.totalCorrect} / ${session.totalAnswered}`));
             body.appendChild(hero);
 
-            // 학년별 정확도 막대
+            // 학년별 정확도 막대 (선택 범위 안의 학년만)
             body.appendChild(el('h3', 'report-h3', '학년별 정답률 📊'));
             const gradeWrap = el('div', 'bar-wrap');
-            [1, 2, 3, 4, 5, 6].forEach(g => {
+            for (let g = 1; g <= session.config.targetGrade; g++) {
                 const gd = session.perGrade[g];
-                if (!gd) return;
-                const pct = Math.round(gd.accuracy * 100);
+                if (!gd) continue;
+                const gpct = Math.round(gd.accuracy * 100);
                 const row = el('div', 'bar-row');
                 row.appendChild(el('span', 'bar-label', `${g}학년`));
                 const track = el('div', 'bar-track');
                 const fill = el('div', 'bar-fill');
-                fill.style.width = pct + '%';
-                if (pct < 50) fill.classList.add('low');
-                else if (pct < 70) fill.classList.add('mid');
+                fill.style.width = gpct + '%';
+                if (gpct < 50) fill.classList.add('low');
+                else if (gpct < 70) fill.classList.add('mid');
                 track.appendChild(fill);
                 row.appendChild(track);
-                row.appendChild(el('span', 'bar-pct', `${pct}% (${gd.correct}/${gd.asked})`));
+                row.appendChild(el('span', 'bar-pct', `${gpct}% (${gd.correct}/${gd.asked})`));
                 gradeWrap.appendChild(row);
-            });
+            }
             body.appendChild(gradeWrap);
 
             // 약점 단원
@@ -350,9 +355,9 @@
                 const ul = el('ul', 'weak-list');
                 session.weakUnits.forEach(u => {
                     const pu = session.perUnit[u];
-                    const pct = Math.round(pu.errorRate * 100);
+                    const ppct = Math.round(pu.errorRate * 100);
                     ul.appendChild(el('li', null,
-                        `${unitGradeMap[u]}학년 · ${pu.unitName} — 틀린 비율 ${pct}% (${pu.correct}/${pu.asked} 맞힘)`));
+                        `${unitGradeMap[u]}학년 · ${pu.unitName} — 틀린 비율 ${ppct}% (${pu.correct}/${pu.asked} 맞힘)`));
                 });
                 body.appendChild(ul);
             } else {
@@ -402,11 +407,26 @@
         // ── 컨트롤 연결 ──────────────────────────────────────────
         function syncCountButtons() {
             countButtons.forEach(b =>
-                b.classList.toggle('active', parseInt(b.dataset.count) === questionCount));
+                b.classList.toggle('active', parseInt(b.dataset.count, 10) === questionCount));
         }
+        function syncLevelButtons() {
+            gradeButtons.forEach(b =>
+                b.classList.toggle('active', parseInt(b.dataset.grade, 10) === targetGrade));
+            semButtons.forEach(b =>
+                b.classList.toggle('active', parseInt(b.dataset.sem, 10) === targetSem));
+        }
+
         countButtons.forEach(b => b.addEventListener('click', () => {
-            questionCount = parseInt(b.dataset.count) || 20;
+            questionCount = parseInt(b.dataset.count, 10) || 20;
             syncCountButtons();
+        }));
+        gradeButtons.forEach(b => b.addEventListener('click', () => {
+            targetGrade = parseInt(b.dataset.grade, 10) || 6;
+            syncLevelButtons();
+        }));
+        semButtons.forEach(b => b.addEventListener('click', () => {
+            targetSem = parseInt(b.dataset.sem, 10) || 1;
+            syncLevelButtons();
         }));
 
         importInput.addEventListener('change', e => {
@@ -426,12 +446,17 @@
                     weights[u] = prevReport.cumulative.perUnit[u].errorRate || 0;
                 });
             }
-            const sel = selectQuestions(questionCount, weights);
+            const maxRank = levelRank(targetGrade, targetSem);
+            const sel = selectQuestions(questionCount, weights, maxRank);
+            if (!sel.questions.length) {
+                messageEl.textContent = sel.note || '이 범위에는 아직 문제가 없어요 😢';
+                return;
+            }
             quizList = sel.questions;
             answers = [];
             cursor = 0;
             currentReport = null;
-            messageEl.textContent = '';
+            messageEl.textContent = sel.note || '';
 
             hide(startEl);
             hide(reportEl);
@@ -453,6 +478,7 @@
 
         // ── 시작 상태 ────────────────────────────────────────────
         syncCountButtons();
+        syncLevelButtons();
         downloadBtn.disabled = true;
         loadData(); // 미리 받아두기 (실패해도 startQuiz에서 재시도)
     }

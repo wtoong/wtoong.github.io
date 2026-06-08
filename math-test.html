@@ -9,7 +9,7 @@
 </head>
 <body>
     <h1 class="page-title">🧮 수학 레벨 진단</h1>
-    <p class="page-subtitle">문제를 풀면 지금 몇 학년 수준인지, 어떤 단원이 약한지 알려줄게요! 🌈</p>
+    <p class="page-subtitle">고른 학년·학기까지 누적해서 풀고, 어떤 단원이 약한지 알려줄게요! 🌈</p>
 
     <!-- ── 시작 화면 ── -->
     <div id="start" class="screen">
@@ -18,6 +18,21 @@
                 <span class="control-label">이름 (선택)</span>
                 <input type="text" id="nameInput" placeholder="이름을 적어요 (안 적어도 돼요)">
             </div>
+            <div class="row">
+                <span class="control-label">학년까지</span>
+                <button type="button" class="grade-btn" data-grade="1">1학년</button>
+                <button type="button" class="grade-btn" data-grade="2">2학년</button>
+                <button type="button" class="grade-btn" data-grade="3">3학년</button>
+                <button type="button" class="grade-btn" data-grade="4">4학년</button>
+                <button type="button" class="grade-btn" data-grade="5">5학년</button>
+                <button type="button" class="grade-btn" data-grade="6">6학년</button>
+            </div>
+            <div class="row">
+                <span class="control-label">학기까지</span>
+                <button type="button" class="sem-btn" data-sem="1">1학기</button>
+                <button type="button" class="sem-btn" data-sem="2">2학기</button>
+            </div>
+            <p class="level-hint">고른 학년·학기까지 <b>차곡차곡 누적</b>해서 나와요. (예: 4학년 · 1학기 → 1학년 1학기부터 4학년 1학기까지 ✨)</p>
             <div class="row">
                 <span class="control-label">문제 수</span>
                 <button type="button" class="count-btn" data-count="20">20문제</button>
@@ -57,6 +72,8 @@
             startEl:      document.getElementById('start'),
             nameInput:    document.getElementById('nameInput'),
             countButtons: document.querySelectorAll('.count-btn'),
+            gradeButtons: document.querySelectorAll('.grade-btn'),
+            semButtons:   document.querySelectorAll('.sem-btn'),
             importInput:  document.getElementById('importInput'),
             startBtn:     document.getElementById('startBtn'),
             quizEl:       document.getElementById('quiz'),

@@ -4,29 +4,31 @@
     "updated": "2026-06-08",
     "schema": {
       "grade": "학년 1~6",
+      "semester": "학기 1(1학기) | 2(2학기) — 단원이 속한 학기",
       "unitId": "단원 식별자 '{학년}-{단원번호}'",
       "unitName": "단원 이름",
       "skillId": "세부 기능 식별자 '{unitId}-{알파벳}'",
       "skillName": "세부 기능 이름"
-    }
+    },
+    "note": "semester가 없는 단원은 단원번호로 추정한다(1~2번=1학기, 3번 이상=2학기). 누적 출제는 (학년, 학기) 순서로 한다."
   },
   "grades": [
     {
       "grade": 1,
       "units": [
-        { "unitId": "1-1", "unitName": "9까지의 수", "skills": [
+        { "unitId": "1-1", "unitName": "9까지의 수", "semester": 1, "skills": [
           { "skillId": "1-1-a", "skillName": "수 세기" },
           { "skillId": "1-1-b", "skillName": "수의 순서와 크기" }
         ] },
-        { "unitId": "1-2", "unitName": "덧셈과 뺄셈", "skills": [
+        { "unitId": "1-2", "unitName": "덧셈과 뺄셈", "semester": 1, "skills": [
           { "skillId": "1-2-a", "skillName": "한 자리 덧셈" },
           { "skillId": "1-2-b", "skillName": "한 자리 뺄셈" }
         ] },
-        { "unitId": "1-3", "unitName": "100까지의 수", "skills": [
+        { "unitId": "1-3", "unitName": "100까지의 수", "semester": 2, "skills": [
           { "skillId": "1-3-a", "skillName": "두 자리 수와 자릿값" },
           { "skillId": "1-3-b", "skillName": "수의 크기 비교" }
         ] },
-        { "unitId": "1-4", "unitName": "여러 가지 모양", "skills": [
+        { "unitId": "1-4", "unitName": "여러 가지 모양", "semester": 2, "skills": [
           { "skillId": "1-4-a", "skillName": "평면 모양 구별" }
         ] }
       ]
@@ -34,19 +36,19 @@
     {
       "grade": 2,
       "units": [
-        { "unitId": "2-1", "unitName": "세 자리 수", "skills": [
+        { "unitId": "2-1", "unitName": "세 자리 수", "semester": 1, "skills": [
           { "skillId": "2-1-a", "skillName": "자릿값" },
           { "skillId": "2-1-b", "skillName": "수의 크기 비교" }
         ] },
-        { "unitId": "2-2", "unitName": "덧셈과 뺄셈", "skills": [
+        { "unitId": "2-2", "unitName": "덧셈과 뺄셈", "semester": 1, "skills": [
           { "skillId": "2-2-a", "skillName": "받아올림이 있는 덧셈" },
           { "skillId": "2-2-b", "skillName": "받아내림이 있는 뺄셈" }
         ] },
-        { "unitId": "2-3", "unitName": "곱셈구구", "skills": [
+        { "unitId": "2-3", "unitName": "곱셈구구", "semester": 2, "skills": [
           { "skillId": "2-3-a", "skillName": "곱셈의 의미" },
           { "skillId": "2-3-b", "skillName": "곱셈구구" }
         ] },
-        { "unitId": "2-4", "unitName": "길이 재기", "skills": [
+        { "unitId": "2-4", "unitName": "길이 재기", "semester": 2, "skills": [
           { "skillId": "2-4-a", "skillName": "길이의 단위와 계산" }
         ] }
       ]
@@ -54,19 +56,19 @@
     {
       "grade": 3,
       "units": [
-        { "unitId": "3-1", "unitName": "덧셈과 뺄셈", "skills": [
+        { "unitId": "3-1", "unitName": "덧셈과 뺄셈", "semester": 1, "skills": [
           { "skillId": "3-1-a", "skillName": "세 자리 수 덧셈" },
           { "skillId": "3-1-b", "skillName": "세 자리 수 뺄셈" }
         ] },
-        { "unitId": "3-2", "unitName": "나눗셈", "skills": [
+        { "unitId": "3-2", "unitName": "나눗셈", "semester": 1, "skills": [
           { "skillId": "3-2-a", "skillName": "나눗셈의 의미" },
           { "skillId": "3-2-b", "skillName": "곱셈과 나눗셈의 관계" }
         ] },
-        { "unitId": "3-3", "unitName": "분수와 소수", "skills": [
+        { "unitId": "3-3", "unitName": "분수와 소수", "semester": 2, "skills": [
           { "skillId": "3-3-a", "skillName": "분수의 개념" },
           { "skillId": "3-3-b", "skillName": "소수 한 자리" }
         ] },
-        { "unitId": "3-4", "unitName": "곱셈", "skills": [
+        { "unitId": "3-4", "unitName": "곱셈", "semester": 2, "skills": [
           { "skillId": "3-4-a", "skillName": "두 자리 수 × 한 자리 수" }
         ] }
       ]
@@ -74,18 +76,18 @@
     {
       "grade": 4,
       "units": [
-        { "unitId": "4-1", "unitName": "큰 수", "skills": [
+        { "unitId": "4-1", "unitName": "큰 수", "semester": 1, "skills": [
           { "skillId": "4-1-a", "skillName": "만·억과 자릿값" },
           { "skillId": "4-1-b", "skillName": "큰 수의 크기 비교" }
         ] },
-        { "unitId": "4-2", "unitName": "곱셈과 나눗셈", "skills": [
+        { "unitId": "4-2", "unitName": "곱셈과 나눗셈", "semester": 1, "skills": [
           { "skillId": "4-2-a", "skillName": "세 자리 × 두 자리" },
           { "skillId": "4-2-b", "skillName": "나눗셈과 나머지" }
         ] },
-        { "unitId": "4-3", "unitName": "분수의 덧셈과 뺄셈", "skills": [
+        { "unitId": "4-3", "unitName": "분수의 덧셈과 뺄셈", "semester": 2, "skills": [
           { "skillId": "4-3-a", "skillName": "분모가 같은 분수의 계산" }
         ] },
-        { "unitId": "4-4", "unitName": "각도와 삼각형", "skills": [
+        { "unitId": "4-4", "unitName": "각도와 삼각형", "semester": 2, "skills": [
           { "skillId": "4-4-a", "skillName": "각의 크기" },
           { "skillId": "4-4-b", "skillName": "삼각형의 각" }
         ] }
@@ -94,18 +96,18 @@
     {
       "grade": 5,
       "units": [
-        { "unitId": "5-1", "unitName": "약수와 배수", "skills": [
+        { "unitId": "5-1", "unitName": "약수와 배수", "semester": 1, "skills": [
           { "skillId": "5-1-a", "skillName": "약수와 배수" },
           { "skillId": "5-1-b", "skillName": "공약수와 공배수" }
         ] },
-        { "unitId": "5-2", "unitName": "약분과 통분", "skills": [
+        { "unitId": "5-2", "unitName": "약분과 통분", "semester": 1, "skills": [
           { "skillId": "5-2-a", "skillName": "약분" },
           { "skillId": "5-2-b", "skillName": "통분" }
         ] },
-        { "unitId": "5-3", "unitName": "분수의 덧셈과 뺄셈", "skills": [
+        { "unitId": "5-3", "unitName": "분수의 덧셈과 뺄셈", "semester": 2, "skills": [
           { "skillId": "5-3-a", "skillName": "분모가 다른 분수의 계산" }
         ] },
-        { "unitId": "5-4", "unitName": "다각형의 넓이", "skills": [
+        { "unitId": "5-4", "unitName": "다각형의 넓이", "semester": 2, "skills": [
           { "skillId": "5-4-a", "skillName": "직사각형의 넓이" },
           { "skillId": "5-4-b", "skillName": "삼각형의 넓이" }
         ] }
@@ -114,17 +116,17 @@
     {
       "grade": 6,
       "units": [
-        { "unitId": "6-1", "unitName": "분수의 나눗셈", "skills": [
+        { "unitId": "6-1", "unitName": "분수의 나눗셈", "semester": 1, "skills": [
           { "skillId": "6-1-a", "skillName": "분수 ÷ 분수" }
         ] },
-        { "unitId": "6-2", "unitName": "소수의 나눗셈", "skills": [
+        { "unitId": "6-2", "unitName": "소수의 나눗셈", "semester": 1, "skills": [
           { "skillId": "6-2-a", "skillName": "소수 ÷ 소수" }
         ] },
-        { "unitId": "6-3", "unitName": "비와 비율", "skills": [
+        { "unitId": "6-3", "unitName": "비와 비율", "semester": 2, "skills": [
           { "skillId": "6-3-a", "skillName": "비와 비율" },
           { "skillId": "6-3-b", "skillName": "백분율" }
         ] },
-        { "unitId": "6-4", "unitName": "원의 넓이", "skills": [
+        { "unitId": "6-4", "unitName": "원의 넓이", "semester": 2, "skills": [
           { "skillId": "6-4-a", "skillName": "원주" },
           { "skillId": "6-4-b", "skillName": "원의 넓이" }
         ] }
