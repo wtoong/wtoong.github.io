@@ -43,7 +43,7 @@
     function init(opts) {
         const {
             startEl, nameInput, countButtons, gradeButtons, semButtons,
-            importInput, startBtn,
+            levelSummaryEl, importInput, startBtn,
             quizEl, progressEl, questionEl,
             reportEl, downloadBtn, restartBtn, messageEl,
         } = opts;
@@ -414,6 +414,10 @@
                 b.classList.toggle('active', parseInt(b.dataset.grade, 10) === targetGrade));
             semButtons.forEach(b =>
                 b.classList.toggle('active', parseInt(b.dataset.sem, 10) === targetSem));
+            if (levelSummaryEl) {
+                levelSummaryEl.innerHTML =
+                    `지금 고른 범위: <b>${targetGrade}학년 ${targetSem}학기</b>까지 누적 📚`;
+            }
         }
 
         countButtons.forEach(b => b.addEventListener('click', () => {
@@ -457,6 +461,15 @@
             cursor = 0;
             currentReport = null;
             messageEl.textContent = sel.note || '';
+
+            // 고른 범위를 주소창에 반영(공유·새로고침해도 같은 범위로 시작)
+            try {
+                const p = new URLSearchParams(location.search);
+                p.set('grade', targetGrade);
+                p.set('sem', targetSem);
+                p.set('count', questionCount);
+                history.replaceState(null, '', location.pathname + '?' + p.toString());
+            } catch (e) { /* 파일(file://)로 열면 무시 */ }
 
             hide(startEl);
             hide(reportEl);
