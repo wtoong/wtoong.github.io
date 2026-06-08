@@ -1,5 +1,5 @@
 /* 카드 뒤집기 메모리 게임 엔진
-   🎴 카드 앞면(face)을 추상 객체로 다뤄 이모지↔교과 그림을 쉽게 교체한다.
+   🧠 카드 앞면(face)을 추상 객체로 다뤄 이모지↔교과 그림을 쉽게 교체한다.
       face: { type: 'emoji', value: '🍎' }  또는  { type: 'image', url, title }
    window.MemoryGame.init(...) 로 시작한다 (puzzle.js의 JigsawPuzzle 컨벤션). */
 (function () {
