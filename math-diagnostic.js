@@ -11,7 +11,9 @@
     const QUESTIONS_URL  = 'data/math-questions.json';
     const CURRICULUM_URL = 'data/math-curriculum.json';
 
-    const WEIGHT_K = 3;     // 약점 단원 가중치 세기: w = 1 + K * 오답률
+    const WEIGHT_K = 3;        // 약점 단원 가중치 세기: w = 1 + K * 오답률
+    const RECENCY_DECAY = 0.6; // 최근 학기일수록 ↑ : 한 학기 멀어질 때마다 가중치 ×0.6
+    const MIN_PER_LEVEL = 1;   // 각 학기(학년·학기)에 최소 보장하는 문항 수
 
     // ── 작은 유틸 (memory.js와 동일) ─────────────────────────────
     function shuffle(arr) { // Fisher–Yates
@@ -110,7 +112,10 @@
             return levelRank(unitGradeMap[q.unitId] || q.grade, unitSemesterMap[q.unitId] || 1);
         }
 
-        // ── 문제 선택: 선택한 레벨까지 누적 + 단원 랜덤(+약점 가중치) ──
+        // ── 문제 선택: 누적 범위 + 최근 학기 가중 + 학기별 최소 보장 ──
+        //   · 최근 학기일수록 더 자주(가중치 ×RECENCY_DECAY^거리), 저학년은 참고용으로 적게.
+        //   · 단, 범위 안 각 학기는 최소 MIN_PER_LEVEL개 보장(1학년 1학기가 0개로 묻히지 않게).
+        //   · 약점 단원 가중치(1 + K×오답률)는 그 위에 곱해서 함께 반영.
         function selectQuestions(count, weights, maxRank) {
             // 선택 범위 안의 문제만 (1학년 1학기 ~ 목표 학년·학기)
             const all = (bankCache.questions || []).filter(q => questionRank(q) <= maxRank);
@@ -118,11 +123,29 @@
             all.forEach(q => { (pool[q.unitId] = pool[q.unitId] || []).push(q); });
             Object.keys(pool).forEach(u => { pool[u] = shuffle(pool[u]); });
 
-            const chosen = [];
-            const unitWeight = u => 1 + WEIGHT_K * ((weights && weights[u]) || 0);
+            // 단원 -> 학기 순위(rank). 범위 안에 실제 문제가 있는 학기 목록도 모은다.
+            const unitRank = {};
+            Object.keys(pool).forEach(u => {
+                unitRank[u] = levelRank(unitGradeMap[u] || 0, unitSemesterMap[u] || 1);
+            });
+            const levelRanks = [...new Set(Object.keys(pool).map(u => unitRank[u]))];
 
-            function stockUnits() {
-                return Object.keys(pool).filter(u => pool[u].length);
+            // 학기별 남은 문제 수
+            const availOf = r => Object.keys(pool)
+                .filter(u => unitRank[u] === r)
+                .reduce((s, u) => s + pool[u].length, 0);
+
+            // 학기별 최소 보장(quota) — 그 학기 문제 수로 상한
+            const quota = {};
+            levelRanks.forEach(r => { quota[r] = Math.min(MIN_PER_LEVEL, availOf(r)); });
+
+            // 가중치 = 최근 학기 가중(×decay^거리) × 약점 단원 가중
+            const recency = r => Math.pow(RECENCY_DECAY, Math.max(0, maxRank - r));
+            const unitWeight = u => recency(unitRank[u]) * (1 + WEIGHT_K * ((weights && weights[u]) || 0));
+
+            function stockUnits(rankSet) {
+                return Object.keys(pool).filter(u =>
+                    pool[u].length && (!rankSet || rankSet.has(unitRank[u])));
             }
             function roulette(units) {
                 const total = units.reduce((s, u) => s + unitWeight(u), 0);
@@ -130,13 +153,33 @@
                 for (const u of units) { r -= unitWeight(u); if (r <= 0) return u; }
                 return units[units.length - 1];
             }
-            function take(u) { chosen.push(pool[u].pop()); }
+            function take(u) {
+                chosen.push(pool[u].pop());
+                const r = unitRank[u];
+                if (quota[r] > 0) quota[r]--; // 뽑힌 학기의 보장분에서 깐다
+            }
 
-            // 범위 안의 단원에서 랜덤(약점 단원이 더 자주) 표집 — 단원은 균등하게 나누지 않는다
+            const chosen = [];
             while (chosen.length < count) {
                 const units = stockUnits();
                 if (!units.length) break;
-                take(roulette(units));
+                const remainingDraws = count - chosen.length;
+
+                // 아직 못 채운 최소보장 합(남은 문제 수로 상한)과, 그 학기들의 집합
+                let unmetSum = 0; const unmetRanks = new Set();
+                levelRanks.forEach(r => {
+                    if (quota[r] <= 0) return;
+                    const need = Math.min(quota[r], availOf(r));
+                    if (need > 0) { unmetSum += need; unmetRanks.add(r); }
+                });
+
+                // 남은 자리수가 보장분과 같아지면(=더는 여유 없음) 그때부터 보장분만 채운다
+                if (remainingDraws <= unmetSum) {
+                    const forced = stockUnits(unmetRanks);
+                    take(roulette(forced.length ? forced : units));
+                } else {
+                    take(roulette(units)); // 평소엔 최근 가중 랜덤
+                }
             }
 
             let note = '';
