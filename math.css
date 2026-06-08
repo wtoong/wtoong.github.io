@@ -28,6 +28,39 @@
 .count-btn.active:hover { background: #ff7aa4; box-shadow: 0 7px 0 #e06a92; }
 .count-btn.active:active { box-shadow: 0 2px 0 #e06a92; }
 
+/* 학년·학기 선택 버튼 (범위 누적) */
+.grade-btn, .sem-btn {
+    padding: 10px 16px;
+    font-size: 1rem;
+}
+.grade-btn.active {
+    background: var(--candy-mint);
+    box-shadow: 0 5px 0 #4fc0a0;
+    transform: translateY(-2px);
+}
+.grade-btn.active:hover { background: #6fe0c2; box-shadow: 0 7px 0 #4fc0a0; }
+.grade-btn.active:active { box-shadow: 0 2px 0 #4fc0a0; }
+.sem-btn.active {
+    background: var(--candy-purple);
+    box-shadow: 0 5px 0 #a06fe0;
+    transform: translateY(-2px);
+}
+.sem-btn.active:hover { background: #d0b0ff; box-shadow: 0 7px 0 #a06fe0; }
+.sem-btn.active:active { box-shadow: 0 2px 0 #a06fe0; }
+
+.level-hint {
+    font-family: 'Gaegu', sans-serif;
+    font-size: 0.98rem;
+    color: #8a7aa0;
+    text-align: center;
+    line-height: 1.6;
+    margin: 2px 4px 4px;
+}
+.level-hint b { color: var(--candy-purple); }
+
+/* 시작화면 버튼 줄바꿈 허용 (학년 6개 등) */
+#start .row { flex-wrap: wrap; justify-content: center; }
+
 .import-box {
     font-family: 'Gaegu', sans-serif;
     font-size: 0.98rem;
@@ -151,6 +184,12 @@
     border-radius: 22px;
     padding: 18px;
     margin-bottom: 18px;
+}
+.report-range {
+    font-family: 'Jua', sans-serif;
+    font-size: 1.05rem;
+    color: #7a6a90;
+    margin-bottom: 6px;
 }
 .report-grade {
     font-family: 'Jua', sans-serif;
