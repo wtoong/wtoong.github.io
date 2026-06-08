@@ -14,6 +14,9 @@
 | `index.html` | 모두 | 메인 랜딩 페이지 (놀이터 입구) |
 | `study.html` | **학생** | 선생님이 보내준 링크로 퍼즐을 푸는 페이지 |
 | `jigsaw-puzzle.html` | 선생님 | 사진·크기를 정해 퍼즐을 만들고 학습용 링크를 생성 |
+| `memory.html` | **학생** | 카드 뒤집기 메모리 게임 (이모지·교과 그림 짝 맞추기) |
+| `memory.js` | 메모리 게임 | 메모리 게임 엔진 (`window.MemoryGame.init(...)`) |
+| `memory.css` | 메모리 게임 | 카드판·3D 뒤집기 전용 스타일 (puzzle.css 위에 얹음) |
 | `puzzle.js` | 공통 | 퍼즐 엔진 (`window.JigsawPuzzle.init(...)`) |
 | `puzzle.css` | 공통 | maker·study 페이지가 함께 쓰는 스타일 |
 | `data/dataset-builder.html` | 선생님 | 교과 이미지 URL을 모아 `curriculum-images.json` 생성 |
