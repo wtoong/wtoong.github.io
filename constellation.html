@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌟 별자리 완성하기</title>
+    <link rel="stylesheet" href="puzzle.css">
+    <link rel="stylesheet" href="math.css?v=3">
+    <link rel="stylesheet" href="constellation.css?v=1">
+</head>
+<body class="night">
+    <h1 class="page-title">🌟 별자리 완성하기</h1>
+    <p class="page-subtitle">문제를 풀어 별을 켜고, 밤하늘을 별자리로 가득 채워보자! 🔭✨</p>
+
+    <!-- ── 전체 밤하늘 ── -->
+    <div id="sky" class="screen">
+        <div class="controls sky-controls">
+            <div class="row">
+                <span class="control-label">이름 (선택)</span>
+                <input type="text" id="nameInput" placeholder="이름을 적어요 (안 적어도 돼요)">
+            </div>
+            <div class="row">
+                <button type="button" id="exportBtn" class="secondary">내 별 내보내기 💾</button>
+                <label class="import-lbl">📂 별 불러오기
+                    <input type="file" id="importInput" accept="application/json,.json">
+                </label>
+            </div>
+        </div>
+        <p class="sky-hint">별자리를 콕 누르면 그 학기 단원 문제가 나와요!<br>고득점할수록 별이 더 화려해져요 (⭐→⭐⭐→⭐⭐⭐ 무지개별) 🌈</p>
+        <div id="skyGrid" class="sky-grid"></div>
+        <div id="message" class="message"></div>
+    </div>
+
+    <!-- ── 별자리 상세 ── -->
+    <div id="constel" class="screen hidden">
+        <button type="button" id="backBtn" class="secondary back-btn">⬅️ 밤하늘로</button>
+        <h2 id="constelTitle" class="constel-title"></h2>
+        <div id="constelMap" class="constel-map"></div>
+        <div id="constelStatus" class="constel-status"></div>
+    </div>
+
+    <!-- ── 문제 풀이 ── -->
+    <div id="quiz" class="screen hidden">
+        <span class="progress" id="progress">0 / 0</span>
+        <div id="question" style="width:100%;display:flex;justify-content:center;"></div>
+    </div>
+
+    <!-- ── 결과 ── -->
+    <div id="result" class="screen hidden">
+        <div id="resultBody" class="report-body"></div>
+        <div class="row" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+            <button type="button" id="replayBtn">다시 풀기 🔄</button>
+            <button type="button" id="resultBackBtn" class="secondary">별자리로 ⬅️</button>
+        </div>
+    </div>
+
+    <p class="page-subtitle home-link"><a href="index.html">🏠 놀이터 입구로 돌아가기</a></p>
+
+    <script src="constellation.js?v=1"></script>
+    <script>
+        ConstellationGame.init({
+            skyEl:           document.getElementById('sky'),
+            skyGridEl:       document.getElementById('skyGrid'),
+            nameInput:       document.getElementById('nameInput'),
+            importInput:     document.getElementById('importInput'),
+            exportBtn:       document.getElementById('exportBtn'),
+            messageEl:       document.getElementById('message'),
+            constelEl:       document.getElementById('constel'),
+            constelTitleEl:  document.getElementById('constelTitle'),
+            constelMapEl:    document.getElementById('constelMap'),
+            constelStatusEl: document.getElementById('constelStatus'),
+            backBtn:         document.getElementById('backBtn'),
+            quizEl:          document.getElementById('quiz'),
+            progressEl:      document.getElementById('progress'),
+            questionEl:      document.getElementById('question'),
+            resultEl:        document.getElementById('result'),
+            resultBodyEl:    document.getElementById('resultBody'),
+            replayBtn:       document.getElementById('replayBtn'),
+            resultBackBtn:   document.getElementById('resultBackBtn'),
+        });
+    </script>
+</body>
+</html>

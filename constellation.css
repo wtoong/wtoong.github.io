@@ -1,0 +1,263 @@
+/* 별자리 완성하기 전용 스타일
+   🌟 puzzle.css의 캔디 색·폰트·버튼을 그대로 쓰되, 이 게임만 밤하늘처럼 어둡게.
+      math.css의 문제카드(.q-card 등)·결과(.report-body 등)는 그대로 재사용. */
+
+.hidden { display: none !important; }
+
+/* 이 페이지만 밤하늘 배경 (별가루 + 짙은 남보라 그라데이션) */
+body.night {
+    background:
+        radial-gradient(circle at 18% 22%, rgba(255,255,255,0.9) 0 1.4px, transparent 2px) 0 0/90px 90px,
+        radial-gradient(circle at 64% 50%, rgba(255,255,255,0.7) 0 1.2px, transparent 2px) 0 0/130px 120px,
+        radial-gradient(circle at 40% 80%, rgba(255,236,180,0.8) 0 1.4px, transparent 2px) 0 0/160px 150px,
+        linear-gradient(165deg, #1b1140 0%, #2a1c5c 48%, #3a2170 100%);
+    background-attachment: fixed;
+}
+body.night .page-title { color: #fff; text-shadow: 2px 2px 0 rgba(199,155,255,0.5), 0 0 14px rgba(142,197,255,0.6); }
+body.night .page-subtitle { color: #d6ccff; }
+
+/* 화면 묶음 공통 폭 (math.css .screen과 동일 톤) */
+.screen {
+    width: 100%;
+    max-width: 680px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+/* ── 상단 컨트롤 (이름·내보내기·불러오기) ─────────────────── */
+.sky-controls {
+    background: rgba(255,255,255,0.1);
+    border: 2px dashed rgba(199,155,255,0.6);
+    box-shadow: none;
+    backdrop-filter: blur(2px);
+}
+.sky-controls input[type="text"] { background: #fffef9; }
+.import-lbl {
+    font-family: 'Gaegu', sans-serif;
+    color: #efeaff;
+    font-size: 0.98rem;
+}
+.sky-hint {
+    font-family: 'Gaegu', sans-serif;
+    font-size: 1.02rem;
+    color: #e7defa;
+    text-align: center;
+    line-height: 1.7;
+    margin: 2px 6px 4px;
+}
+
+/* ── 전체 밤하늘 (별자리 미니 타일 격자) ──────────────────── */
+.sky-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 14px;
+    width: 100%;
+}
+.sky-tile {
+    background: rgba(255,255,255,0.07);
+    border: 2px solid rgba(142,197,255,0.35);
+    border-radius: 22px;
+    box-shadow: 0 6px 16px rgba(10,4,40,0.4);
+    padding: 12px 12px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    color: #fff;
+    font-family: 'Jua', sans-serif;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.2s;
+}
+.sky-tile:hover {
+    transform: translateY(-4px);
+    border-color: var(--candy-yellow);
+    box-shadow: 0 10px 22px rgba(10,4,40,0.55);
+    background: rgba(255,255,255,0.12);
+}
+.sky-tile:active { transform: translateY(0); }
+.sky-tile.done {
+    border-color: var(--candy-yellow);
+    box-shadow: 0 0 18px rgba(255,216,107,0.5), 0 6px 16px rgba(10,4,40,0.4);
+}
+.sky-tile-grade { font-size: 0.85rem; color: #c9bcff; }
+.sky-tile-map { width: 100%; }
+.sky-tile-name { font-size: 1.02rem; color: #fff; }
+.sky-tile-stars { font-size: 0.82rem; color: #ffe6a8; font-family: 'Gaegu', sans-serif; }
+
+/* ── 별자리 그림판 (미니/상세 공용) ───────────────────────── */
+.constel-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 0.8;
+    /* 상세 별 크기 기준 */
+    --star: 26px;
+    font-size: 0;
+}
+.constel-wrap.mini {
+    aspect-ratio: 1 / 0.86;
+    --star: 9px;
+}
+.constel-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+.constel-line {
+    stroke: rgba(173,196,255,0.35);
+    stroke-width: 0.6;
+    stroke-linecap: round;
+    stroke-dasharray: 2 2;
+}
+.constel-line.lit {
+    stroke: rgba(255,224,150,0.9);
+    stroke-width: 0.9;
+    stroke-dasharray: none;
+}
+
+/* 상세 화면 그림판 박스 */
+.constel-map {
+    width: 100%;
+    max-width: 460px;
+    background: rgba(12,6,38,0.5);
+    border: 2px solid rgba(142,197,255,0.3);
+    border-radius: 26px;
+    padding: 14px;
+    box-shadow: inset 0 0 40px rgba(80,40,140,0.4);
+}
+
+/* ── 별 ──────────────────────────────────────────────────── */
+.star {
+    position: absolute;
+    width: var(--star);
+    height: var(--star);
+    transform: translate(-50%, -50%);
+    border: none;
+    background: transparent;
+    padding: 0;
+    border-radius: 50%;
+}
+.star.unit { cursor: default; }
+button.star.unit { cursor: pointer; }
+.star-core {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+/* 장식 별: 작고 흐릿하게 반짝 */
+.star.deco {
+    width: calc(var(--star) * 0.42);
+    height: calc(var(--star) * 0.42);
+    background: radial-gradient(circle, #fff 0%, rgba(255,255,255,0.5) 50%, transparent 70%);
+    animation: twinkle 2.4s ease-in-out infinite;
+}
+.star.deco:nth-of-type(2n) { animation-delay: 0.8s; }
+.star.deco:nth-of-type(3n) { animation-delay: 1.5s; }
+
+/* 등급 0: 아직 안 켜진 단원 별 (빈 자리, 눌러줘 하는 느낌) */
+.star.unit.lv0 .star-core {
+    background: rgba(255,255,255,0.12);
+    border: 2px dashed rgba(255,255,255,0.55);
+    box-sizing: border-box;
+}
+button.star.unit.lv0 .star-core { animation: invite 1.8s ease-in-out infinite; }
+/* 등급 1: 하늘색 글로우 */
+.star.unit.lv1 .star-core {
+    background: radial-gradient(circle, #fff 0%, var(--candy-sky) 55%, #6aa8ff 100%);
+    box-shadow: 0 0 10px 2px rgba(142,197,255,0.8);
+}
+/* 등급 2: 황금 글로우 */
+.star.unit.lv2 .star-core {
+    background: radial-gradient(circle, #fff 0%, var(--candy-yellow) 55%, #f0a500 100%);
+    box-shadow: 0 0 14px 3px rgba(255,216,107,0.9);
+}
+/* 등급 3: 분홍↔보라 무지개 + 반짝 (가장 화려) */
+.star.unit.lv3 .star-core {
+    background: radial-gradient(circle, #fff 0%, var(--candy-pink) 40%, var(--candy-purple) 100%);
+    box-shadow: 0 0 16px 4px rgba(255,143,177,0.85), 0 0 26px 8px rgba(199,155,255,0.6);
+    animation: rainbow-pulse 2.2s ease-in-out infinite;
+}
+button.star.unit:hover { transform: translate(-50%, -50%) scale(1.18); z-index: 3; }
+button.star.unit:focus-visible { outline: 3px solid var(--candy-yellow); outline-offset: 3px; }
+
+/* 상세 화면 별 이름표 */
+.star-label {
+    position: absolute;
+    top: calc(100% + 3px);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    white-space: nowrap;
+    pointer-events: none;
+}
+.constel-wrap.mini .star-label { display: none; }
+.star-label-name {
+    font-family: 'Jua', sans-serif;
+    font-size: 0.72rem;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+    background: rgba(20,10,50,0.55);
+    padding: 1px 7px;
+    border-radius: 999px;
+}
+.star-label-stars { font-size: 0.7rem; line-height: 1.1; }
+
+/* ── 별자리 상세 헤더/상태 ────────────────────────────────── */
+.back-btn { align-self: flex-start; }
+.constel-title {
+    font-family: 'Jua', sans-serif;
+    font-size: 1.5rem;
+    color: #fff;
+    text-align: center;
+    margin: 0;
+    text-shadow: 0 0 12px rgba(199,155,255,0.6);
+}
+.constel-status {
+    background: rgba(255,255,255,0.1);
+    border: 2px dashed rgba(199,155,255,0.5);
+    border-radius: 22px;
+    padding: 12px 20px;
+    text-align: center;
+    width: 100%;
+    max-width: 460px;
+}
+.status-line { font-family: 'Jua', sans-serif; font-size: 1.05rem; color: #fff; }
+.status-msg { font-family: 'Gaegu', sans-serif; font-size: 1rem; color: #e7defa; margin-top: 4px; line-height: 1.6; }
+
+/* ── 결과 화면 (math.css .report-body 재사용 + 별 강조) ───── */
+.result-stars {
+    font-size: 2.6rem;
+    line-height: 1.2;
+    letter-spacing: 4px;
+}
+.result-stars.lv0 { filter: grayscale(0.6); opacity: 0.7; }
+.result-stars.lv3 { animation: pop-bounce 0.5s ease; text-shadow: 0 0 16px rgba(255,143,177,0.7); }
+
+/* 결과/문제 화면은 밝은 카드라 글씨는 어둡게 (math.css 그대로) */
+body.night .report-body { background: #fffdf7; }
+
+/* ── 애니메이션 ──────────────────────────────────────────── */
+@keyframes twinkle {
+    0%, 100% { opacity: 0.25; transform: translate(-50%, -50%) scale(0.8); }
+    50%      { opacity: 0.9;  transform: translate(-50%, -50%) scale(1.1); }
+}
+@keyframes invite {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.0); }
+    50%      { box-shadow: 0 0 10px 2px rgba(255,255,255,0.45); }
+}
+@keyframes rainbow-pulse {
+    0%, 100% { filter: hue-rotate(0deg) brightness(1); }
+    50%      { filter: hue-rotate(40deg) brightness(1.15); }
+}
+
+@media (max-width: 480px) {
+    .sky-grid { grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 10px; }
+    .constel-wrap { --star: 22px; }
+    .star-label-name { font-size: 0.66rem; }
+}
