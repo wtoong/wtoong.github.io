@@ -26,6 +26,7 @@
 | `math-test.html` | **학생** | 수학 레벨 진단 페이지 (학년·학기 누적 또는 단원별 평가 → 레포트 → 결과 JSON 저장/불러오기) |
 | `math-diagnostic.js` | 수학 진단 | 진단 엔진 (`window.MathDiagnostic.init(...)`) — 출제·채점·약점분석·세부유형분석·레포트 |
 | `question-bank.js` | 공통 | 문제 은행 로더 (`window.QuestionBank`) — 매니페스트를 읽어 필요한 (학년·학기) 샤드만 fetch |
+| `question-template.js` | 공통 | 생성형(템플릿) 문제 엔진 (`window.QuestionTemplate.instantiate(q)`) — `template`이 있는 문항을 출제 시점에 "숫자만 바뀐" 구체 문항으로 인스턴스화. 자체 안전 식 계산기(eval 미사용)·제약(거부 표집)·포맷(소수/분수). 템플릿 없으면 원본 그대로 반환 |
 | `math.css` | 수학 진단 | 시작화면·문제카드·결과막대·단원칩·세부유형표 전용 스타일 (puzzle.css 위에 얹음) |
 | `data/math-curriculum.json` | 공통 | 학년/단원/세부기능 구조 (1~6학년 전 단원). 4학년은 1학기·2학기 각 6단원 모두 수록 |
 | `data/questions/index.json` | 공통 | 문제 은행 샤드 매니페스트 (샤드 파일·포함 unitId·문항 수) |
@@ -72,6 +73,21 @@
 - 단원/세부기능 구조는 `data/math-curriculum.json`. 선생님이 `data/math-question-builder.html`(GUI)로
   문제를 추가해 샤드로 저장하고, `data/math-verification.html`로 빠진 유형(0개 세부기능)·orphan을 점검.
   직접 편집 또는 Claude에게 요청해 등록·확장도 가능.
+- **생성형(템플릿) 문항**: 학생이 답을 외우지 못하게, 포맷은 같고 숫자만 매번 바뀌는 문항을
+  지원. 문항에 `template`을 넣으면(고정 문항과 한 샤드에 자유롭게 섞임) 출제 시점에
+  `question-template.js`가 변수를 범위에서 뽑아 **구체값으로 인스턴스화**한다. `template`이
+  없으면 기존 고정 문항과 100% 동일하게 동작(하위호환). 진단·별자리 모두 문제를 뽑아
+  `quizList`에 넣는 순간 `QuestionTemplate.instantiate(q)`를 거친다.
+  - `template` 필드: `vars`(정수 변수 `{min,max,step?}`), `constraints`(불리언 식 배열 —
+    모두 참이어야 채택, 음수 방지 `a >= b`·정확한 나눗셈 등을 표현), `derived`(파생값),
+    `prompt`(`{이름}` 자리표시자), `format`/`promptParts`(소수 `dec:N`·분수 `frac`·대분수 `mixed`),
+    `answer`(numeric=산술식, mc는 `choices[0]`이 정답), `choices`(mc, 0번=정답·나머지 오답 유인지),
+    `tolerance`(소수 오차).
+  - 식 계산기는 **eval 미사용** 자체 파서. 함수는 화이트리스트(`floor,ceil,round,abs,gcd,lcm,
+    min,max,pow`)만. 제약 불만족이면 재추첨(최대 200회), 못 찾으면 `__templateFailed`로 폴백.
+  - 작성은 당분간 샤드 JSON 직접 편집(예시: 4학년 `q-t-*` 문항). `data/math-verification.html`의
+    **"🎲 템플릿 문항 점검"** 버튼으로 생성 오류(정답이 보기에 없음·음수·자리표시자 미치환 등)를
+    출제 전에 일괄 점검할 수 있음.
 
 ### 별자리 완성 게임 동작 방식
 - **목표**: 단원 문제를 풀어 별을 켜고 학년·학기 별자리를 완성. 첫 진입 시 12개

@@ -71,7 +71,12 @@
   <div class="controls">
     <div class="grp"><span class="lbl">학년</span><div id="gradeChips"></div></div>
     <div class="grp"><span class="lbl">학기</span><div id="semChips"></div></div>
+    <div class="grp" style="margin-left:auto;">
+      <button id="smokeBtn" class="chip" style="font-weight:700;cursor:pointer;">🎲 템플릿 문항 점검</button>
+    </div>
   </div>
+
+  <div id="tmplSmoke"></div>
 
   <p class="legend">
     세부기능 색:
@@ -86,6 +91,7 @@
 </div>
 
 <script src="../question-bank.js?v=1"></script>
+<script src="../question-template.js?v=1"></script>
 <script>
   QuestionBank.basePath = 'questions/';   // 이 페이지는 data/ 안에 있음
   let curriculum = null, questions = [];
@@ -225,6 +231,55 @@
     document.getElementById('report').innerHTML = out.join('') ||
       '<p style="color:#64748b">선택한 범위에 단원이 없어요.</p>';
   }
+
+  // ── 템플릿(생성형) 문항 스모크 테스트 ──
+  // 모든 template 문항을 여러 번 인스턴스화해 생성 오류를 사전 적발한다.
+  document.getElementById('smokeBtn').onclick = function () {
+    const box = document.getElementById('tmplSmoke');
+    if (!window.QuestionTemplate) {
+      box.innerHTML = '<div class="warnbox"><h3>⚠️ question-template.js를 불러오지 못했어요</h3></div>';
+      return;
+    }
+    const RUNS = 30;
+    const templated = questions.filter(q => q.template);
+    if (!templated.length) {
+      box.innerHTML = '<div class="warnbox clean"><h3>🎲 템플릿 문항이 아직 없어요</h3>' +
+        '<p style="font-size:0.8rem;color:#065f46">template 필드를 가진 문항이 없습니다.</p></div>';
+      return;
+    }
+    const issues = [];
+    templated.forEach(q => {
+      for (let i = 0; i < RUNS; i++) {
+        let c;
+        try { c = window.QuestionTemplate.instantiate(q); }
+        catch (e) { issues.push(`${q.id}: 생성 중 오류 — ${e.message}`); break; }
+        if (c.__templateFailed) { issues.push(`${q.id}: 제약을 만족하는 값을 못 찾음`); break; }
+        if (typeof c.prompt !== 'string' || /\{[a-zA-Z_]/.test(c.prompt)) {
+          issues.push(`${q.id}: 자리표시자가 안 채워짐 — "${c.prompt}"`); break;
+        }
+        if (q.type === 'mc') {
+          if (!Array.isArray(c.choices) || c.choices.length < 2) { issues.push(`${q.id}: 선택지 부족`); break; }
+          if (c.choices.indexOf(c.answer) < 0) { issues.push(`${q.id}: 정답이 선택지에 없음 (${c.answer})`); break; }
+          if (new Set(c.choices).size !== c.choices.length) { issues.push(`${q.id}: 선택지 중복 — ${JSON.stringify(c.choices)}`); break; }
+        } else {
+          if (typeof c.answer !== 'number' || !isFinite(c.answer)) { issues.push(`${q.id}: 정답이 숫자가 아님 (${c.answer})`); break; }
+          if (c.answer < 0) { issues.push(`${q.id}: 정답이 음수 (${c.answer})`); break; }
+        }
+      }
+    });
+    const samples = templated.map(q => {
+      const c = window.QuestionTemplate.instantiate(q);
+      const ans = q.type === 'mc' ? `정답 ${c.answer} / 보기 ${JSON.stringify(c.choices)}` : `정답 ${c.answer}`;
+      return `<li><b>${q.id}</b> (${q.unitId}·${q.skillId}): “${c.prompt}” → ${ans}</li>`;
+    }).join('');
+    if (issues.length) {
+      box.innerHTML = `<div class="warnbox"><h3>⚠️ 템플릿 문항 ${templated.length}개 중 ${issues.length}건 문제</h3>` +
+        `<ul>${issues.map(t => `<li>${t}</li>`).join('')}</ul></div>`;
+    } else {
+      box.innerHTML = `<div class="warnbox clean"><h3>✅ 템플릿 문항 ${templated.length}개 모두 정상 (각 ${RUNS}회 생성)</h3>` +
+        `<ul style="margin-left:18px;font-size:0.8rem;color:#065f46;line-height:1.7;">${samples}</ul></div>`;
+    }
+  };
 </script>
 </body>
 </html>

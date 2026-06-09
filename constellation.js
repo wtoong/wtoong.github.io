@@ -282,7 +282,9 @@
             }
             currentUnitId = node.unitId;
             currentUnitName = node.unitName;
-            quizList = shuffle(pool).slice(0, QUESTIONS_PER_PLAY);
+            // 템플릿 문항은 여기서 구체값으로 인스턴스화(숫자만 매번 바뀜). 템플릿이 없으면 원본 그대로.
+            quizList = shuffle(pool).slice(0, QUESTIONS_PER_PLAY)
+                .map(q => window.QuestionTemplate ? window.QuestionTemplate.instantiate(q) : q);
             answers = [];
             cursor = 0;
             goScreen(quizEl);
