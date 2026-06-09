@@ -1,7 +1,7 @@
 {
   "_meta": {
     "description": "초등 수학 진단평가 교육과정 구조 (1~6학년 전 단원)",
-    "updated": "2026-06-08",
+    "updated": "2026-06-09",
     "schema": {
       "grade": "학년 1~6",
       "semester": "학기 1(1학기) | 2(2학기) — 단원이 속한 학기",
@@ -118,10 +118,46 @@
           { "skillId": "4-6-c", "skillName": "계산식 배열 규칙" }
         ] },
         { "unitId": "4-7", "unitName": "분수의 덧셈과 뺄셈", "semester": 2, "skills": [
-          { "skillId": "4-7-a", "skillName": "분모가 같은 분수의 계산" }
+          { "skillId": "4-7-a", "skillName": "진분수의 덧셈(가분수→대분수 포함)" },
+          { "skillId": "4-7-b", "skillName": "대분수의 덧셈" },
+          { "skillId": "4-7-c", "skillName": "진분수의 뺄셈" },
+          { "skillId": "4-7-d", "skillName": "(자연수)−(분수)" },
+          { "skillId": "4-7-e", "skillName": "대분수의 뺄셈(받아내림 없음)" },
+          { "skillId": "4-7-f", "skillName": "대분수의 뺄셈(받아내림 있음)" },
+          { "skillId": "4-7-g", "skillName": "분수 덧셈·뺄셈 문장제" }
         ] },
         { "unitId": "4-8", "unitName": "삼각형", "semester": 2, "skills": [
-          { "skillId": "4-8-a", "skillName": "삼각형의 각" }
+          { "skillId": "4-8-a", "skillName": "이등변삼각형의 성질" },
+          { "skillId": "4-8-b", "skillName": "정삼각형의 성질" },
+          { "skillId": "4-8-c", "skillName": "각의 크기에 따른 분류(예각·직각·둔각)" },
+          { "skillId": "4-8-d", "skillName": "변·각 기준 복합 분류" },
+          { "skillId": "4-8-e", "skillName": "내각의 합·둘레 구하기" }
+        ] },
+        { "unitId": "4-9", "unitName": "소수의 덧셈과 뺄셈", "semester": 2, "skills": [
+          { "skillId": "4-9-a", "skillName": "소수의 자릿값·읽기" },
+          { "skillId": "4-9-b", "skillName": "소수의 크기 비교(자릿수 다른 수)" },
+          { "skillId": "4-9-c", "skillName": "소수점 위치 이동(10배·1/10배 등)" },
+          { "skillId": "4-9-d", "skillName": "소수의 덧셈·뺄셈(받아올림/내림)" },
+          { "skillId": "4-9-e", "skillName": "자릿수가 다른 소수의 연산" }
+        ] },
+        { "unitId": "4-10", "unitName": "사각형", "semester": 2, "skills": [
+          { "skillId": "4-10-a", "skillName": "사다리꼴·평행사변형 구분" },
+          { "skillId": "4-10-b", "skillName": "평행사변형의 성질" },
+          { "skillId": "4-10-c", "skillName": "마름모의 성질" },
+          { "skillId": "4-10-d", "skillName": "직사각형·정사각형의 성질" },
+          { "skillId": "4-10-e", "skillName": "사각형의 포함 관계" }
+        ] },
+        { "unitId": "4-11", "unitName": "꺾은선그래프", "semester": 2, "skills": [
+          { "skillId": "4-11-a", "skillName": "눈금 정하고 그래프 그리기" },
+          { "skillId": "4-11-b", "skillName": "물결선의 이해" },
+          { "skillId": "4-11-c", "skillName": "그래프 해석·예측" },
+          { "skillId": "4-11-d", "skillName": "그래프 선택(막대 vs 꺾은선)" }
+        ] },
+        { "unitId": "4-12", "unitName": "다각형", "semester": 2, "skills": [
+          { "skillId": "4-12-a", "skillName": "다각형·정다각형의 구별" },
+          { "skillId": "4-12-b", "skillName": "대각선의 수" },
+          { "skillId": "4-12-c", "skillName": "정다각형의 변·둘레·각" },
+          { "skillId": "4-12-d", "skillName": "모양 만들기·채우기" }
         ] }
       ]
     },

@@ -27,7 +27,7 @@
 | `math-diagnostic.js` | 수학 진단 | 진단 엔진 (`window.MathDiagnostic.init(...)`) — 출제·채점·약점분석·세부유형분석·레포트 |
 | `question-bank.js` | 공통 | 문제 은행 로더 (`window.QuestionBank`) — 매니페스트를 읽어 필요한 (학년·학기) 샤드만 fetch |
 | `math.css` | 수학 진단 | 시작화면·문제카드·결과막대·단원칩·세부유형표 전용 스타일 (puzzle.css 위에 얹음) |
-| `data/math-curriculum.json` | 공통 | 학년/단원/세부기능 구조 (1~6학년 전 단원). 4학년은 교과서 6단원(+2학기 2단원) |
+| `data/math-curriculum.json` | 공통 | 학년/단원/세부기능 구조 (1~6학년 전 단원). 4학년은 1학기·2학기 각 6단원 모두 수록 |
 | `data/questions/index.json` | 공통 | 문제 은행 샤드 매니페스트 (샤드 파일·포함 unitId·문항 수) |
 | `data/questions/g{학년}-s{학기}.json` | 공통 | (학년·학기)별 문제 은행 샤드 (mc·numeric, grade/unitId/skillId 태깅) |
 | `data/math-question-builder.html` | 선생님 | 진단 문제를 추가해 샤드(`gX-sY.json`) 생성/편집 |
