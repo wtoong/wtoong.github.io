@@ -1,0 +1,15 @@
+{
+  "_meta": { "description": "문제 은행 샤드 — 5학년 1학기", "grade": 5, "semester": 1 },
+  "questions": [
+    {"id": "q-0088", "grade": 5, "unitId": "5-1", "skillId": "5-1-a", "difficulty": 2, "type": "mc", "prompt": "다음 중 12의 약수가 아닌 것은?", "choices": ["1", "3", "4", "5"], "answer": "5"},
+    {"id": "q-0089", "grade": 5, "unitId": "5-1", "skillId": "5-1-a", "difficulty": 2, "type": "mc", "prompt": "다음 중 6의 배수는?", "choices": ["14", "16", "18", "20"], "answer": "18"},
+    {"id": "q-0090", "grade": 5, "unitId": "5-1", "skillId": "5-1-a", "difficulty": 3, "type": "numeric", "prompt": "15의 약수는 모두 몇 개일까요?", "answer": 4},
+    {"id": "q-0091", "grade": 5, "unitId": "5-1", "skillId": "5-1-b", "difficulty": 3, "type": "numeric", "prompt": "8과 12의 최대공약수는?", "answer": 4},
+    {"id": "q-0092", "grade": 5, "unitId": "5-1", "skillId": "5-1-b", "difficulty": 3, "type": "numeric", "prompt": "4와 6의 최소공배수는?", "answer": 12},
+    {"id": "q-0093", "grade": 5, "unitId": "5-2", "skillId": "5-2-a", "difficulty": 2, "type": "mc", "prompt": "4/8을 가장 간단한 분수로 약분하면?", "choices": ["1/2", "2/4", "1/4", "4/8"], "answer": "1/2"},
+    {"id": "q-0094", "grade": 5, "unitId": "5-2", "skillId": "5-2-a", "difficulty": 2, "type": "mc", "prompt": "6/9를 가장 간단한 분수로 약분하면?", "choices": ["2/3", "3/9", "1/3", "6/9"], "answer": "2/3"},
+    {"id": "q-0095", "grade": 5, "unitId": "5-2", "skillId": "5-2-a", "difficulty": 3, "type": "mc", "prompt": "10/15를 가장 간단한 분수로 약분하면?", "choices": ["2/3", "5/15", "1/3", "10/15"], "answer": "2/3"},
+    {"id": "q-0096", "grade": 5, "unitId": "5-2", "skillId": "5-2-b", "difficulty": 3, "type": "numeric", "prompt": "1/2 과 1/3 을 통분할 때 공통분모(가장 작은 수)는?", "answer": 6},
+    {"id": "q-0097", "grade": 5, "unitId": "5-2", "skillId": "5-2-b", "difficulty": 3, "type": "numeric", "prompt": "1/4 과 1/6 을 통분할 때 공통분모(가장 작은 수)는?", "answer": 12}
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "_meta": { "description": "문제 은행 샤드 — 2학년 1학기", "grade": 2, "semester": 1 },
+  "questions": [
+    {"id": "q-0021", "grade": 2, "unitId": "2-1", "skillId": "2-1-a", "difficulty": 2, "type": "numeric", "prompt": "100이 3개, 10이 5개, 1이 2개인 수는?", "answer": 352},
+    {"id": "q-0022", "grade": 2, "unitId": "2-1", "skillId": "2-1-a", "difficulty": 2, "type": "mc", "prompt": "486에서 백의 자리 숫자는?", "choices": ["4", "8", "6", "486"], "answer": "4"},
+    {"id": "q-0023", "grade": 2, "unitId": "2-1", "skillId": "2-1-a", "difficulty": 2, "type": "mc", "prompt": "274에서 십의 자리 숫자는?", "choices": ["2", "7", "4", "27"], "answer": "7"},
+    {"id": "q-0024", "grade": 2, "unitId": "2-1", "skillId": "2-1-a", "difficulty": 1, "type": "numeric", "prompt": "100이 7개인 수는?", "answer": 700},
+    {"id": "q-0025", "grade": 2, "unitId": "2-1", "skillId": "2-1-b", "difficulty": 2, "type": "mc", "prompt": "다음 중 가장 큰 수는?", "choices": ["305", "350", "299", "348"], "answer": "350"},
+    {"id": "q-0026", "grade": 2, "unitId": "2-1", "skillId": "2-1-b", "difficulty": 2, "type": "mc", "prompt": "다음 중 608보다 큰 수는?", "choices": ["600", "580", "611", "599"], "answer": "611"},
+    {"id": "q-0027", "grade": 2, "unitId": "2-2", "skillId": "2-2-a", "difficulty": 2, "type": "numeric", "prompt": "27 + 15 = ?", "answer": 42},
+    {"id": "q-0028", "grade": 2, "unitId": "2-2", "skillId": "2-2-a", "difficulty": 2, "type": "numeric", "prompt": "38 + 46 = ?", "answer": 84},
+    {"id": "q-0029", "grade": 2, "unitId": "2-2", "skillId": "2-2-a", "difficulty": 2, "type": "mc", "prompt": "56 + 29 = ?", "choices": ["75", "84", "85", "86"], "answer": "85"},
+    {"id": "q-0030", "grade": 2, "unitId": "2-2", "skillId": "2-2-b", "difficulty": 2, "type": "numeric", "prompt": "52 - 18 = ?", "answer": 34},
+    {"id": "q-0031", "grade": 2, "unitId": "2-2", "skillId": "2-2-b", "difficulty": 3, "type": "numeric", "prompt": "73 - 47 = ?", "answer": 26},
+    {"id": "q-0032", "grade": 2, "unitId": "2-2", "skillId": "2-2-b", "difficulty": 2, "type": "mc", "prompt": "61 - 25 = ?", "choices": ["36", "46", "35", "44"], "answer": "36"}
+  ]
+}

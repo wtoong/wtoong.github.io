@@ -23,12 +23,15 @@
 | `data/constellations.json` | 공통 | 학년·학기별 별자리 도형(별 좌표·연결선) 데이터 |
 | `puzzle.js` | 공통 | 퍼즐 엔진 (`window.JigsawPuzzle.init(...)`) |
 | `puzzle.css` | 공통 | maker·study 페이지가 함께 쓰는 스타일 |
-| `math-test.html` | **학생** | 수학 레벨 진단 페이지 (문제 풀기 → 레포트 → 결과 JSON 저장/불러오기) |
-| `math-diagnostic.js` | 수학 진단 | 진단 엔진 (`window.MathDiagnostic.init(...)`) — 출제·채점·학년추정·약점분석·레포트 |
-| `math.css` | 수학 진단 | 시작화면·문제카드·결과막대 전용 스타일 (puzzle.css 위에 얹음) |
-| `data/math-curriculum.json` | 공통 | 학년/단원/세부기능 구조 (1~6학년 전 단원) |
-| `data/math-questions.json` | 공통 | 수학 진단 문제 은행 (mc·numeric, grade/unitId/skillId 태깅) |
-| `data/math-question-builder.html` | 선생님 | 진단 문제를 추가해 `math-questions.json` 생성 |
+| `math-test.html` | **학생** | 수학 레벨 진단 페이지 (학년·학기 누적 또는 단원별 평가 → 레포트 → 결과 JSON 저장/불러오기) |
+| `math-diagnostic.js` | 수학 진단 | 진단 엔진 (`window.MathDiagnostic.init(...)`) — 출제·채점·약점분석·세부유형분석·레포트 |
+| `question-bank.js` | 공통 | 문제 은행 로더 (`window.QuestionBank`) — 매니페스트를 읽어 필요한 (학년·학기) 샤드만 fetch |
+| `math.css` | 수학 진단 | 시작화면·문제카드·결과막대·단원칩·세부유형표 전용 스타일 (puzzle.css 위에 얹음) |
+| `data/math-curriculum.json` | 공통 | 학년/단원/세부기능 구조 (1~6학년 전 단원). 4학년은 교과서 6단원(+2학기 2단원) |
+| `data/questions/index.json` | 공통 | 문제 은행 샤드 매니페스트 (샤드 파일·포함 unitId·문항 수) |
+| `data/questions/g{학년}-s{학기}.json` | 공통 | (학년·학기)별 문제 은행 샤드 (mc·numeric, grade/unitId/skillId 태깅) |
+| `data/math-question-builder.html` | 선생님 | 진단 문제를 추가해 샤드(`gX-sY.json`) 생성/편집 |
+| `data/math-verification.html` | 선생님 | 단원·세부기능별 문제 수와 빠진 유형(0개)·orphan 문항을 점검하는 검증 페이지 |
 | `data/dataset-builder.html` | 선생님 | 교과 이미지 URL을 모아 `curriculum-images.json` 생성 |
 | `data/curriculum-images.json` | 공통 | 교과 과정 이미지 데이터셋 |
 
@@ -52,12 +55,23 @@
   가중치는 그 위에 곱해 함께 반영. 단원은 균등 배분하지 않고 랜덤.
   최소 보장은 "남은 뽑기 수 = 남은 보장분 합"이 되는 순간부터 보장분만 채워 달성.
   학년 수준 자동 역추정은 하지 않음(레벨을 직접 고르므로).
-- 레포트는 **선택 범위 내 정답률**(전체·학년별)과 **약점 단원**(오답률 ≥50%, 2문항 이상)을 보여줌.
+- **단원별(세분화) 평가**: 시작화면에서 학년·학기를 고르면 그 학기 **단원 칩**이 뜨고,
+  단원을 콕 고르면(다중 선택 가능) 누적 대신 **그 단원만** 균등 출제. URL `?unit=4-3`
+  (콤마로 여러 개)으로도 고정. 단원 평가 결과에는 **세부 유형(skill)별 정답률** 표가 떠
+  어느 유형이 약한지 콕 집어줌. 단원 미선택이면 기존 누적 출제 그대로.
+- 레포트는 **선택 범위 내 정답률**(전체·학년별)과 **약점 단원**(오답률 ≥50%, 2문항 이상),
+  단원 평가일 때 **세부 유형별 정답률**을 보여줌.
 - 평가 끝 → "결과 저장하기"로 누적 이력이 담긴 레포트 JSON 다운로드.
 - 재평가 때 그 파일을 업로드하면 누적 오답률로 약한 단원에 가중치(`1 + 3×오답률`)를 줘
   그 단원 문제가 더 자주 나옴(적응형). 레포트 업로드 유무로 자동 전환.
-- 문제 은행/단원 구조는 정적 JSON. 선생님이 `data/math-question-builder.html`(GUI),
-  직접 편집, 또는 Claude에게 요청해 등록·확장.
+- **문제 은행 샤딩**: 문제는 `data/questions/g{학년}-s{학기}.json` 샤드로 나뉘고
+  `data/questions/index.json`(매니페스트)에 목록이 있음. `question-bank.js`(`QuestionBank`)가
+  매니페스트를 먼저 읽고 **필요한 샤드만** fetch(누적=범위 내 샤드, 단원평가=그 단원 샤드).
+  진단·별자리 게임·빌더·검증 페이지가 모두 이 로더를 공유.
+  (`data/` 안의 페이지는 `QuestionBank.basePath='questions/'`로 설정.)
+- 단원/세부기능 구조는 `data/math-curriculum.json`. 선생님이 `data/math-question-builder.html`(GUI)로
+  문제를 추가해 샤드로 저장하고, `data/math-verification.html`로 빠진 유형(0개 세부기능)·orphan을 점검.
+  직접 편집 또는 Claude에게 요청해 등록·확장도 가능.
 
 ### 별자리 완성 게임 동작 방식
 - **목표**: 단원 문제를 풀어 별을 켜고 학년·학기 별자리를 완성. 첫 진입 시 12개
@@ -70,7 +84,7 @@
 - **별 등급(후하게)**: 한 단원을 풀면 정답률 → 별 1~3개. `<40%`=0(미점등),
   `≥40%`=⭐, `≥70%`=⭐⭐, `≥90%`=⭐⭐⭐. 등급이 오를수록 별 색이 화려해짐
   (0 점선 빈별 → 1 하늘색 → 2 황금 → 3 분홍↔보라 무지개). **최고기록 갱신만** 저장.
-- **출제**: `math-questions.json`에서 그 단원(`unitId`) 문제를 섞어 최대 `QUESTIONS_PER_PLAY`(=5)개.
+- **출제**: `QuestionBank.loadByUnits([unitId])`로 그 단원 샤드를 불러와 문제를 섞어 최대 `QUESTIONS_PER_PLAY`(=5)개.
   채점·문제카드는 진단(`math-diagnostic.js`)과 동일 로직/스타일(`.q-card` 등) 재사용.
 - **기록 저장**: `localStorage`(키 `constellation-progress-v1`)에 단원별 최고 별등급 저장.
   "내 별 내보내기"로 JSON 다운로드, "별 불러오기"로 업로드(더 높은 등급 우선 병합).

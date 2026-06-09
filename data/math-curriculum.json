@@ -78,18 +78,50 @@
       "units": [
         { "unitId": "4-1", "unitName": "큰 수", "semester": 1, "skills": [
           { "skillId": "4-1-a", "skillName": "만·억과 자릿값" },
-          { "skillId": "4-1-b", "skillName": "큰 수의 크기 비교" }
+          { "skillId": "4-1-b", "skillName": "0이 포함된 수 쓰고 읽기" },
+          { "skillId": "4-1-c", "skillName": "십진 전개식(자릿값 분해)" },
+          { "skillId": "4-1-d", "skillName": "같은 숫자 다른 값 비교" },
+          { "skillId": "4-1-e", "skillName": "뛰어 세기" },
+          { "skillId": "4-1-f", "skillName": "큰 수의 크기 비교" },
+          { "skillId": "4-1-g", "skillName": "조건 만족 큰 수 만들기" }
         ] },
-        { "unitId": "4-2", "unitName": "곱셈과 나눗셈", "semester": 1, "skills": [
-          { "skillId": "4-2-a", "skillName": "세 자리 × 두 자리" },
-          { "skillId": "4-2-b", "skillName": "나눗셈과 나머지" }
+        { "unitId": "4-2", "unitName": "각도", "semester": 1, "skills": [
+          { "skillId": "4-2-a", "skillName": "각도기로 각 읽기(눈금 오독 방지)" },
+          { "skillId": "4-2-b", "skillName": "예각·직각·둔각 구분" },
+          { "skillId": "4-2-c", "skillName": "삼각형·사각형 내각의 합으로 각 구하기" },
+          { "skillId": "4-2-d", "skillName": "직선(평각)으로 각의 합·차" }
         ] },
-        { "unitId": "4-3", "unitName": "분수의 덧셈과 뺄셈", "semester": 2, "skills": [
-          { "skillId": "4-3-a", "skillName": "분모가 같은 분수의 계산" }
+        { "unitId": "4-3", "unitName": "곱셈과 나눗셈", "semester": 1, "skills": [
+          { "skillId": "4-3-a", "skillName": "세 자리 × 두 자리" },
+          { "skillId": "4-3-b", "skillName": "곱셈 중간 과정의 자릿값 의미" },
+          { "skillId": "4-3-c", "skillName": "어림하여 몫 찾기" },
+          { "skillId": "4-3-d", "skillName": "나눗셈과 나머지" },
+          { "skillId": "4-3-e", "skillName": "나머지 조건(나머지<나누는 수) 검증" },
+          { "skillId": "4-3-f", "skillName": "검산식 완성" }
         ] },
-        { "unitId": "4-4", "unitName": "각도와 삼각형", "semester": 2, "skills": [
-          { "skillId": "4-4-a", "skillName": "각의 크기" },
-          { "skillId": "4-4-b", "skillName": "삼각형의 각" }
+        { "unitId": "4-4", "unitName": "평면도형의 이동", "semester": 1, "skills": [
+          { "skillId": "4-4-a", "skillName": "밀기·뒤집기·돌리기 기본" },
+          { "skillId": "4-4-b", "skillName": "돌리기(90·180·270°)" },
+          { "skillId": "4-4-c", "skillName": "뒤집고 돌리기 복합" },
+          { "skillId": "4-4-d", "skillName": "글자·숫자의 이동" },
+          { "skillId": "4-4-e", "skillName": "처음 도형 추론(역연산)" }
+        ] },
+        { "unitId": "4-5", "unitName": "막대그래프", "semester": 1, "skills": [
+          { "skillId": "4-5-a", "skillName": "눈금 한 칸의 크기 정하기" },
+          { "skillId": "4-5-b", "skillName": "표·그래프 상호 전환" },
+          { "skillId": "4-5-c", "skillName": "그래프 읽고 비교" },
+          { "skillId": "4-5-d", "skillName": "분석·추론(몇 배·예측)" }
+        ] },
+        { "unitId": "4-6", "unitName": "규칙 찾기", "semester": 1, "skills": [
+          { "skillId": "4-6-a", "skillName": "수 배열표 규칙·빈칸" },
+          { "skillId": "4-6-b", "skillName": "도형 개수 변화 추론(n단계)" },
+          { "skillId": "4-6-c", "skillName": "계산식 배열 규칙" }
+        ] },
+        { "unitId": "4-7", "unitName": "분수의 덧셈과 뺄셈", "semester": 2, "skills": [
+          { "skillId": "4-7-a", "skillName": "분모가 같은 분수의 계산" }
+        ] },
+        { "unitId": "4-8", "unitName": "삼각형", "semester": 2, "skills": [
+          { "skillId": "4-8-a", "skillName": "삼각형의 각" }
         ] }
       ]
     },

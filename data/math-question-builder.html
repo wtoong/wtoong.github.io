@@ -76,7 +76,8 @@
 
 <header>
   <h1>🧮 수학 진단 문제 빌더</h1>
-  <span>math-questions.json 생성 도구 · 단원 구조는 math-curriculum.json 사용</span>
+  <span>문제 은행 샤드(data/questions/gX-sY.json) 편집 도구 · 단원 구조는 math-curriculum.json 사용</span>
+  <a href="math-verification.html" style="margin-left:auto;color:#93c5fd;font-size:0.82rem;font-weight:700;">🔍 문제 검증 페이지</a>
 </header>
 
 <div class="layout">
@@ -136,20 +137,24 @@
 
     <div class="import-section">
       <details>
-        <summary>기존 math-questions.json 이어서 편집</summary>
-        <textarea id="importInput" placeholder="math-questions.json 내용을 여기 붙여넣기"></textarea>
+        <summary>샤드 JSON 붙여넣어 이어서 편집</summary>
+        <textarea id="importInput" placeholder="gX-sY.json 내용을 여기 붙여넣기 (questions 배열)"></textarea>
         <button class="btn btn-gray" style="margin-top:6px;width:100%" onclick="importJson()">불러오기</button>
       </details>
     </div>
 
     <div class="stat" id="stat">문제: <strong>0</strong>개</div>
 
+    <div class="field-group">
+      <label class="field">내보낼 샤드 (학년·학기)</label>
+      <select id="shardSel"></select>
+    </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <button class="btn btn-success" style="flex:1" onclick="downloadJson()">JSON 다운로드</button>
-      <button class="btn btn-gray" onclick="copyJson()">📋 복사</button>
+      <button class="btn btn-success" style="flex:1" onclick="downloadShard()">이 샤드 다운로드</button>
+      <button class="btn btn-gray" onclick="copyShard()">📋 복사</button>
       <button class="btn btn-danger" onclick="clearAll()">전체 삭제</button>
     </div>
-    <p class="hint">다운로드한 파일을 <b>data/math-questions.json</b> 으로 저장하면 진단 페이지에 바로 반영됩니다.</p>
+    <p class="hint">선택한 샤드만 내려받아 <b>data/questions/gX-sY.json</b> 으로 저장하세요. 새 단원·새 샤드를 처음 만들면 <b>data/questions/index.json</b> 의 shards 목록도 함께 갱신해야 합니다.</p>
   </aside>
 
   <!-- ─── 메인: 커버리지 + 문제 목록 ─── -->
@@ -170,16 +175,42 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="../question-bank.js?v=1"></script>
 <script>
   let curriculum = null;
-  let questions = [];   // 문제 객체 배열
+  let questions = [];   // 문제 객체 배열 (모든 샤드 합본)
   let counter = 1;
+  QuestionBank.basePath = 'questions/';   // 이 페이지는 data/ 안에 있음
 
-  /* ── 교육과정 구조 로드 ── */
-  fetch('math-curriculum.json')
-    .then(r => r.json())
-    .then(data => { curriculum = data; initGradeSelect(); renderCoverage(); })
-    .catch(() => showToast('math-curriculum.json을 불러오지 못했어요'));
+  /* ── 교육과정 구조 + 기존 문제(모든 샤드) 로드 ── */
+  Promise.all([
+    fetch('math-curriculum.json').then(r => r.json()),
+    QuestionBank.loadAll().catch(() => []),
+  ]).then(([curr, qs]) => {
+    curriculum = curr;
+    questions = qs || [];
+    const nums = questions.map(q => parseInt(String(q.id).replace(/\D/g, ''))).filter(n => !isNaN(n));
+    if (nums.length) counter = Math.max(...nums) + 1;
+    initGradeSelect();
+    initShardSelect();
+    render();
+  }).catch(() => showToast('데이터를 불러오지 못했어요 (math-curriculum.json / questions)'));
+
+  /* ── 샤드(학년·학기) 선택지 ── */
+  function semesterOf(unitId) {
+    for (const g of (curriculum ? curriculum.grades : [])) {
+      const u = g.units.find(x => x.unitId === unitId);
+      if (u) return u.semester || (parseInt(unitId.split('-')[1], 10) <= 2 ? 1 : 2);
+    }
+    return parseInt(unitId.split('-')[1], 10) <= 2 ? 1 : 2;
+  }
+  function initShardSelect() {
+    const opts = [];
+    curriculum.grades.forEach(g => {
+      [1, 2].forEach(s => opts.push(`<option value="${g.grade}-${s}">${g.grade}학년 ${s}학기 (g${g.grade}-s${s}.json)</option>`));
+    });
+    document.getElementById('shardSel').innerHTML = opts.join('');
+  }
 
   function initGradeSelect() {
     const gs = document.getElementById('gradeSel');
@@ -324,34 +355,37 @@
     document.getElementById('coverage').innerHTML = cells.join('');
   }
 
-  /* ── JSON 생성 / 내보내기 ── */
-  function buildJson() {
+  /* ── 샤드 JSON 생성 / 내보내기 ── */
+  function shardQuestions(grade, sem) {
+    return questions.filter(q => q.grade === grade && semesterOf(q.unitId) === sem);
+  }
+  function selectedShard() {
+    const [g, s] = (document.getElementById('shardSel').value || '').split('-').map(Number);
+    return { grade: g, sem: s };
+  }
+  function buildShardJson(grade, sem) {
     return JSON.stringify({
-      _meta: {
-        description: "초등 수학 진단 문제 은행 (1~6학년 전 단원). 자동 채점용(mc/numeric)만.",
-        updated: new Date().toISOString().slice(0, 10),
-        schema: {
-          id: "q-NNNN", grade: "학년 1~6", unitId: "단원 식별자", skillId: "세부 기능",
-          difficulty: "1~3", type: "mc | numeric", prompt: "문제 글",
-          choices: "mc 보기 배열", answer: "정답", tolerance: "numeric 허용 오차(선택)"
-        }
-      },
-      questions
-    }, null, 2);
+      _meta: { description: `문제 은행 샤드 — ${grade}학년 ${sem}학기`, grade, semester: sem },
+      questions: shardQuestions(grade, sem)
+    }, null, 2) + '\n';
   }
 
-  function copyJson() {
-    navigator.clipboard.writeText(buildJson()).then(() => showToast('클립보드에 복사됐어요!'));
+  function copyShard() {
+    const { grade, sem } = selectedShard();
+    navigator.clipboard.writeText(buildShardJson(grade, sem))
+      .then(() => showToast(`g${grade}-s${sem}.json 복사됐어요!`));
   }
 
-  function downloadJson() {
-    if (!questions.length) { showToast('문제가 없어요'); return; }
-    const blob = new Blob([buildJson()], { type: 'application/json' });
+  function downloadShard() {
+    const { grade, sem } = selectedShard();
+    const qs = shardQuestions(grade, sem);
+    if (!qs.length) { showToast('이 샤드에는 문제가 없어요'); return; }
+    const blob = new Blob([buildShardJson(grade, sem)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'math-questions.json';
+    a.download = `g${grade}-s${sem}.json`;
     a.click();
-    showToast('다운로드 시작!');
+    showToast(`g${grade}-s${sem}.json 다운로드 시작! (${qs.length}문항)`);
   }
 
   /* ── 기존 JSON 불러오기 (id 중복 제거) ── */

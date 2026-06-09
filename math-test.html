@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🧮 수학 레벨 진단</title>
     <link rel="stylesheet" href="puzzle.css">
-    <link rel="stylesheet" href="math.css?v=3">
+    <link rel="stylesheet" href="math.css?v=4">
 </head>
 <body>
     <h1 class="page-title">🧮 수학 레벨 진단</h1>
@@ -33,6 +33,11 @@
                 <button type="button" class="sem-btn" data-sem="2">2학기</button>
             </div>
             <p class="level-hint">고른 학년·학기까지 <b>차곡차곡 누적</b>해서 나와요. (예: 4학년 · 1학기 → 1학년 1학기부터 4학년 1학기까지 ✨)</p>
+            <div class="row unit-row">
+                <span class="control-label">단원 (선택)</span>
+                <div id="unitButtons" class="unit-buttons"></div>
+            </div>
+            <p class="level-hint">한 단원만 콕 고르면 <b>그 단원만</b> 평가하고, 끝나면 세부 유형별로 어디가 약한지 알려줘요 🎯 (여러 개 골라도 돼요!)</p>
             <p class="level-summary" id="levelSummary"></p>
             <div class="row">
                 <span class="control-label">문제 수</span>
@@ -67,7 +72,8 @@
 
     <p class="page-subtitle home-link"><a href="index.html">🏠 놀이터 입구로 돌아가기</a></p>
 
-    <script src="math-diagnostic.js?v=4"></script>
+    <script src="question-bank.js?v=1"></script>
+    <script src="math-diagnostic.js?v=5"></script>
     <script>
         MathDiagnostic.init({
             startEl:        document.getElementById('start'),
@@ -76,6 +82,7 @@
             gradeButtons:   document.querySelectorAll('.grade-btn'),
             semButtons:     document.querySelectorAll('.sem-btn'),
             levelSummaryEl: document.getElementById('levelSummary'),
+            unitButtonsEl:  document.getElementById('unitButtons'),
             importInput:    document.getElementById('importInput'),
             startBtn:     document.getElementById('startBtn'),
             quizEl:       document.getElementById('quiz'),

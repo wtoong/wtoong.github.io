@@ -1,0 +1,12 @@
+{
+  "_meta": { "description": "문제 은행 샤드 — 4학년 2학기", "grade": 4, "semester": 2 },
+  "questions": [
+    {"id": "q-0078", "grade": 4, "unitId": "4-7", "skillId": "4-7-a", "difficulty": 2, "type": "mc", "prompt": "2/5 + 1/5 = ?", "choices": ["3/5", "3/10", "2/5", "1/5"], "answer": "3/5"},
+    {"id": "q-0079", "grade": 4, "unitId": "4-7", "skillId": "4-7-a", "difficulty": 2, "type": "mc", "prompt": "4/7 - 2/7 = ?", "choices": ["2/7", "6/7", "2/14", "2/0"], "answer": "2/7"},
+    {"id": "q-0080", "grade": 4, "unitId": "4-7", "skillId": "4-7-a", "difficulty": 2, "type": "mc", "prompt": "3/8 + 4/8 = ?", "choices": ["7/8", "7/16", "1/8", "12/8"], "answer": "7/8"},
+    {"id": "q-0081", "grade": 4, "unitId": "4-7", "skillId": "4-7-a", "difficulty": 2, "type": "mc", "prompt": "5/6 - 1/6 = ?", "choices": ["4/6", "6/6", "4/12", "4/0"], "answer": "4/6"},
+    {"id": "q-0082", "grade": 4, "unitId": "4-7", "skillId": "4-7-a", "difficulty": 1, "type": "numeric", "prompt": "대분수 1과 2/5 에서 자연수 부분은 얼마일까요?", "answer": 1},
+    {"id": "q-0084", "grade": 4, "unitId": "4-8", "skillId": "4-8-a", "difficulty": 2, "type": "numeric", "prompt": "삼각형 세 각의 크기의 합은 몇 도일까요?", "answer": 180},
+    {"id": "q-0085", "grade": 4, "unitId": "4-8", "skillId": "4-8-a", "difficulty": 3, "type": "numeric", "prompt": "한 각이 70도, 다른 한 각이 60도인 삼각형의 나머지 한 각은 몇 도일까요?", "answer": 50}
+  ]
+}

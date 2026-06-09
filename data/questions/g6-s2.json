@@ -1,0 +1,15 @@
+{
+  "_meta": { "description": "문제 은행 샤드 — 6학년 2학기", "grade": 6, "semester": 2 },
+  "questions": [
+    {"id": "q-0118", "grade": 6, "unitId": "6-3", "skillId": "6-3-a", "difficulty": 2, "type": "numeric", "prompt": "비 2 : 5 에서 후항은 얼마일까요?", "answer": 5},
+    {"id": "q-0119", "grade": 6, "unitId": "6-3", "skillId": "6-3-a", "difficulty": 3, "type": "mc", "prompt": "다음 중 3 : 4 와 비율이 같은 것은?", "choices": ["6:8", "4:3", "3:8", "6:4"], "answer": "6:8"},
+    {"id": "q-0120", "grade": 6, "unitId": "6-3", "skillId": "6-3-b", "difficulty": 2, "type": "numeric", "prompt": "0.6을 백분율로 나타내면 몇 %일까요?", "answer": 60},
+    {"id": "q-0121", "grade": 6, "unitId": "6-3", "skillId": "6-3-b", "difficulty": 3, "type": "numeric", "prompt": "비율 3/4 을 백분율로 나타내면 몇 %일까요?", "answer": 75},
+    {"id": "q-0122", "grade": 6, "unitId": "6-3", "skillId": "6-3-b", "difficulty": 3, "type": "numeric", "prompt": "전체 20명 중 5명이 안경을 썼어요. 안경 쓴 학생의 비율은 몇 %일까요?", "answer": 25},
+    {"id": "q-0123", "grade": 6, "unitId": "6-4", "skillId": "6-4-a", "difficulty": 1, "type": "numeric", "prompt": "반지름이 5cm인 원의 지름은 몇 cm일까요?", "answer": 10},
+    {"id": "q-0124", "grade": 6, "unitId": "6-4", "skillId": "6-4-a", "difficulty": 1, "type": "numeric", "prompt": "지름이 8cm인 원의 반지름은 몇 cm일까요?", "answer": 4},
+    {"id": "q-0125", "grade": 6, "unitId": "6-4", "skillId": "6-4-a", "difficulty": 3, "type": "numeric", "prompt": "원주율을 3.14로 할 때, 지름 10cm인 원의 둘레는 몇 cm일까요?", "answer": 31.4, "tolerance": 0.01},
+    {"id": "q-0126", "grade": 6, "unitId": "6-4", "skillId": "6-4-b", "difficulty": 2, "type": "numeric", "prompt": "원주율을 3으로 할 때, 반지름 3cm인 원의 넓이는 몇 cm²일까요?", "answer": 27},
+    {"id": "q-0127", "grade": 6, "unitId": "6-4", "skillId": "6-4-b", "difficulty": 3, "type": "numeric", "prompt": "원주율을 3.14로 할 때, 반지름 4cm인 원의 넓이는 몇 cm²일까요?", "answer": 50.24, "tolerance": 0.01}
+  ]
+}

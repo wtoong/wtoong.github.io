@@ -1,0 +1,15 @@
+{
+  "_meta": { "description": "문제 은행 샤드 — 6학년 1학기", "grade": 6, "semester": 1 },
+  "questions": [
+    {"id": "q-0108", "grade": 6, "unitId": "6-1", "skillId": "6-1-a", "difficulty": 2, "type": "numeric", "prompt": "1/2 ÷ 1/4 = ?", "answer": 2},
+    {"id": "q-0109", "grade": 6, "unitId": "6-1", "skillId": "6-1-a", "difficulty": 3, "type": "numeric", "prompt": "3/4 ÷ 1/4 = ?", "answer": 3},
+    {"id": "q-0110", "grade": 6, "unitId": "6-1", "skillId": "6-1-a", "difficulty": 2, "type": "numeric", "prompt": "2/3 ÷ 1/3 = ?", "answer": 2},
+    {"id": "q-0111", "grade": 6, "unitId": "6-1", "skillId": "6-1-a", "difficulty": 2, "type": "numeric", "prompt": "4/5 ÷ 2/5 = ?", "answer": 2},
+    {"id": "q-0112", "grade": 6, "unitId": "6-1", "skillId": "6-1-a", "difficulty": 2, "type": "numeric", "prompt": "6/7 ÷ 3/7 = ?", "answer": 2},
+    {"id": "q-0113", "grade": 6, "unitId": "6-2", "skillId": "6-2-a", "difficulty": 2, "type": "numeric", "prompt": "4.8 ÷ 2 = ?", "answer": 2.4, "tolerance": 0.001},
+    {"id": "q-0114", "grade": 6, "unitId": "6-2", "skillId": "6-2-a", "difficulty": 2, "type": "numeric", "prompt": "6.4 ÷ 4 = ?", "answer": 1.6, "tolerance": 0.001},
+    {"id": "q-0115", "grade": 6, "unitId": "6-2", "skillId": "6-2-a", "difficulty": 3, "type": "numeric", "prompt": "7.5 ÷ 2.5 = ?", "answer": 3},
+    {"id": "q-0116", "grade": 6, "unitId": "6-2", "skillId": "6-2-a", "difficulty": 3, "type": "numeric", "prompt": "9.6 ÷ 0.8 = ?", "answer": 12},
+    {"id": "q-0117", "grade": 6, "unitId": "6-2", "skillId": "6-2-a", "difficulty": 2, "type": "numeric", "prompt": "3.6 ÷ 3 = ?", "answer": 1.2, "tolerance": 0.001}
+  ]
+}
