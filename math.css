@@ -306,6 +306,64 @@
 }
 .home-link a:hover { text-decoration: underline; }
 
+/* 단원 선택 칩 (학년·학기 안에서 단원 하나만 콕 골라 평가) */
+.unit-row { align-items: flex-start; }
+.unit-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+.unit-btn {
+    padding: 8px 14px;
+    font-size: 0.95rem;
+    background: #eef6ff;
+    color: #6f9ad0;
+    box-shadow: 0 4px 0 #d3e3f5;
+}
+.unit-btn:hover {
+    background: #dceaff;
+    color: #4f80c0;
+    box-shadow: 0 6px 0 #d3e3f5;
+}
+.unit-btn.active {
+    background: var(--candy-sky);
+    color: #fff;
+    box-shadow: 0 5px 0 #5f9ad8;
+    transform: translateY(-2px);
+}
+.unit-btn.active:hover { background: #a8d2ff; box-shadow: 0 7px 0 #5f9ad8; }
+
+/* 세부 유형별 정답률 (단원별 평가 결과) */
+.skill-table {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.skill-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 14px;
+    border-radius: 14px;
+    background: #f0fbf6;
+    border: 2px dashed #b6e6d3;
+}
+.skill-row.mid { background: #fff8e8; border-color: #f3dca0; }
+.skill-row.low { background: #fff0f3; border-color: #f5c2cf; }
+.skill-name {
+    font-family: 'Jua', sans-serif;
+    font-size: 0.98rem;
+    color: var(--ink);
+}
+.skill-pct {
+    font-family: 'Gaegu', sans-serif;
+    font-size: 0.95rem;
+    color: #6a6a6a;
+    flex-shrink: 0;
+}
+
 @media (max-width: 480px) {
     .q-prompt { font-size: 1.25rem; }
     .bar-pct { width: 78px; font-size: 0.78rem; }

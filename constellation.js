@@ -6,9 +6,9 @@
 (function () {
     'use strict';
 
-    const QUESTIONS_URL     = 'data/math-questions.json';
     const CURRICULUM_URL    = 'data/math-curriculum.json';
     const CONSTELLATIONS_URL = 'data/constellations.json';
+    // 문항은 question-bank.js(QuestionBank)가 단원별 샤드에서 필요할 때만 불러온다.
 
     const STORE_KEY = 'constellation-progress-v1';
     const QUESTIONS_PER_PLAY = 5;   // 한 단원당 출제 수 (문제가 적으면 있는 만큼)
@@ -59,7 +59,7 @@
         } = opts;
 
         // ── 데이터 캐시 ──────────────────────────────────────────
-        let bankCache = null;          // 문제 은행
+        let manifestLoaded = false;    // 문제 은행 매니페스트 로드 여부
         let curriculumCache = null;    // 교육과정 구조
         let constellationsCache = null; // 별자리 도형
         let unitNameMap = {};          // unitId -> 단원 이름
@@ -87,15 +87,17 @@
 
         // ── 데이터 로드 ──────────────────────────────────────────
         async function loadData() {
-            if (bankCache && curriculumCache && constellationsCache) return true;
+            if (curriculumCache && constellationsCache && manifestLoaded) return true;
             try {
-                const [qRes, cRes, sRes] = await Promise.all([
-                    fetch(QUESTIONS_URL), fetch(CURRICULUM_URL), fetch(CONSTELLATIONS_URL),
+                QuestionBank.basePath = 'data/questions/';
+                const [cRes, sRes] = await Promise.all([
+                    fetch(CURRICULUM_URL), fetch(CONSTELLATIONS_URL),
                 ]);
-                if (!qRes.ok || !cRes.ok || !sRes.ok) return false;
-                bankCache = await qRes.json();
+                if (!cRes.ok || !sRes.ok) return false;
                 curriculumCache = await cRes.json();
                 constellationsCache = await sRes.json();
+                await QuestionBank.loadManifest();
+                manifestLoaded = true;
                 buildMaps();
                 return true;
             } catch (e) {
@@ -109,10 +111,6 @@
                     unitNameMap[u.unitId] = u.unitName;
                     unitGradeMap[u.unitId] = g.grade;
                 });
-            });
-            (bankCache.questions || []).forEach(q => {
-                if (unitGradeMap[q.unitId] == null) unitGradeMap[q.unitId] = q.grade;
-                if (unitNameMap[q.unitId] == null)  unitNameMap[q.unitId] = q.unitId;
             });
         }
 
@@ -271,8 +269,10 @@
         }
 
         // ── 단원 문제 시작 ───────────────────────────────────────
-        function startUnit(node) {
-            const pool = (bankCache.questions || []).filter(q => q.unitId === node.unitId);
+        async function startUnit(node) {
+            let pool = [];
+            try { pool = await QuestionBank.loadByUnits([node.unitId]); }
+            catch (e) { pool = []; }
             if (!pool.length) {
                 messageEl.textContent = '';
                 renderStatus(unitsForSemester(currentC.grade, currentC.semester));

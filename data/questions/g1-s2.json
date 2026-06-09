@@ -1,0 +1,14 @@
+{
+  "_meta": { "description": "문제 은행 샤드 — 1학년 2학기", "grade": 1, "semester": 2 },
+  "questions": [
+    {"id": "q-0012", "grade": 1, "unitId": "1-3", "skillId": "1-3-a", "difficulty": 2, "type": "numeric", "prompt": "10개씩 묶음 4개와 낱개 3개는 모두 얼마일까요?", "answer": 43},
+    {"id": "q-0013", "grade": 1, "unitId": "1-3", "skillId": "1-3-a", "difficulty": 2, "type": "mc", "prompt": "67에서 십의 자리 숫자는?", "choices": ["6", "7", "67", "76"], "answer": "6"},
+    {"id": "q-0014", "grade": 1, "unitId": "1-3", "skillId": "1-3-a", "difficulty": 1, "type": "numeric", "prompt": "10개씩 묶음 5개는 얼마일까요?", "answer": 50},
+    {"id": "q-0015", "grade": 1, "unitId": "1-3", "skillId": "1-3-b", "difficulty": 2, "type": "mc", "prompt": "다음 중 가장 큰 수는?", "choices": ["48", "71", "69", "55"], "answer": "71"},
+    {"id": "q-0016", "grade": 1, "unitId": "1-3", "skillId": "1-3-b", "difficulty": 2, "type": "numeric", "prompt": "79보다 1 큰 수는?", "answer": 80},
+    {"id": "q-0017", "grade": 1, "unitId": "1-4", "skillId": "1-4-a", "difficulty": 1, "type": "mc", "prompt": "다음 중 동그라미 모양은?", "choices": ["▲", "●", "■", "★"], "answer": "●"},
+    {"id": "q-0018", "grade": 1, "unitId": "1-4", "skillId": "1-4-a", "difficulty": 2, "type": "numeric", "prompt": "네모(사각형)는 변이 모두 몇 개일까요?", "answer": 4},
+    {"id": "q-0019", "grade": 1, "unitId": "1-4", "skillId": "1-4-a", "difficulty": 2, "type": "numeric", "prompt": "세모(삼각형)는 꼭짓점이 모두 몇 개일까요?", "answer": 3},
+    {"id": "q-0020", "grade": 1, "unitId": "1-4", "skillId": "1-4-a", "difficulty": 1, "type": "mc", "prompt": "다음 중 세모 모양은?", "choices": ["●", "▲", "■", "♥"], "answer": "▲"}
+  ]
+}

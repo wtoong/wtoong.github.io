@@ -1,0 +1,132 @@
+{
+  "_meta": {
+    "description": "문제 은행 샤드 목록 (학년·학기별). question-bank.js가 이 목록을 읽어 필요한 조각만 불러온다.",
+    "updated": "2026-06-09"
+  },
+  "shards": [
+    {
+      "file": "g1-s1.json",
+      "grade": 1,
+      "semester": 1,
+      "units": [
+        "1-1",
+        "1-2"
+      ],
+      "count": 11
+    },
+    {
+      "file": "g1-s2.json",
+      "grade": 1,
+      "semester": 2,
+      "units": [
+        "1-3",
+        "1-4"
+      ],
+      "count": 9
+    },
+    {
+      "file": "g2-s1.json",
+      "grade": 2,
+      "semester": 1,
+      "units": [
+        "2-1",
+        "2-2"
+      ],
+      "count": 12
+    },
+    {
+      "file": "g2-s2.json",
+      "grade": 2,
+      "semester": 2,
+      "units": [
+        "2-3",
+        "2-4"
+      ],
+      "count": 10
+    },
+    {
+      "file": "g3-s1.json",
+      "grade": 3,
+      "semester": 1,
+      "units": [
+        "3-1",
+        "3-2"
+      ],
+      "count": 12
+    },
+    {
+      "file": "g3-s2.json",
+      "grade": 3,
+      "semester": 2,
+      "units": [
+        "3-3",
+        "3-4"
+      ],
+      "count": 11
+    },
+    {
+      "file": "g4-s1.json",
+      "grade": 4,
+      "semester": 1,
+      "units": [
+        "4-1",
+        "4-3",
+        "4-2",
+        "4-4",
+        "4-5",
+        "4-6"
+      ],
+      "count": 81
+    },
+    {
+      "file": "g4-s2.json",
+      "grade": 4,
+      "semester": 2,
+      "units": [
+        "4-7",
+        "4-8"
+      ],
+      "count": 7
+    },
+    {
+      "file": "g5-s1.json",
+      "grade": 5,
+      "semester": 1,
+      "units": [
+        "5-1",
+        "5-2"
+      ],
+      "count": 10
+    },
+    {
+      "file": "g5-s2.json",
+      "grade": 5,
+      "semester": 2,
+      "units": [
+        "5-3",
+        "5-4"
+      ],
+      "count": 10
+    },
+    {
+      "file": "g6-s1.json",
+      "grade": 6,
+      "semester": 1,
+      "units": [
+        "6-1",
+        "6-2"
+      ],
+      "count": 10
+    },
+    {
+      "file": "g6-s2.json",
+      "grade": 6,
+      "semester": 2,
+      "units": [
+        "6-3",
+        "6-4"
+      ],
+      "count": 10
+    }
+  ]
+}

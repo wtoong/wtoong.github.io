@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>수학 문제 검증 (단원·세부기능별 점검)</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f1f5f9; min-height: 100vh; color: #1e293b; }
+
+    header { background: #1e293b; color: #fff; padding: 16px 24px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    header h1 { font-size: 1.1rem; font-weight: 700; }
+    header span { font-size: 0.82rem; color: #94a3b8; }
+    header a { color: #93c5fd; font-size: 0.82rem; font-weight: 700; text-decoration: none; }
+
+    .wrap { padding: 20px; max-width: 1100px; margin: 0 auto; }
+
+    .controls { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; }
+    .controls .grp { display: flex; gap: 6px; align-items: center; }
+    .controls .lbl { font-size: 0.78rem; color: #64748b; margin-right: 2px; }
+    .chip { padding: 5px 11px; border: 1px solid #cbd5e1; border-radius: 999px; background: #f8fafc; cursor: pointer; font-size: 0.82rem; }
+    .chip.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+
+    .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 16px; }
+    .scard { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; }
+    .scard .num { font-size: 1.5rem; font-weight: 800; }
+    .scard .cap { font-size: 0.76rem; color: #64748b; margin-top: 2px; }
+    .scard.warn .num { color: #b91c1c; }
+    .scard.ok .num { color: #059669; }
+
+    .warnbox { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 10px; padding: 12px 14px; margin-bottom: 16px; }
+    .warnbox h3 { font-size: 0.86rem; color: #9a3412; margin-bottom: 6px; }
+    .warnbox ul { margin-left: 18px; }
+    .warnbox li { font-size: 0.8rem; color: #7c2d12; line-height: 1.6; }
+    .warnbox.clean { background: #ecfdf5; border-color: #a7f3d0; }
+    .warnbox.clean h3 { color: #047857; }
+
+    .grade-block { margin-bottom: 18px; }
+    .grade-title { font-size: 1rem; font-weight: 800; color: #334155; margin: 6px 0 8px; }
+    .sem-title { font-size: 0.82rem; font-weight: 700; color: #64748b; margin: 6px 0; }
+
+    .unit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
+    .unit-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; }
+    .unit-card.focus { box-shadow: 0 0 0 2px #93c5fd; }
+    .unit-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+    .unit-name { font-size: 0.95rem; font-weight: 700; }
+    .unit-total { font-size: 0.8rem; color: #64748b; }
+    .unit-total b { color: #1e293b; }
+    .diffbar { font-size: 0.72rem; color: #94a3b8; margin-bottom: 8px; }
+
+    .skill-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 5px 9px; border-radius: 7px; margin-bottom: 4px; border: 1px solid transparent; }
+    .skill-row .sname { font-size: 0.82rem; }
+    .skill-row .scount { font-size: 0.78rem; font-weight: 700; flex-shrink: 0; }
+    .skill-row.s0 { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
+    .skill-row.s1 { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+    .skill-row.s2 { background: #ecfdf5; border-color: #a7f3d0; color: #065f46; }
+
+    .legend { font-size: 0.76rem; color: #64748b; margin-bottom: 12px; }
+    .legend .b { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 3px 0 10px; vertical-align: middle; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🔍 수학 문제 검증</h1>
+  <span>단원·세부기능별 문제 수와 빠진 유형을 한눈에 점검</span>
+  <a href="math-question-builder.html" style="margin-left:auto;">📝 문제 빌더로</a>
+</header>
+
+<div class="wrap">
+  <div class="controls">
+    <div class="grp"><span class="lbl">학년</span><div id="gradeChips"></div></div>
+    <div class="grp"><span class="lbl">학기</span><div id="semChips"></div></div>
+  </div>
+
+  <p class="legend">
+    세부기능 색:
+    <span class="b" style="background:#fecaca"></span>0개(보강 필요)
+    <span class="b" style="background:#fde68a"></span>1개(부족)
+    <span class="b" style="background:#a7f3d0"></span>2개+(충분)
+  </p>
+
+  <div class="summary" id="summary"></div>
+  <div id="warnings"></div>
+  <div id="report"></div>
+</div>
+
+<script src="../question-bank.js?v=1"></script>
+<script>
+  QuestionBank.basePath = 'questions/';   // 이 페이지는 data/ 안에 있음
+  let curriculum = null, questions = [];
+  let fGrade = 4, fSem = 1;   // 기본 초점: 4학년 1학기
+
+  Promise.all([
+    fetch('math-curriculum.json').then(r => r.json()),
+    QuestionBank.loadAll(),
+  ]).then(([curr, qs]) => {
+    curriculum = curr; questions = qs;
+    initChips();
+    render();
+  }).catch(e => {
+    document.getElementById('report').innerHTML =
+      '<p style="color:#b91c1c">데이터를 불러오지 못했어요: ' + e.message + '</p>';
+  });
+
+  function semOf(unitId) {
+    for (const g of curriculum.grades) {
+      const u = g.units.find(x => x.unitId === unitId);
+      if (u) return u.semester || (parseInt(unitId.split('-')[1], 10) <= 2 ? 1 : 2);
+    }
+    return parseInt(unitId.split('-')[1], 10) <= 2 ? 1 : 2;
+  }
+
+  function initChips() {
+    const gc = document.getElementById('gradeChips');
+    gc.innerHTML = `<span class="chip" data-g="0">전체</span>` +
+      curriculum.grades.map(g => `<span class="chip" data-g="${g.grade}">${g.grade}학년</span>`).join('');
+    const sc = document.getElementById('semChips');
+    sc.innerHTML = `<span class="chip" data-s="0">전체</span>` +
+      `<span class="chip" data-s="1">1학기</span><span class="chip" data-s="2">2학기</span>`;
+    gc.querySelectorAll('.chip').forEach(c => c.onclick = () => { fGrade = +c.dataset.g; render(); });
+    sc.querySelectorAll('.chip').forEach(c => c.onclick = () => { fSem = +c.dataset.s; render(); });
+  }
+  function syncChips() {
+    document.querySelectorAll('#gradeChips .chip').forEach(c =>
+      c.classList.toggle('active', +c.dataset.g === fGrade));
+    document.querySelectorAll('#semChips .chip').forEach(c =>
+      c.classList.toggle('active', +c.dataset.s === fSem));
+  }
+
+  function render() {
+    syncChips();
+    // ── 집계 ──
+    const unitCount = {}, skillCount = {}, skillDiff = {};
+    const validUnits = new Set(), validSkills = new Set();
+    curriculum.grades.forEach(g => g.units.forEach(u => {
+      validUnits.add(u.unitId);
+      (u.skills || []).forEach(s => validSkills.add(s.skillId));
+    }));
+    questions.forEach(q => {
+      unitCount[q.unitId] = (unitCount[q.unitId] || 0) + 1;
+      skillCount[q.skillId] = (skillCount[q.skillId] || 0) + 1;
+      (skillDiff[q.skillId] = skillDiff[q.skillId] || { 1: 0, 2: 0, 3: 0 })[q.difficulty]++;
+    });
+
+    // ── 요약 ──
+    let totalSkills = 0, emptySkills = 0, emptyUnits = 0, totalUnits = 0;
+    curriculum.grades.forEach(g => g.units.forEach(u => {
+      totalUnits++;
+      if (!unitCount[u.unitId]) emptyUnits++;
+      (u.skills || []).forEach(s => {
+        totalSkills++;
+        if (!skillCount[s.skillId]) emptySkills++;
+      });
+    }));
+    const orphans = questions.filter(q => !validUnits.has(q.unitId) || !validSkills.has(q.skillId));
+
+    document.getElementById('summary').innerHTML = [
+      `<div class="scard"><div class="num">${questions.length}</div><div class="cap">전체 문항</div></div>`,
+      `<div class="scard"><div class="num">${totalUnits}</div><div class="cap">전체 단원</div></div>`,
+      `<div class="scard ${emptyUnits ? 'warn' : 'ok'}"><div class="num">${emptyUnits}</div><div class="cap">문항 0개 단원</div></div>`,
+      `<div class="scard ${emptySkills ? 'warn' : 'ok'}"><div class="num">${emptySkills}</div><div class="cap">문항 0개 세부기능</div></div>`,
+      `<div class="scard ${orphans.length ? 'warn' : 'ok'}"><div class="num">${orphans.length}</div><div class="cap">커리큘럼 밖 문항(orphan)</div></div>`,
+    ].join('');
+
+    // ── 경고 ──
+    const wlines = [];
+    if (orphans.length) {
+      wlines.push('<b>커리큘럼에 없는 unitId/skillId 문항:</b>');
+      orphans.slice(0, 30).forEach(q =>
+        wlines.push(`· ${q.id} — unit ${q.unitId} / skill ${q.skillId}`));
+      if (orphans.length > 30) wlines.push(`· … 외 ${orphans.length - 30}개`);
+    }
+    const emptyList = [];
+    curriculum.grades.forEach(g => g.units.forEach(u => (u.skills || []).forEach(s => {
+      if (!skillCount[s.skillId]) emptyList.push(`${g.grade}학년 · ${u.unitName} · ${s.skillName} (${s.skillId})`);
+    })));
+    const wb = document.getElementById('warnings');
+    if (!orphans.length && !emptyList.length) {
+      wb.innerHTML = `<div class="warnbox clean"><h3>✅ 빠진 문제 유형이 없어요!</h3>
+        <p style="font-size:0.8rem;color:#065f46">모든 단원의 모든 세부기능에 문제가 1개 이상 있어요.</p></div>`;
+    } else {
+      let html = '<div class="warnbox"><h3>⚠️ 점검이 필요해요</h3><ul>';
+      if (emptyList.length) {
+        html += `<li><b>문항이 0개인 세부기능 (${emptyList.length}개):</b><ul>` +
+          emptyList.map(t => `<li>${t}</li>`).join('') + '</ul></li>';
+      }
+      if (wlines.length) html += `<li>${wlines.join('<br>')}</li>`;
+      html += '</ul></div>';
+      wb.innerHTML = html;
+    }
+
+    // ── 학년→학기→단원→세부기능 ──
+    const out = [];
+    curriculum.grades.forEach(g => {
+      if (fGrade && g.grade !== fGrade) return;
+      const sems = [1, 2].filter(s => !fSem || s === fSem);
+      const semBlocks = [];
+      sems.forEach(sem => {
+        const units = g.units.filter(u => semOf(u.unitId) === sem);
+        if (!units.length) return;
+        const cards = units.map(u => {
+          const total = unitCount[u.unitId] || 0;
+          const isFocus = g.grade === 4 && sem === 1;
+          const skills = (u.skills || []).map(s => {
+            const n = skillCount[s.skillId] || 0;
+            const cls = n === 0 ? 's0' : (n === 1 ? 's1' : 's2');
+            return `<div class="skill-row ${cls}"><span class="sname">${s.skillName}</span><span class="scount">${n}개</span></div>`;
+          }).join('');
+          const d = {1:0,2:0,3:0};
+          (u.skills || []).forEach(s => { const sd = skillDiff[s.skillId]; if (sd) { d[1]+=sd[1]; d[2]+=sd[2]; d[3]+=sd[3]; } });
+          return `<div class="unit-card ${isFocus ? 'focus' : ''}">
+            <div class="unit-head"><span class="unit-name">${u.unitName}</span>
+              <span class="unit-total">문항 <b>${total}</b></span></div>
+            <div class="diffbar">난이도 — 쉬움 ${d[1]} · 보통 ${d[2]} · 어려움 ${d[3]}</div>
+            ${skills || '<div class="diffbar">세부기능 정의 없음</div>'}
+          </div>`;
+        }).join('');
+        semBlocks.push(`<div class="sem-title">${sem}학기</div><div class="unit-grid">${cards}</div>`);
+      });
+      if (semBlocks.length) {
+        out.push(`<div class="grade-block"><div class="grade-title">${g.grade}학년</div>${semBlocks.join('')}</div>`);
+      }
+    });
+    document.getElementById('report').innerHTML = out.join('') ||
+      '<p style="color:#64748b">선택한 범위에 단원이 없어요.</p>';
+  }
+</script>
+</body>
+</html>

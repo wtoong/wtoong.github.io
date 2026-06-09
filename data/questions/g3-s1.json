@@ -1,0 +1,17 @@
+{
+  "_meta": { "description": "문제 은행 샤드 — 3학년 1학기", "grade": 3, "semester": 1 },
+  "questions": [
+    {"id": "q-0043", "grade": 3, "unitId": "3-1", "skillId": "3-1-a", "difficulty": 2, "type": "numeric", "prompt": "245 + 137 = ?", "answer": 382},
+    {"id": "q-0044", "grade": 3, "unitId": "3-1", "skillId": "3-1-a", "difficulty": 3, "type": "numeric", "prompt": "368 + 254 = ?", "answer": 622},
+    {"id": "q-0045", "grade": 3, "unitId": "3-1", "skillId": "3-1-a", "difficulty": 2, "type": "mc", "prompt": "523 + 199 = ?", "choices": ["712", "722", "721", "732"], "answer": "722"},
+    {"id": "q-0046", "grade": 3, "unitId": "3-1", "skillId": "3-1-b", "difficulty": 3, "type": "numeric", "prompt": "504 - 268 = ?", "answer": 236},
+    {"id": "q-0047", "grade": 3, "unitId": "3-1", "skillId": "3-1-b", "difficulty": 3, "type": "numeric", "prompt": "731 - 456 = ?", "answer": 275},
+    {"id": "q-0048", "grade": 3, "unitId": "3-1", "skillId": "3-1-b", "difficulty": 2, "type": "mc", "prompt": "600 - 145 = ?", "choices": ["455", "465", "445", "555"], "answer": "455"},
+    {"id": "q-0049", "grade": 3, "unitId": "3-2", "skillId": "3-2-a", "difficulty": 2, "type": "numeric", "prompt": "12 ÷ 3 = ?", "answer": 4},
+    {"id": "q-0050", "grade": 3, "unitId": "3-2", "skillId": "3-2-a", "difficulty": 2, "type": "numeric", "prompt": "20 ÷ 4 = ?", "answer": 5},
+    {"id": "q-0051", "grade": 3, "unitId": "3-2", "skillId": "3-2-a", "difficulty": 2, "type": "numeric", "prompt": "사탕 15개를 5명에게 똑같이 나누면 한 명당 몇 개일까요?", "answer": 3},
+    {"id": "q-0052", "grade": 3, "unitId": "3-2", "skillId": "3-2-b", "difficulty": 2, "type": "mc", "prompt": "35 ÷ 7 = ?", "choices": ["4", "5", "6", "7"], "answer": "5"},
+    {"id": "q-0053", "grade": 3, "unitId": "3-2", "skillId": "3-2-b", "difficulty": 2, "type": "numeric", "prompt": "4 × ☐ = 24 일 때, ☐에 알맞은 수는?", "answer": 6},
+    {"id": "q-0054", "grade": 3, "unitId": "3-2", "skillId": "3-2-b", "difficulty": 2, "type": "numeric", "prompt": "42 ÷ 6 = ?", "answer": 7}
+  ]
+}

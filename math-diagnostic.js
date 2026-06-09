@@ -8,8 +8,8 @@
 (function () {
     'use strict';
 
-    const QUESTIONS_URL  = 'data/math-questions.json';
     const CURRICULUM_URL = 'data/math-curriculum.json';
+    // 문제 은행은 question-bank.js(QuestionBank)가 (학년·학기)별 샤드에서 필요한 만큼만 불러온다.
 
     const WEIGHT_K = 3;        // 약점 단원 가중치 세기: w = 1 + K * 오답률
     const RECENCY_DECAY = 0.6; // 최근 학기일수록 ↑ : 한 학기 멀어질 때마다 가중치 ×0.6
@@ -45,17 +45,19 @@
     function init(opts) {
         const {
             startEl, nameInput, countButtons, gradeButtons, semButtons,
-            levelSummaryEl, importInput, startBtn,
+            levelSummaryEl, unitButtonsEl, importInput, startBtn,
             quizEl, progressEl, questionEl,
             reportEl, downloadBtn, restartBtn, messageEl,
         } = opts;
 
         // ── 데이터 캐시 ──────────────────────────────────────────
-        let bankCache = null;          // 문제 은행
+        let bankCache = { questions: [] }; // 이번 회차에 불러온 문항(샤드에서 채움)
+        let manifestLoaded = false;        // QuestionBank 매니페스트 로드 여부
         let curriculumCache = null;    // 교육과정 구조
         let unitNameMap = {};          // unitId -> 단원 이름
         let unitGradeMap = {};         // unitId -> 학년
         let unitSemesterMap = {};      // unitId -> 학기(1|2)
+        let skillNameMap = {};         // skillId -> 세부 기능 이름
 
         // ── 진행 상태 ────────────────────────────────────────────
         const params = new URLSearchParams(location.search);
@@ -67,6 +69,9 @@
         const urlSem   = parseInt(params.get('sem'), 10);
         let targetGrade = [1, 2, 3, 4, 5, 6].includes(urlGrade) ? urlGrade : 6;
         let targetSem   = [1, 2].includes(urlSem) ? urlSem : 2;
+        // ?unit=4-3 또는 ?unit=4-3,4-4 로 특정 단원만 평가(단원별 세분화). 비어 있으면 누적.
+        const urlUnit = (params.get('unit') || '').trim();
+        let filterUnits = new Set(urlUnit ? urlUnit.split(',').map(s => s.trim()).filter(Boolean) : []);
 
         let prevReport = null;       // 불러온 이전 레포트(재평가용)
         let quizList = [];           // 이번 회차 출제 문제
@@ -75,15 +80,17 @@
         let currentReport = null;    // 내보낼 누적 레포트
 
         // ── 데이터 로드 ──────────────────────────────────────────
+        //   커리큘럼 + 문제 은행 매니페스트만 먼저 받는다(전 문항 X).
+        //   실제 문항은 출제 범위가 정해진 뒤 필요한 샤드만 불러온다(startQuiz).
         async function loadData() {
-            if (bankCache && curriculumCache) return true;
+            if (curriculumCache && manifestLoaded) return true;
             try {
-                const [qRes, cRes] = await Promise.all([
-                    fetch(QUESTIONS_URL), fetch(CURRICULUM_URL),
-                ]);
-                if (!qRes.ok || !cRes.ok) return false;
-                bankCache = await qRes.json();
+                QuestionBank.basePath = 'data/questions/';
+                const cRes = await fetch(CURRICULUM_URL);
+                if (!cRes.ok) return false;
                 curriculumCache = await cRes.json();
+                await QuestionBank.loadManifest();
+                manifestLoaded = true;
                 buildMaps();
                 return true;
             } catch (e) {
@@ -97,13 +104,8 @@
                     unitNameMap[u.unitId] = u.unitName;
                     unitGradeMap[u.unitId] = g.grade;
                     unitSemesterMap[u.unitId] = u.semester || deriveSemester(u.unitId);
+                    (u.skills || []).forEach(s => { skillNameMap[s.skillId] = s.skillName; });
                 });
-            });
-            // 문제에만 있는 단원도 보강 (커리큘럼 누락 대비)
-            (bankCache.questions || []).forEach(q => {
-                if (unitGradeMap[q.unitId] == null) unitGradeMap[q.unitId] = q.grade;
-                if (unitNameMap[q.unitId] == null)  unitNameMap[q.unitId] = q.unitId;
-                if (unitSemesterMap[q.unitId] == null) unitSemesterMap[q.unitId] = deriveSemester(q.unitId);
             });
         }
 
@@ -117,6 +119,16 @@
         //   · 단, 범위 안 각 학기는 최소 MIN_PER_LEVEL개 보장(1학년 1학기가 0개로 묻히지 않게).
         //   · 약점 단원 가중치(1 + K×오답률)는 그 위에 곱해서 함께 반영.
         function selectQuestions(count, weights, maxRank) {
+            // 단원 필터가 켜져 있으면 누적 대신 그 단원만 균등하게 출제(단원별 세분화 평가).
+            if (filterUnits.size) {
+                const all = (bankCache.questions || []).filter(q => filterUnits.has(q.unitId));
+                const chosen = shuffle(all).slice(0, count);
+                let note = '';
+                if (!all.length) note = '이 단원에는 아직 문제가 없어요 😢 선생님께 알려주세요!';
+                else if (chosen.length < count)
+                    note = `이 단원 문제가 ${count}개보다 적어서 ${chosen.length}개만 풀어요! 😊`;
+                return { questions: shuffle(chosen), note };
+            }
             // 선택 범위 안의 문제만 (1학년 1학기 ~ 목표 학년·학기)
             const all = (bankCache.questions || []).filter(q => questionRank(q) <= maxRank);
             const pool = {};            // unitId -> 남은 문제(셔플됨)
@@ -205,13 +217,19 @@
 
         // ── 집계 ─────────────────────────────────────────────────
         function aggregate(list) {
-            const perUnit = {}, perGrade = {};
+            const perUnit = {}, perGrade = {}, perSkill = {};
             list.forEach(a => {
                 const u = perUnit[a.unitId] = perUnit[a.unitId] ||
                     { asked: 0, correct: 0, unitName: unitNameMap[a.unitId] || a.unitId };
                 u.asked++; if (a.correct) u.correct++;
                 const g = perGrade[a.grade] = perGrade[a.grade] || { asked: 0, correct: 0 };
                 g.asked++; if (a.correct) g.correct++;
+                if (a.skillId) {
+                    const s = perSkill[a.skillId] = perSkill[a.skillId] ||
+                        { asked: 0, correct: 0, unitId: a.unitId,
+                          skillName: skillNameMap[a.skillId] || a.skillId };
+                    s.asked++; if (a.correct) s.correct++;
+                }
             });
             Object.values(perUnit).forEach(u => {
                 u.errorRate = u.asked ? (u.asked - u.correct) / u.asked : 0;
@@ -219,10 +237,13 @@
             Object.values(perGrade).forEach(g => {
                 g.accuracy = g.asked ? g.correct / g.asked : 0;
             });
+            Object.values(perSkill).forEach(s => {
+                s.accuracy = s.asked ? s.correct / s.asked : 0;
+            });
             const weakUnits = Object.keys(perUnit)
                 .filter(u => perUnit[u].errorRate >= 0.5 && perUnit[u].asked >= 2)
                 .sort((a, b) => perUnit[b].errorRate - perUnit[a].errorRate);
-            return { perUnit, perGrade, weakUnits };
+            return { perUnit, perGrade, perSkill, weakUnits };
         }
 
         // ── 선택 범위 정답률에 따른 한줄평 ───────────────────────
@@ -282,7 +303,7 @@
 
             function finishQuestion(given) {
                 const correct = gradeAnswer(q, given);
-                answers.push({ qId: q.id, unitId: q.unitId, grade: q.grade, given, correct });
+                answers.push({ qId: q.id, unitId: q.unitId, skillId: q.skillId, grade: q.grade, given, correct });
                 answersWrap.querySelectorAll('button, input').forEach(n => n.disabled = true);
                 feedback.textContent = correct
                     ? '정답이에요! 🎉'
@@ -331,16 +352,19 @@
 
         // ── 평가 종료 → 레포트 ───────────────────────────────────
         function finishQuiz() {
-            const { perUnit, perGrade, weakUnits } = aggregate(answers);
+            const { perUnit, perGrade, perSkill, weakUnits } = aggregate(answers);
             const studentLabel = (nameInput.value || '').trim();
             const totalCorrect = answers.filter(a => a.correct).length;
 
             const session = {
                 sessionId: 's-' + Date.now(),
                 date: new Date().toISOString().slice(0, 10),
-                config: { questionCount: quizList.length, targetGrade, targetSem },
+                config: {
+                    questionCount: quizList.length, targetGrade, targetSem,
+                    units: [...filterUnits],
+                },
                 totalCorrect, totalAnswered: answers.length,
-                perUnit, perGrade, weakUnits,
+                perUnit, perGrade, perSkill, weakUnits,
                 answers,
             };
             currentReport = buildReport(prevReport, session, studentLabel);
@@ -360,11 +384,15 @@
 
             const accuracy = session.totalAnswered ? session.totalCorrect / session.totalAnswered : 0;
             const pct = Math.round(accuracy * 100);
-            const rangeLabel = `1학년 1학기 ~ ${session.config.targetGrade}학년 ${session.config.targetSem}학기`;
+            const unitsSel = session.config.units || [];
+            const rangeLabel = unitsSel.length
+                ? unitsSel.map(u => `${unitGradeMap[u] || ''}학년 · ${unitNameMap[u] || u}`).join(', ')
+                : `1학년 1학기 ~ ${session.config.targetGrade}학년 ${session.config.targetSem}학기`;
 
             // 출제 범위 + 정답률 + 한줄평
             const hero = el('div', 'report-hero');
-            hero.appendChild(el('div', 'report-range', `📚 ${rangeLabel} 범위`));
+            hero.appendChild(el('div', 'report-range',
+                unitsSel.length ? `🎯 ${rangeLabel} 단원` : `📚 ${rangeLabel} 범위`));
             hero.appendChild(el('div', 'report-grade', `정답률 ${pct}%`));
             hero.appendChild(el('div', 'report-note', rangeNote(accuracy)));
             hero.appendChild(el('div', 'report-score',
@@ -405,6 +433,22 @@
                 body.appendChild(ul);
             } else {
                 body.appendChild(el('p', 'weak-none', '약한 단원이 거의 없어요! 정말 잘했어요 🌈'));
+            }
+
+            // 세부 유형별 정답률 (단원별 평가일 때 — 어떤 유형이 약한지 콕 집어줌)
+            if (unitsSel.length && session.perSkill && Object.keys(session.perSkill).length) {
+                body.appendChild(el('h3', 'report-h3', '세부 유형별 정답률 🔍'));
+                const sk = el('div', 'skill-table');
+                Object.keys(session.perSkill).forEach(sid => {
+                    const s = session.perSkill[sid];
+                    const spct = Math.round((s.accuracy || 0) * 100);
+                    const cls = spct < 50 ? ' low' : (spct < 70 ? ' mid' : '');
+                    const row = el('div', 'skill-row' + cls);
+                    row.appendChild(el('span', 'skill-name', s.skillName));
+                    row.appendChild(el('span', 'skill-pct', `${spct}% (${s.correct}/${s.asked})`));
+                    sk.appendChild(row);
+                });
+                body.appendChild(sk);
             }
 
             // 누적 안내
@@ -458,9 +502,48 @@
             semButtons.forEach(b =>
                 b.classList.toggle('active', parseInt(b.dataset.sem, 10) === targetSem));
             if (levelSummaryEl) {
-                levelSummaryEl.innerHTML =
-                    `지금 고른 범위: <b>${targetGrade}학년 ${targetSem}학기</b>까지 누적 📚`;
+                levelSummaryEl.innerHTML = filterUnits.size
+                    ? `지금 고른 범위: <b>${[...filterUnits].map(u => unitNameMap[u] || u).join(', ')}</b> 단원만 🎯`
+                    : `지금 고른 범위: <b>${targetGrade}학년 ${targetSem}학기</b>까지 누적 📚`;
             }
+        }
+
+        // 고른 학년·학기의 단원 목록(순서 유지)
+        function unitsForLevel(grade, sem) {
+            const g = (curriculumCache && curriculumCache.grades || []).find(x => x.grade === grade);
+            if (!g) return [];
+            return (g.units || [])
+                .filter(u => (u.semester || deriveSemester(u.unitId)) === sem)
+                .map(u => ({ unitId: u.unitId, unitName: u.unitName }));
+        }
+        // 단원 선택 칩 그리기 ("전체(누적)" + 그 학기 단원들). 다중 선택 가능.
+        function renderUnitButtons() {
+            if (!unitButtonsEl) return;
+            unitButtonsEl.innerHTML = '';
+            if (!curriculumCache) return;
+            const allBtn = el('button', 'unit-btn', '전체(누적)');
+            allBtn.type = 'button';
+            allBtn.addEventListener('click', () => { filterUnits.clear(); syncUnitButtons(); syncLevelButtons(); });
+            unitButtonsEl.appendChild(allBtn);
+            unitsForLevel(targetGrade, targetSem).forEach(u => {
+                const b = el('button', 'unit-btn', u.unitName);
+                b.type = 'button';
+                b.dataset.unit = u.unitId;
+                b.addEventListener('click', () => {
+                    if (filterUnits.has(u.unitId)) filterUnits.delete(u.unitId);
+                    else filterUnits.add(u.unitId);
+                    syncUnitButtons(); syncLevelButtons();
+                });
+                unitButtonsEl.appendChild(b);
+            });
+            syncUnitButtons();
+        }
+        function syncUnitButtons() {
+            if (!unitButtonsEl) return;
+            unitButtonsEl.querySelectorAll('.unit-btn').forEach(b => {
+                if (b.dataset.unit) b.classList.toggle('active', filterUnits.has(b.dataset.unit));
+                else b.classList.toggle('active', filterUnits.size === 0); // "전체(누적)"
+            });
         }
 
         countButtons.forEach(b => b.addEventListener('click', () => {
@@ -469,11 +552,15 @@
         }));
         gradeButtons.forEach(b => b.addEventListener('click', () => {
             targetGrade = parseInt(b.dataset.grade, 10) || 6;
+            filterUnits.clear();      // 학년이 바뀌면 단원 선택은 초기화(다른 단원 목록)
             syncLevelButtons();
+            renderUnitButtons();
         }));
         semButtons.forEach(b => b.addEventListener('click', () => {
             targetSem = parseInt(b.dataset.sem, 10) || 1;
+            filterUnits.clear();
             syncLevelButtons();
+            renderUnitButtons();
         }));
 
         importInput.addEventListener('change', e => {
@@ -494,6 +581,17 @@
                 });
             }
             const maxRank = levelRank(targetGrade, targetSem);
+            // 필요한 샤드만 불러온다: 단원 필터면 그 단원, 아니면 누적 범위.
+            try {
+                bankCache = {
+                    questions: filterUnits.size
+                        ? await QuestionBank.loadByUnits([...filterUnits])
+                        : await QuestionBank.loadByRank(maxRank),
+                };
+            } catch (e) {
+                messageEl.textContent = '문제를 불러오지 못했어요 😢 선생님께 알려주세요!';
+                return;
+            }
             const sel = selectQuestions(questionCount, weights, maxRank);
             if (!sel.questions.length) {
                 messageEl.textContent = sel.note || '이 범위에는 아직 문제가 없어요 😢';
@@ -511,6 +609,8 @@
                 p.set('grade', targetGrade);
                 p.set('sem', targetSem);
                 p.set('count', questionCount);
+                if (filterUnits.size) p.set('unit', [...filterUnits].join(','));
+                else p.delete('unit');
                 history.replaceState(null, '', location.pathname + '?' + p.toString());
             } catch (e) { /* 파일(file://)로 열면 무시 */ }
 
@@ -536,7 +636,18 @@
         syncCountButtons();
         syncLevelButtons();
         downloadBtn.disabled = true;
-        loadData(); // 미리 받아두기 (실패해도 startQuiz에서 재시도)
+        // 미리 받아두기 (실패해도 startQuiz에서 재시도). 받은 뒤 단원 칩을 그린다.
+        loadData().then(ok => {
+            if (!ok) return;
+            // ?unit= 으로 깊은링크 진입 시, 그 단원의 학년·학기에 맞춰 화면을 정렬
+            if (filterUnits.size) {
+                const u0 = [...filterUnits][0];
+                if (unitGradeMap[u0]) targetGrade = unitGradeMap[u0];
+                if (unitSemesterMap[u0]) targetSem = unitSemesterMap[u0];
+                syncLevelButtons();
+            }
+            renderUnitButtons();
+        });
     }
 
     window.MathDiagnostic = { init };

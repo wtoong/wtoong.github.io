@@ -1,0 +1,15 @@
+{
+  "_meta": { "description": "문제 은행 샤드 — 2학년 2학기", "grade": 2, "semester": 2 },
+  "questions": [
+    {"id": "q-0033", "grade": 2, "unitId": "2-3", "skillId": "2-3-b", "difficulty": 2, "type": "numeric", "prompt": "3 × 4 = ?", "answer": 12},
+    {"id": "q-0034", "grade": 2, "unitId": "2-3", "skillId": "2-3-b", "difficulty": 2, "type": "numeric", "prompt": "6 × 7 = ?", "answer": 42},
+    {"id": "q-0035", "grade": 2, "unitId": "2-3", "skillId": "2-3-b", "difficulty": 2, "type": "mc", "prompt": "8 × 9 = ?", "choices": ["64", "72", "81", "71"], "answer": "72"},
+    {"id": "q-0036", "grade": 2, "unitId": "2-3", "skillId": "2-3-b", "difficulty": 1, "type": "numeric", "prompt": "5 × 6 = ?", "answer": 30},
+    {"id": "q-0037", "grade": 2, "unitId": "2-3", "skillId": "2-3-a", "difficulty": 2, "type": "numeric", "prompt": "사탕이 4개씩 3봉지 있어요. 사탕은 모두 몇 개일까요?", "answer": 12},
+    {"id": "q-0038", "grade": 2, "unitId": "2-3", "skillId": "2-3-b", "difficulty": 2, "type": "mc", "prompt": "7 × 8 = ?", "choices": ["54", "56", "63", "49"], "answer": "56"},
+    {"id": "q-0039", "grade": 2, "unitId": "2-4", "skillId": "2-4-a", "difficulty": 2, "type": "numeric", "prompt": "1m는 몇 cm일까요?", "answer": 100},
+    {"id": "q-0040", "grade": 2, "unitId": "2-4", "skillId": "2-4-a", "difficulty": 1, "type": "numeric", "prompt": "30cm + 40cm 는 몇 cm일까요?", "answer": 70},
+    {"id": "q-0041", "grade": 2, "unitId": "2-4", "skillId": "2-4-a", "difficulty": 2, "type": "numeric", "prompt": "1m 50cm는 몇 cm일까요?", "answer": 150},
+    {"id": "q-0042", "grade": 2, "unitId": "2-4", "skillId": "2-4-a", "difficulty": 2, "type": "mc", "prompt": "다음 중 가장 긴 것은?", "choices": ["10cm", "1m", "50cm", "99cm"], "answer": "1m"}
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "_meta": { "description": "문제 은행 샤드 — 1학년 1학기", "grade": 1, "semester": 1 },
+  "questions": [
+    {"id": "q-0001", "grade": 1, "unitId": "1-1", "skillId": "1-1-a", "difficulty": 1, "type": "mc", "prompt": "사과가 몇 개일까요? 🍎🍎🍎🍎", "choices": ["3", "4", "5", "6"], "answer": "4"},
+    {"id": "q-0002", "grade": 1, "unitId": "1-1", "skillId": "1-1-a", "difficulty": 1, "type": "numeric", "prompt": "고양이는 모두 몇 마리일까요? 🐱🐱🐱🐱🐱", "answer": 5},
+    {"id": "q-0003", "grade": 1, "unitId": "1-1", "skillId": "1-1-b", "difficulty": 1, "type": "mc", "prompt": "5 바로 다음의 수는?", "choices": ["4", "5", "6", "7"], "answer": "6"},
+    {"id": "q-0004", "grade": 1, "unitId": "1-1", "skillId": "1-1-b", "difficulty": 2, "type": "numeric", "prompt": "7보다 1 작은 수는?", "answer": 6},
+    {"id": "q-0005", "grade": 1, "unitId": "1-1", "skillId": "1-1-b", "difficulty": 2, "type": "mc", "prompt": "다음 중 가장 큰 수는?", "choices": ["3", "8", "5", "2"], "answer": "8"},
+    {"id": "q-0006", "grade": 1, "unitId": "1-2", "skillId": "1-2-a", "difficulty": 1, "type": "numeric", "prompt": "2 + 3 = ?", "answer": 5},
+    {"id": "q-0007", "grade": 1, "unitId": "1-2", "skillId": "1-2-a", "difficulty": 1, "type": "mc", "prompt": "4 + 5 = ?", "choices": ["7", "8", "9", "10"], "answer": "9"},
+    {"id": "q-0008", "grade": 1, "unitId": "1-2", "skillId": "1-2-a", "difficulty": 2, "type": "numeric", "prompt": "6 + 3 = ?", "answer": 9},
+    {"id": "q-0009", "grade": 1, "unitId": "1-2", "skillId": "1-2-b", "difficulty": 1, "type": "numeric", "prompt": "7 - 2 = ?", "answer": 5},
+    {"id": "q-0010", "grade": 1, "unitId": "1-2", "skillId": "1-2-b", "difficulty": 1, "type": "mc", "prompt": "9 - 4 = ?", "choices": ["3", "4", "5", "6"], "answer": "5"},
+    {"id": "q-0011", "grade": 1, "unitId": "1-2", "skillId": "1-2-b", "difficulty": 2, "type": "numeric", "prompt": "8 - 5 = ?", "answer": 3}
+  ]
+}
