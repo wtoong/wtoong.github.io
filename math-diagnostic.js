@@ -597,7 +597,9 @@
                 messageEl.textContent = sel.note || '이 범위에는 아직 문제가 없어요 😢';
                 return;
             }
-            quizList = sel.questions;
+            // 템플릿 문항은 여기서 구체값으로 인스턴스화(숫자만 매번 바뀜). 템플릿이 없으면 원본 그대로.
+            quizList = sel.questions.map(q =>
+                window.QuestionTemplate ? window.QuestionTemplate.instantiate(q) : q);
             answers = [];
             cursor = 0;
             currentReport = null;

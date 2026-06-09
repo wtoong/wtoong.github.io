@@ -84,6 +84,26 @@
     {"id": "q-0262", "grade": 4, "unitId": "4-12", "skillId": "4-12-c", "difficulty": 2, "type": "numeric", "prompt": "한 변이 5cm인 정오각형의 둘레는 몇 cm일까요?", "answer": 25},
     {"id": "q-0263", "grade": 4, "unitId": "4-12", "skillId": "4-12-c", "difficulty": 1, "type": "numeric", "prompt": "정사각형의 한 각의 크기는 몇 도일까요?", "answer": 90},
     {"id": "q-0264", "grade": 4, "unitId": "4-12", "skillId": "4-12-d", "difficulty": 2, "type": "mc", "prompt": "정삼각형 2개를 변끼리 이어 붙이면 어떤 사각형이 될까요?", "choices": ["마름모", "정사각형", "사다리꼴", "육각형"], "answer": "마름모"},
-    {"id": "q-0265", "grade": 4, "unitId": "4-12", "skillId": "4-12-d", "difficulty": 3, "type": "mc", "prompt": "정삼각형 6개를 한 점에 모아 빈틈없이 붙이면 어떤 정다각형이 될까요?", "choices": ["정육각형", "정오각형", "정사각형", "정삼각형"], "answer": "정육각형"}
+    {"id": "q-0265", "grade": 4, "unitId": "4-12", "skillId": "4-12-d", "difficulty": 3, "type": "mc", "prompt": "정삼각형 6개를 한 점에 모아 빈틈없이 붙이면 어떤 정다각형이 될까요?", "choices": ["정육각형", "정오각형", "정사각형", "정삼각형"], "answer": "정육각형"},
+
+    {"id": "q-t-0010", "grade": 4, "unitId": "4-9", "skillId": "4-9-d", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": { "ai": {"min": 1, "max": 8}, "ad": {"min": 0, "max": 9}, "bi": {"min": 1, "max": 8}, "bd": {"min": 0, "max": 9} },
+        "derived": { "x": "ai + ad / 10", "y": "bi + bd / 10" },
+        "format": { "x": "dec:1", "y": "dec:1" },
+        "prompt": "{x} + {y} = ?",
+        "answer": "x + y",
+        "tolerance": 0.001
+      }},
+    {"id": "q-t-0011", "grade": 4, "unitId": "4-7", "skillId": "4-7-a", "difficulty": 2, "type": "mc",
+      "template": {
+        "vars": { "d": {"min": 4, "max": 9}, "p": {"min": 1, "max": 7}, "q": {"min": 1, "max": 7} },
+        "constraints": ["p < d", "q < d", "p + q < d"],
+        "derived": { "s": "p + q", "dd": "d + d" },
+        "format": { "fp": "frac", "fq": "frac", "cans": "frac", "cw1": "frac", "cw2": "frac", "cw3": "frac" },
+        "promptParts": { "fp": ["p", "d"], "fq": ["q", "d"], "cans": ["s", "d"], "cw1": ["s", "dd"], "cw2": ["p", "d"], "cw3": ["q", "d"] },
+        "prompt": "{fp} + {fq} = ?",
+        "choices": ["{cans}", "{cw1}", "{cw2}", "{cw3}"]
+      }}
   ]
 }

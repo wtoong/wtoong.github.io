@@ -81,6 +81,26 @@
     {"id": "q-0190", "grade": 4, "unitId": "4-6", "skillId": "4-6-b", "difficulty": 3, "type": "numeric", "prompt": "바둑돌이 1단계 1개, 2단계 4개, 3단계 9개로 늘어나요. 4단계에는 몇 개일까요?", "answer": 16},
     {"id": "q-0191", "grade": 4, "unitId": "4-6", "skillId": "4-6-c", "difficulty": 1, "type": "numeric", "prompt": "2×1=2, 2×2=4, 2×3=6 … 다섯 번째 식 2×5 의 값은?", "answer": 10},
     {"id": "q-0192", "grade": 4, "unitId": "4-6", "skillId": "4-6-c", "difficulty": 2, "type": "numeric", "prompt": "100−1=99, 100−2=98, 100−3=97 … 100−5 는 얼마일까요?", "answer": 95},
-    {"id": "q-0193", "grade": 4, "unitId": "4-6", "skillId": "4-6-c", "difficulty": 3, "type": "numeric", "prompt": "1+2=3, 1+2+3=6, 1+2+3+4=10 … 1+2+3+4+5 는 얼마일까요?", "answer": 15}
+    {"id": "q-0193", "grade": 4, "unitId": "4-6", "skillId": "4-6-c", "difficulty": 3, "type": "numeric", "prompt": "1+2=3, 1+2+3=6, 1+2+3+4=10 … 1+2+3+4+5 는 얼마일까요?", "answer": 15},
+
+    {"id": "q-t-0001", "grade": 4, "unitId": "4-1", "skillId": "4-1-a", "difficulty": 1, "type": "numeric",
+      "template": {
+        "vars": { "k": {"min": 2, "max": 9} },
+        "prompt": "10000이 {k}개인 수는?",
+        "answer": "k * 10000"
+      }},
+    {"id": "q-t-0002", "grade": 4, "unitId": "4-3", "skillId": "4-3-a", "difficulty": 2, "type": "mc",
+      "template": {
+        "vars": { "a": {"min": 101, "max": 499}, "b": {"min": 11, "max": 30} },
+        "prompt": "{a} × {b} = ?",
+        "choices": ["a * b", "a * b + a", "a * b - b", "a * (b + 10)"]
+      }},
+    {"id": "q-t-0003", "grade": 4, "unitId": "4-3", "skillId": "4-3-d", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": { "divisor": {"min": 2, "max": 9}, "quotient": {"min": 12, "max": 99} },
+        "derived": { "dividend": "divisor * quotient" },
+        "prompt": "{dividend} ÷ {divisor} = ?",
+        "answer": "quotient"
+      }}
   ]
 }
