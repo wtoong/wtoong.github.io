@@ -82,7 +82,7 @@
             const [bxp, byp] = P[(i + 2) % 3];
             const u1 = norm(ax - vx, ay - vy);
             const u2 = norm(bxp - vx, byp - vy);
-            const isRight = angles[i] === 90;
+            const isRight = angles[i] === 90 && i !== 2; // 미지각은 힌트 방지를 위해 호로 표시
 
             if (isRight) {
                 // 직각 기호: ㄱ 모양 사각형 꺾쇠
