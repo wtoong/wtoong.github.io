@@ -104,6 +104,254 @@
         "promptParts": { "fp": ["p", "d"], "fq": ["q", "d"], "cans": ["s", "d"], "cw1": ["s", "dd"], "cw2": ["p", "d"], "cw3": ["q", "d"] },
         "prompt": "{fp} + {fq} = ?",
         "choices": ["{cans}", "{cw1}", "{cw2}", "{cw3}"]
+      }},
+
+    {"id": "q-t-0012", "grade": 4, "unitId": "4-7", "skillId": "4-7-c", "difficulty": 2, "type": "mc",
+      "template": {
+        "vars": {"d": {"min": 4, "max": 9}, "p": {"min": 2, "max": 8}, "q": {"min": 1, "max": 6}},
+        "constraints": ["p < d", "q < d", "p > q"],
+        "derived": {"s": "p - q", "ps": "p + q", "dd": "d + d"},
+        "format": {"fp": "frac", "fq": "frac", "cans": "frac", "cw1": "frac", "cw2": "frac", "cw3": "frac"},
+        "promptParts": {"fp": ["p", "d"], "fq": ["q", "d"], "cans": ["s", "d"], "cw1": ["ps", "d"], "cw2": ["s", "dd"], "cw3": ["p", "d"]},
+        "prompt": "{fp} - {fq} = ?",
+        "choices": ["{cans}", "{cw1}", "{cw2}", "{cw3}"]
+      }},
+
+    {"id": "q-t-0013", "grade": 4, "unitId": "4-7", "skillId": "4-7-a", "difficulty": 3, "type": "mc",
+      "template": {
+        "vars": {"d": {"min": 3, "max": 8}, "p": {"min": 1, "max": 7}, "q": {"min": 1, "max": 7}},
+        "constraints": ["p < d", "q < d", "p + q > d", "p + q < 2 * d"],
+        "derived": {"s": "p + q", "w": "floor(s / d)", "r": "s - d", "dd": "d + d"},
+        "format": {"fp": "frac", "fq": "frac", "cans": "mixed", "cw1": "frac", "cw2": "mixed", "cw3": "frac"},
+        "promptParts": {"fp": ["p", "d"], "fq": ["q", "d"], "cans": ["w", "r", "d"], "cw1": ["s", "d"], "cw2": ["w", "r", "dd"], "cw3": ["r", "d"]},
+        "prompt": "{fp} + {fq} = ? (합이 1보다 크면 대분수로 나타내요)",
+        "choices": ["{cans}", "{cw1}", "{cw2}", "{cw3}"]
+      }},
+
+    {"id": "q-t-0014", "grade": 4, "unitId": "4-7", "skillId": "4-7-b", "difficulty": 2, "type": "mc",
+      "template": {
+        "vars": {"d": {"min": 4, "max": 9}, "p": {"min": 1, "max": 6}, "q": {"min": 1, "max": 6}, "A": {"min": 1, "max": 4}, "B": {"min": 1, "max": 4}},
+        "constraints": ["p < d", "q < d", "p + q < d", "A != B"],
+        "derived": {"sw": "A + B", "sf": "p + q", "dd": "d + d"},
+        "format": {"ma": "mixed", "mb": "mixed", "cans": "mixed", "cw1": "mixed", "cw2": "mixed", "cw3": "mixed"},
+        "promptParts": {"ma": ["A", "p", "d"], "mb": ["B", "q", "d"], "cans": ["sw", "sf", "d"], "cw1": ["sw", "sf", "dd"], "cw2": ["A", "sf", "d"], "cw3": ["B", "sf", "d"]},
+        "prompt": "{ma} + {mb} = ?",
+        "choices": ["{cans}", "{cw1}", "{cw2}", "{cw3}"]
+      }},
+
+    {"id": "q-t-0015", "grade": 4, "unitId": "4-7", "skillId": "4-7-b", "difficulty": 3, "type": "mc",
+      "template": {
+        "vars": {"d": {"min": 3, "max": 8}, "p": {"min": 1, "max": 7}, "q": {"min": 1, "max": 7}, "A": {"min": 1, "max": 4}, "B": {"min": 1, "max": 4}},
+        "constraints": ["p < d", "q < d", "p + q > d", "p + q < 2 * d", "A != B"],
+        "derived": {"sw": "A + B + 1", "sw0": "A + B", "r": "p + q - d", "sf": "p + q"},
+        "format": {"ma": "mixed", "mb": "mixed", "cans": "mixed", "cw1": "mixed", "cw2": "mixed", "cw3": "mixed"},
+        "promptParts": {"ma": ["A", "p", "d"], "mb": ["B", "q", "d"], "cans": ["sw", "r", "d"], "cw1": ["sw0", "sf", "d"], "cw2": ["sw", "sf", "d"], "cw3": ["sw0", "r", "d"]},
+        "prompt": "{ma} + {mb} = ? (분수의 합이 1 이상이면 자연수에 1을 더해요)",
+        "choices": ["{cans}", "{cw1}", "{cw2}", "{cw3}"]
+      }},
+
+    {"id": "q-t-0016", "grade": 4, "unitId": "4-7", "skillId": "4-7-d", "difficulty": 2, "type": "mc",
+      "template": {
+        "vars": {"d": {"min": 3, "max": 8}, "p": {"min": 1, "max": 7}, "n": {"min": 2, "max": 6}},
+        "constraints": ["p < d", "2 * p != d"],
+        "derived": {"r": "d - p", "nm1": "n - 1"},
+        "format": {"fp": "frac", "cans": "mixed", "cw1": "mixed", "cw2": "mixed", "cw3": "mixed"},
+        "promptParts": {"fp": ["p", "d"], "cans": ["nm1", "r", "d"], "cw1": ["n", "r", "d"], "cw2": ["nm1", "p", "d"], "cw3": ["n", "p", "d"]},
+        "prompt": "{n} - {fp} = ?",
+        "choices": ["{cans}", "{cw1}", "{cw2}", "{cw3}"]
+      }},
+
+    {"id": "q-t-0017", "grade": 4, "unitId": "4-7", "skillId": "4-7-d", "difficulty": 3, "type": "mc",
+      "template": {
+        "vars": {"d": {"min": 3, "max": 8}, "p": {"min": 1, "max": 7}, "A": {"min": 1, "max": 3}, "n": {"min": 3, "max": 7}},
+        "constraints": ["p < d", "n >= A + 2", "2 * p != d"],
+        "derived": {"r": "d - p", "whole": "n - A - 1", "nA": "n - A"},
+        "format": {"ma": "mixed", "cans": "mixed", "cw1": "mixed", "cw2": "mixed", "cw3": "mixed"},
+        "promptParts": {"ma": ["A", "p", "d"], "cans": ["whole", "r", "d"], "cw1": ["nA", "r", "d"], "cw2": ["whole", "p", "d"], "cw3": ["nA", "p", "d"]},
+        "prompt": "{n} - {ma} = ?",
+        "choices": ["{cans}", "{cw1}", "{cw2}", "{cw3}"]
+      }},
+
+    {"id": "q-t-0018", "grade": 4, "unitId": "4-7", "skillId": "4-7-e", "difficulty": 2, "type": "mc",
+      "template": {
+        "vars": {"d": {"min": 4, "max": 9}, "p": {"min": 2, "max": 8}, "q": {"min": 1, "max": 6}, "A": {"min": 2, "max": 6}, "B": {"min": 1, "max": 4}},
+        "constraints": ["p < d", "q < d", "p > q", "A > B"],
+        "derived": {"wdiff": "A - B", "fdiff": "p - q", "wsum": "A + B", "fsum": "p + q"},
+        "format": {"ma": "mixed", "mb": "mixed", "cans": "mixed", "cw1": "mixed", "cw2": "mixed", "cw3": "mixed"},
+        "promptParts": {"ma": ["A", "p", "d"], "mb": ["B", "q", "d"], "cans": ["wdiff", "fdiff", "d"], "cw1": ["wsum", "fdiff", "d"], "cw2": ["wdiff", "fsum", "d"], "cw3": ["A", "fdiff", "d"]},
+        "prompt": "{ma} - {mb} = ?",
+        "choices": ["{cans}", "{cw1}", "{cw2}", "{cw3}"]
+      }},
+
+    {"id": "q-t-0019", "grade": 4, "unitId": "4-7", "skillId": "4-7-f", "difficulty": 3, "type": "mc",
+      "template": {
+        "vars": {"d": {"min": 3, "max": 8}, "p": {"min": 1, "max": 6}, "q": {"min": 2, "max": 7}, "A": {"min": 2, "max": 6}, "B": {"min": 1, "max": 4}},
+        "constraints": ["p < d", "q < d", "q > p", "A > B + 1"],
+        "derived": {"whole": "A - B - 1", "r": "d + p - q", "wdiff": "A - B"},
+        "format": {"ma": "mixed", "mb": "mixed", "cans": "mixed", "cw1": "mixed", "cw2": "mixed", "cw3": "mixed"},
+        "promptParts": {"ma": ["A", "p", "d"], "mb": ["B", "q", "d"], "cans": ["whole", "r", "d"], "cw1": ["wdiff", "r", "d"], "cw2": ["whole", "p", "d"], "cw3": ["wdiff", "p", "d"]},
+        "prompt": "{ma} - {mb} = ? (분수끼리 뺄 수 없으면 자연수에서 1을 빌려요)",
+        "choices": ["{cans}", "{cw1}", "{cw2}", "{cw3}"]
+      }},
+
+    {"id": "q-t-0020", "grade": 4, "unitId": "4-8", "skillId": "4-8-a", "difficulty": 3, "type": "numeric",
+      "template": {
+        "vars": {"a": {"min": 20, "max": 100, "step": 10}},
+        "constraints": ["a != 60"],
+        "prompt": "이등변삼각형의 꼭지각이 {a}°일 때, 한 밑각은 몇 도일까요?",
+        "answer": "(180 - a) / 2"
+      }},
+
+    {"id": "q-t-0021", "grade": 4, "unitId": "4-8", "skillId": "4-8-b", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": {"s": {"min": 3, "max": 15}},
+        "prompt": "한 변이 {s}cm인 정삼각형의 둘레는 몇 cm일까요?",
+        "answer": "s * 3"
+      }},
+
+    {"id": "q-t-0022", "grade": 4, "unitId": "4-8", "skillId": "4-8-e", "difficulty": 3, "type": "numeric",
+      "template": {
+        "vars": {"a": {"min": 30, "max": 90, "step": 10}, "b": {"min": 30, "max": 90, "step": 10}},
+        "constraints": ["a + b < 180"],
+        "prompt": "두 각이 {a}°, {b}°인 삼각형에서 나머지 한 각은 몇 도일까요?",
+        "answer": "180 - a - b"
+      }},
+
+    {"id": "q-t-0023", "grade": 4, "unitId": "4-8", "skillId": "4-8-e", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": {"e": {"min": 3, "max": 12}, "b": {"min": 2, "max": 15}},
+        "constraints": ["b < 2 * e", "b != e"],
+        "prompt": "두 변이 각각 {e}cm이고 나머지 한 변이 {b}cm인 이등변삼각형의 둘레는 몇 cm일까요?",
+        "answer": "2 * e + b"
+      }},
+
+    {"id": "q-t-0024", "grade": 4, "unitId": "4-9", "skillId": "4-9-a", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": {"n": {"min": 2, "max": 99}},
+        "constraints": ["n % 10 != 0"],
+        "prompt": "0.01이 {n}개인 수를 소수로 쓰면? (예: 0.01이 3개 → 0.03)",
+        "answer": "n / 100",
+        "tolerance": 0.001
+      }},
+
+    {"id": "q-t-0025", "grade": 4, "unitId": "4-9", "skillId": "4-9-a", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": {"a": {"min": 1, "max": 9}, "b": {"min": 0, "max": 9}, "c": {"min": 1, "max": 9}},
+        "derived": {"x": "a + b / 10 + c / 100"},
+        "format": {"x": "dec:2"},
+        "prompt": "{x}에서 소수 둘째 자리 숫자는 무엇일까요?",
+        "answer": "c"
+      }},
+
+    {"id": "q-t-0026", "grade": 4, "unitId": "4-9", "skillId": "4-9-c", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": {"a": {"min": 1, "max": 9}, "b": {"min": 1, "max": 9}},
+        "derived": {"x": "a + b / 10"},
+        "format": {"x": "dec:1"},
+        "prompt": "{x}의 10배는 얼마일까요?",
+        "answer": "a * 10 + b"
+      }},
+
+    {"id": "q-t-0027", "grade": 4, "unitId": "4-9", "skillId": "4-9-c", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": {"a": {"min": 11, "max": 99}},
+        "constraints": ["a % 10 != 0"],
+        "prompt": "{a}의 1/10은 얼마일까요? (소수로 쓰세요)",
+        "answer": "a / 10",
+        "tolerance": 0.001
+      }},
+
+    {"id": "q-t-0028", "grade": 4, "unitId": "4-9", "skillId": "4-9-d", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": {"ai": {"min": 1, "max": 7}, "ad": {"min": 11, "max": 88}, "bi": {"min": 1, "max": 7}, "bd": {"min": 11, "max": 88}},
+        "constraints": ["ad + bd < 100"],
+        "derived": {"x": "ai + ad / 100", "y": "bi + bd / 100"},
+        "format": {"x": "dec:2", "y": "dec:2"},
+        "prompt": "{x} + {y} = ?",
+        "answer": "x + y",
+        "tolerance": 0.001
+      }},
+
+    {"id": "q-t-0029", "grade": 4, "unitId": "4-9", "skillId": "4-9-d", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": {"ai": {"min": 1, "max": 9}, "ad": {"min": 0, "max": 9}, "bi": {"min": 0, "max": 8}, "bd": {"min": 0, "max": 9}},
+        "constraints": ["ai * 10 + ad > bi * 10 + bd"],
+        "derived": {"x": "ai + ad / 10", "y": "bi + bd / 10"},
+        "format": {"x": "dec:1", "y": "dec:1"},
+        "prompt": "{x} - {y} = ?",
+        "answer": "x - y",
+        "tolerance": 0.001
+      }},
+
+    {"id": "q-t-0030", "grade": 4, "unitId": "4-9", "skillId": "4-9-e", "difficulty": 3, "type": "numeric",
+      "template": {
+        "vars": {"ai": {"min": 0, "max": 5}, "ad": {"min": 1, "max": 9}, "bi": {"min": 0, "max": 5}, "bd": {"min": 11, "max": 99}},
+        "constraints": ["bd % 10 != 0"],
+        "derived": {"x": "ai + ad / 10", "y": "bi + bd / 100"},
+        "format": {"x": "dec:1", "y": "dec:2"},
+        "prompt": "{x} + {y} = ? (소수점 자리를 맞추어 계산해요)",
+        "answer": "x + y",
+        "tolerance": 0.001
+      }},
+
+    {"id": "q-t-0031", "grade": 4, "unitId": "4-9", "skillId": "4-9-e", "difficulty": 3, "type": "numeric",
+      "template": {
+        "vars": {"n": {"min": 2, "max": 9}, "a": {"min": 1, "max": 8}, "bd": {"min": 1, "max": 99}},
+        "constraints": ["a < n", "bd % 10 != 0"],
+        "derived": {"y": "a + bd / 100"},
+        "format": {"y": "dec:2"},
+        "prompt": "{n} - {y} = ?",
+        "answer": "n - y",
+        "tolerance": 0.001
+      }},
+
+    {"id": "q-t-0032", "grade": 4, "unitId": "4-10", "skillId": "4-10-b", "difficulty": 3, "type": "numeric",
+      "template": {
+        "vars": {"a": {"min": 30, "max": 150, "step": 10}},
+        "constraints": ["a != 90"],
+        "prompt": "평행사변형에서 한 각이 {a}°일 때, 이웃한 각은 몇 도일까요? (이웃한 두 각의 합은 180°)",
+        "answer": "180 - a"
+      }},
+
+    {"id": "q-t-0033", "grade": 4, "unitId": "4-10", "skillId": "4-10-c", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": {"s": {"min": 3, "max": 15}},
+        "prompt": "한 변이 {s}cm인 마름모의 둘레는 몇 cm일까요?",
+        "answer": "4 * s"
+      }},
+
+    {"id": "q-t-0034", "grade": 4, "unitId": "4-11", "skillId": "4-11-c", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": {"a": {"min": 5, "max": 25}, "diff": {"min": 2, "max": 15}},
+        "constraints": ["a + diff <= 40"],
+        "derived": {"b": "a + diff"},
+        "prompt": "기온이 오전에 {a}°였다가 낮에 {b}°가 되었어요. 기온은 몇 도 올랐을까요?",
+        "answer": "diff"
+      }},
+
+    {"id": "q-t-0035", "grade": 4, "unitId": "4-12", "skillId": "4-12-c", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": {"s": {"min": 2, "max": 12}},
+        "prompt": "한 변이 {s}cm인 정오각형의 둘레는 몇 cm일까요?",
+        "answer": "s * 5"
+      }},
+
+    {"id": "q-t-0036", "grade": 4, "unitId": "4-12", "skillId": "4-12-c", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": {"s": {"min": 2, "max": 10}},
+        "prompt": "한 변이 {s}cm인 정육각형의 둘레는 몇 cm일까요?",
+        "answer": "s * 6"
+      }},
+
+    {"id": "q-t-0037", "grade": 4, "unitId": "4-7", "skillId": "4-7-g", "difficulty": 2, "type": "mc",
+      "template": {
+        "vars": {"d": {"min": 4, "max": 9}, "p": {"min": 2, "max": 8}, "q": {"min": 1, "max": 6}},
+        "constraints": ["p < d", "q < d", "p > q"],
+        "derived": {"s": "p - q", "ps": "p + q", "dd": "d + d"},
+        "format": {"fp": "frac", "fq": "frac", "cans": "frac", "cw1": "frac", "cw2": "frac", "cw3": "frac"},
+        "promptParts": {"fp": ["p", "d"], "fq": ["q", "d"], "cans": ["s", "d"], "cw1": ["ps", "d"], "cw2": ["s", "dd"], "cw3": ["p", "d"]},
+        "prompt": "리본이 {fp} m 있었는데 {fq} m를 잘라 썼어요. 남은 리본은 몇 m일까요?",
+        "choices": ["{cans} m", "{cw1} m", "{cw2} m", "{cw3} m"]
       }}
   ]
 }
