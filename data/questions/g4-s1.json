@@ -139,6 +139,48 @@
         "prompt": "{n}을(를) 바르게 읽은 것은?",
         "format": { "nk": "korean", "w1": "korean", "w2": "korean", "w3": "korean" },
         "choices": ["{nk}", "{w1}", "{w2}", "{w3}"]
+      }},
+    {"id": "q-t-0008", "grade": 4, "unitId": "4-3", "skillId": "4-3-a", "difficulty": 3, "type": "numeric",
+      "template": {
+        "vars": { "a": {"min": 101, "max": 999}, "b": {"min": 11, "max": 99} },
+        "prompt": "{a} × {b} = ?",
+        "answer": "a * b"
+      }},
+    {"id": "q-t-0009", "grade": 4, "unitId": "4-3", "skillId": "4-3-b", "difficulty": 3, "type": "mc",
+      "template": {
+        "vars": { "a": {"min": 101, "max": 499}, "tens": {"min": 2, "max": 9}, "ones": {"min": 1, "max": 9} },
+        "derived": { "b": "tens * 10 + ones" },
+        "prompt": "{a} × {b} 의 세로셈에서 {a} × {tens}(십의 자리)를 계산한 값이 실제로 나타내는 수는?",
+        "choices": ["a * tens * 10", "a * tens", "a * tens * 100", "a * b"]
+      }},
+    {"id": "q-t-0010", "grade": 4, "unitId": "4-3", "skillId": "4-3-c", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": { "ten": {"min": 2, "max": 4}, "quotient": {"min": 3, "max": 9}, "rem": {"min": 0, "max": 19} },
+        "derived": { "divisor": "ten * 10", "dividend": "divisor * quotient + rem" },
+        "prompt": "{dividend} ÷ {divisor} 의 몫은 얼마일까요?",
+        "answer": "quotient"
+      }},
+    {"id": "q-t-0011", "grade": 4, "unitId": "4-3", "skillId": "4-3-d", "difficulty": 3, "type": "numeric",
+      "template": {
+        "vars": { "divisor": {"min": 3, "max": 9}, "quotient": {"min": 8, "max": 20}, "rem": {"min": 1, "max": 8} },
+        "constraints": ["rem < divisor"],
+        "derived": { "dividend": "divisor * quotient + rem" },
+        "prompt": "{dividend} ÷ {divisor} 의 나머지는 얼마일까요?",
+        "answer": "rem"
+      }},
+    {"id": "q-t-0012", "grade": 4, "unitId": "4-3", "skillId": "4-3-e", "difficulty": 2, "type": "mc",
+      "template": {
+        "vars": { "divisor": {"min": 5, "max": 9} },
+        "prompt": "어떤 수를 {divisor}(으)로 나눌 때, 나머지가 될 수 없는 수는?",
+        "choices": ["divisor", "2", "divisor - 1", "divisor - 2"]
+      }},
+    {"id": "q-t-0013", "grade": 4, "unitId": "4-3", "skillId": "4-3-f", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": { "divisor": {"min": 4, "max": 9}, "quotient": {"min": 3, "max": 12}, "rem": {"min": 1, "max": 3} },
+        "constraints": ["rem < divisor"],
+        "derived": { "n": "divisor * quotient + rem" },
+        "prompt": "어떤 수를 {divisor}(으)로 나누었더니 몫이 {quotient}, 나머지가 {rem}였어요. 어떤 수는?",
+        "answer": "n"
       }}
   ]
 }
