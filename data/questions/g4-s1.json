@@ -181,6 +181,102 @@
         "derived": { "n": "divisor * quotient + rem" },
         "prompt": "어떤 수를 {divisor}(으)로 나누었더니 몫이 {quotient}, 나머지가 {rem}였어요. 어떤 수는?",
         "answer": "n"
+      }},
+    {"id": "q-t-0014", "grade": 4, "unitId": "4-1", "skillId": "4-1-c", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": { "tm": {"min": 1, "max": 9}, "th": {"min": 1, "max": 9}, "t": {"min": 1, "max": 9}, "o": {"min": 1, "max": 9} },
+        "derived": { "e1": "tm * 10000", "e2": "th * 1000", "e3": "t * 10" },
+        "prompt": "{e1} + {e2} + {e3} + {o} 을(를) 하나의 수로 쓰면?",
+        "answer": "tm * 10000 + th * 1000 + t * 10 + o"
+      }},
+    {"id": "q-t-0015", "grade": 4, "unitId": "4-1", "skillId": "4-1-c", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": { "d4": {"min": 1, "max": 9}, "d3": {"min": 1, "max": 9}, "d2": {"min": 0, "max": 9}, "d1": {"min": 0, "max": 9}, "d0": {"min": 0, "max": 9} },
+        "derived": { "n": "d4 * 10000 + d3 * 1000 + d2 * 100 + d1 * 10 + d0" },
+        "prompt": "{n}에서 천의 자리 숫자가 나타내는 값은 얼마일까요?",
+        "answer": "d3 * 1000"
+      }},
+    {"id": "q-t-0016", "grade": 4, "unitId": "4-1", "skillId": "4-1-d", "difficulty": 3, "type": "numeric",
+      "template": {
+        "vars": { "a": {"min": 1, "max": 9}, "dd": {"min": 1, "max": 9}, "b": {"min": 0, "max": 9} },
+        "derived": { "n": "a * 1000 + dd * 100 + dd * 10 + b" },
+        "prompt": "{n}에서 백의 자리 숫자 {dd}이(가) 나타내는 값과 십의 자리 숫자 {dd}이(가) 나타내는 값의 차는?",
+        "answer": "dd * 100 - dd * 10"
+      }},
+    {"id": "q-t-0017", "grade": 4, "unitId": "4-1", "skillId": "4-1-e", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": { "sb": {"min": 2, "max": 9}, "stepK": {"min": 1, "max": 3}, "k": {"min": 2, "max": 5} },
+        "derived": { "start": "sb * 1000", "step": "stepK * 1000" },
+        "prompt": "{start}에서 {step}씩 {k}번 뛰어 세면 얼마일까요?",
+        "answer": "start + step * k"
+      }},
+    {"id": "q-t-0018", "grade": 4, "unitId": "4-1", "skillId": "4-1-f", "difficulty": 2, "type": "mc",
+      "template": {
+        "vars": { "a": {"min": 100000, "max": 999999}, "b": {"min": 100000, "max": 999999}, "c": {"min": 100000, "max": 999999}, "d": {"min": 100000, "max": 999999} },
+        "constraints": ["a > b", "a > c", "a > d", "b != c", "b != d", "c != d"],
+        "prompt": "다음 중 가장 큰 수는?",
+        "choices": ["a", "b", "c", "d"]
+      }},
+    {"id": "q-t-0019", "grade": 4, "unitId": "4-1", "skillId": "4-1-g", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": { "a": {"min": 1, "max": 9}, "b": {"min": 1, "max": 9}, "c": {"min": 1, "max": 9} },
+        "constraints": ["a != b", "b != c", "a != c"],
+        "derived": { "hi": "max(max(a, b), c)", "lo": "min(min(a, b), c)", "mid": "a + b + c - max(max(a, b), c) - min(min(a, b), c)" },
+        "prompt": "수 카드 {a}, {b}, {c} 를 한 번씩 써서 만들 수 있는 가장 큰 세 자리 수는?",
+        "answer": "hi * 100 + mid * 10 + lo"
+      }},
+    {"id": "q-t-0020", "grade": 4, "unitId": "4-5", "skillId": "4-5-a", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": { "n": {"min": 12, "max": 40}, "per": {"min": 2, "max": 5} },
+        "prompt": "조사한 수가 가장 많은 것이 {n}명이에요. 눈금 한 칸을 {per}명으로 하면 적어도 몇 칸이 필요할까요?",
+        "answer": "ceil(n / per)"
+      }},
+    {"id": "q-t-0021", "grade": 4, "unitId": "4-5", "skillId": "4-5-b", "difficulty": 1, "type": "numeric",
+      "template": {
+        "vars": { "cells": {"min": 3, "max": 10}, "per": {"min": 2, "max": 5} },
+        "prompt": "막대그래프에서 어떤 막대가 {cells}칸이고 한 칸이 {per}명을 나타내면 모두 몇 명일까요?",
+        "answer": "cells * per"
+      }},
+    {"id": "q-t-0022", "grade": 4, "unitId": "4-5", "skillId": "4-5-c", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": { "a": {"min": 2, "max": 9}, "b": {"min": 2, "max": 9}, "c": {"min": 2, "max": 9} },
+        "constraints": ["a != b", "b != c", "a != c"],
+        "prompt": "막대그래프에서 빨강 {a}명, 파랑 {b}명, 노랑 {c}명이에요. 가장 적게 나온 색의 학생 수는 몇 명일까요?",
+        "answer": "min(min(a, b), c)"
+      }},
+    {"id": "q-t-0023", "grade": 4, "unitId": "4-5", "skillId": "4-5-d", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": { "small": {"min": 2, "max": 9}, "mult": {"min": 2, "max": 5} },
+        "derived": { "big": "small * mult" },
+        "prompt": "줄넘기를 민수는 {big}개, 영희는 {small}개 했어요. 민수는 영희의 몇 배를 했을까요?",
+        "answer": "mult"
+      }},
+    {"id": "q-t-0024", "grade": 4, "unitId": "4-6", "skillId": "4-6-a", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": { "start": {"min": 2, "max": 9}, "step": {"min": 2, "max": 9} },
+        "derived": { "a0": "start", "a1": "start + step", "a2": "start + 2 * step", "a4": "start + 4 * step" },
+        "prompt": "{a0}, {a1}, {a2}, ☐, {a4} 에서 ☐에 알맞은 수는?",
+        "answer": "start + 3 * step"
+      }},
+    {"id": "q-t-0025", "grade": 4, "unitId": "4-6", "skillId": "4-6-b", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": { "a1": {"min": 1, "max": 5}, "step": {"min": 2, "max": 4}, "k": {"min": 4, "max": 8} },
+        "derived": { "a2": "a1 + step", "a3": "a1 + 2 * step" },
+        "prompt": "바둑돌을 1단계 {a1}개, 2단계 {a2}개, 3단계 {a3}개로 {step}개씩 늘려 놓아요. {k}단계에는 몇 개일까요?",
+        "answer": "a1 + (k - 1) * step"
+      }},
+    {"id": "q-t-0026", "grade": 4, "unitId": "4-6", "skillId": "4-6-b", "difficulty": 3, "type": "numeric",
+      "template": {
+        "vars": { "k": {"min": 4, "max": 9} },
+        "prompt": "바둑돌이 1단계 1개, 2단계 4개, 3단계 9개로 늘어나요. {k}단계에는 몇 개일까요?",
+        "answer": "pow(k, 2)"
+      }},
+    {"id": "q-t-0027", "grade": 4, "unitId": "4-6", "skillId": "4-6-c", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": { "c": {"min": 2, "max": 9}, "m": {"min": 4, "max": 9} },
+        "derived": { "p1": "c", "p2": "2 * c", "p3": "3 * c" },
+        "prompt": "{c}×1={p1}, {c}×2={p2}, {c}×3={p3} … {m}번째 식 {c}×{m} 의 값은?",
+        "answer": "c * m"
       }}
   ]
 }
