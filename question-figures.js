@@ -187,7 +187,7 @@
      correctValues number[]   — 각 항목의 정답 값
      unit          string     — 단위 (예: "명")
      scale         number     — 눈금 한 칸의 값 (기본 1)
-     yMin          number     — y축 시작값 (기본 0; 0 이상이면 하단 생략)
+     yMin          number     — y축 시작값 (기본 0; >0이면 물결 끊김 표시)
    }
 */
 (function () {
@@ -201,9 +201,10 @@
         const n             = labels.length;
 
         // y축 범위 계산
-        const maxVal = correctValues.length ? Math.max.apply(null, correctValues) : scale;
-        const yMin   = Math.floor((opts.yMin || 0) / scale) * scale;
-        const yMax   = Math.ceil((maxVal + scale) / scale) * scale;
+        const maxVal  = correctValues.length ? Math.max.apply(null, correctValues) : scale;
+        const yMin    = Math.floor((opts.yMin || 0) / scale) * scale;
+        const hasWave = yMin > 0;
+        const yMax    = Math.ceil((maxVal + scale) / scale) * scale;
         const numRows = (yMax - yMin) / scale;
 
         // 각 막대의 현재 높이 (0 = 비어있음)
@@ -252,20 +253,32 @@
         // ── 그래프 영역 ────────────────────────────────────────────
         const graphArea = div('bg-graph');
 
-        // Y축 레이블
+        // ── Y축 레이블 ─────────────────────────────────────────────
         const yaxis = div('bg-yaxis');
+        // 인터랙티브 행 레이블: yMax(상단) → yMin+scale(하단)
         for (var r = 0; r <= numRows; r++) {
             var val = yMax - r * scale;
             var lbl = div(r < numRows ? 'bg-ylabel' : 'bg-ylabel bg-ylabel-min');
             lbl.textContent = val;
             yaxis.appendChild(lbl);
         }
+        // 물결 구간 (yMin > 0일 때)
+        if (hasWave) {
+            var wLbl = div('bg-ylabel-wave');
+            yaxis.appendChild(wLbl);
+            var stubLbl = div('bg-ylabel-stub');
+            stubLbl.textContent = scale;  // 아래 표시할 최소 눈금 값
+            yaxis.appendChild(stubLbl);
+            var zeroLbl = div('bg-ylabel bg-ylabel-min');
+            zeroLbl.textContent = '0';
+            yaxis.appendChild(zeroLbl);
+        }
         graphArea.appendChild(yaxis);
 
-        // 격자 래퍼 (왼쪽·아래 테두리 = 축)
+        // ── 격자 래퍼 (왼쪽 테두리 = Y축) ─────────────────────────
         const gridWrap = div('bg-grid-wrap');
 
-        // 셀 행렬 cells[row][col]
+        // 인터랙티브 셀 행렬 cells[row][col]
         var cells = [];
         for (var ri = 0; ri < numRows; ri++) {
             var row = div('bg-row');
@@ -280,6 +293,51 @@
             }
             cells.push(rowCells);
             gridWrap.appendChild(row);
+        }
+
+        // 인터랙티브 영역 하단 축선
+        gridWrap.appendChild(div('bg-axis-line'));
+
+        // 물결 끊김 구간
+        var stubCells = [];  // stubCells[행][col]
+        if (hasWave) {
+            // 물결 SVG 행
+            var waveRow = div('bg-wave-row');
+            var waveW = n * 44;
+            var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('width', waveW);
+            svg.setAttribute('height', 20);
+            svg.style.display = 'block';
+            var seg = 18;
+            var pd = 'M0,10';
+            for (var wx = 0; wx < waveW + seg; wx += seg) {
+                pd += ' Q' + (wx + seg * 0.25) + ',3 ' + (wx + seg * 0.5) + ',10';
+                pd += ' Q' + (wx + seg * 0.75) + ',17 ' + (wx + seg) + ',10';
+            }
+            var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', pd);
+            path.setAttribute('fill', 'none');
+            path.setAttribute('stroke', '#555');
+            path.setAttribute('stroke-width', '2.5');
+            svg.appendChild(path);
+            waveRow.appendChild(svg);
+            gridWrap.appendChild(waveRow);
+
+            // 2개의 짧은 스텁 행 (장식)
+            for (var si = 0; si < 2; si++) {
+                var stubRow = div('bg-stub-row');
+                var stubRowCells = [];
+                for (var sci = 0; sci < n; sci++) {
+                    var sc = div('bg-stub-cell');
+                    stubRow.appendChild(sc);
+                    stubRowCells.push(sc);
+                }
+                gridWrap.appendChild(stubRow);
+                stubCells.push(stubRowCells);
+            }
+
+            // X축 바닥선
+            gridWrap.appendChild(div('bg-axis-line'));
         }
 
         // X축 레이블
@@ -302,9 +360,23 @@
 
         // ── 인터랙션 ──────────────────────────────────────────────
         function topRow(h) {
-            // 막대 높이 h에 해당하는 최상단 채워진 행 인덱스
             if (h <= yMin) return numRows; // 빈 막대
             return Math.round((yMax - h) / scale);
+        }
+
+        function updateStubs(col, cls) {
+            // cls가 있으면 채점 후 색상 적용, 없으면 filled 토글
+            if (!hasWave) return;
+            var filled = (cls != null) ? false : barHeights[col] > yMin;
+            stubCells.forEach(function (sRow) {
+                var sc = sRow[col];
+                sc.classList.remove('stub-filled', 'stub-correct', 'stub-hint');
+                if (cls != null) {
+                    sc.classList.add(cls);
+                } else if (filled) {
+                    sc.classList.add('stub-filled');
+                }
+            });
         }
 
         function redrawCol(col) {
@@ -312,12 +384,12 @@
             for (var r = 0; r < numRows; r++) {
                 cells[r][col].classList.toggle('filled', r >= tr);
             }
+            updateStubs(col, null);
         }
 
         function handleClick(col, rIdx) {
             if (widget.classList.contains('bg-checked')) return;
             var val = yMax - rIdx * scale;
-            // 같은 높이를 다시 누르면 초기화
             barHeights[col] = (barHeights[col] === val) ? 0 : val;
             redrawCol(col);
         }
@@ -337,10 +409,19 @@
                     cell.classList.remove('filled');
                     if (r >= cTop) cell.classList.add(ok ? 'bg-correct' : 'bg-hint');
                 }
+                updateStubs(c, ok ? 'stub-correct' : 'stub-hint');
             }
         }
 
-        return { element: widget, getValues: getValues, markAnswers: markAnswers };
+        // 미리 채우기 (검증 페이지용)
+        function prefill(vals) {
+            vals.forEach(function (v, i) {
+                barHeights[i] = v;
+                redrawCol(i);
+            });
+        }
+
+        return { element: widget, getValues: getValues, markAnswers: markAnswers, prefill: prefill };
     }
 
     window.BarGraphWidget = { create: create };
