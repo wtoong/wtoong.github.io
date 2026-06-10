@@ -296,6 +296,11 @@
                 `${unitGradeMap[q.unitId]}학년 · ${unitNameMap[q.unitId] || q.unitId}`));
             card.appendChild(el('div', 'q-prompt', q.prompt));
 
+            if (q.figure && q._vars && window.QuestionFigures) {
+                const fig = QuestionFigures.render(q.figure, q._vars);
+                if (fig) card.appendChild(fig);
+            }
+
             const answersWrap = el('div', 'q-answers');
             const feedback = el('div', 'q-feedback');
             const nextBtn = el('button', '', cursor === quizList.length - 1 ? '결과 보기 🎉' : '다음 문제 ➡️');
