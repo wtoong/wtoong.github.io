@@ -251,6 +251,55 @@
         "prompt": "줄넘기를 민수는 {big}개, 영희는 {small}개 했어요. 민수는 영희의 몇 배를 했을까요?",
         "answer": "mult"
       }},
+    {"id": "q-t-bar-001", "grade": 4, "unitId": "4-5", "skillId": "4-5-b", "difficulty": 2, "type": "bar-graph",
+      "template": {
+        "vars": { "a": {"min": 2, "max": 9}, "b": {"min": 2, "max": 9}, "c": {"min": 2, "max": 9}, "d": {"min": 2, "max": 9} },
+        "constraints": ["a != b", "a != c", "a != d", "b != c", "b != d", "c != d"],
+        "prompt": "좋아하는 과일을 조사했어요. 표를 보고 막대그래프를 완성해 보세요.",
+        "barGraph": {
+          "labels": ["사과", "배", "귤", "포도"],
+          "valueVars": ["a", "b", "c", "d"],
+          "unit": "명",
+          "scale": 1
+        }
+      }},
+    {"id": "q-t-bar-002", "grade": 4, "unitId": "4-5", "skillId": "4-5-c", "difficulty": 2, "type": "bar-graph",
+      "template": {
+        "vars": { "a": {"min": 3, "max": 10}, "b": {"min": 3, "max": 10}, "c": {"min": 3, "max": 10}, "d": {"min": 3, "max": 10} },
+        "constraints": ["a != b", "a != c", "a != d", "b != c", "b != d", "c != d"],
+        "prompt": "좋아하는 운동을 조사했어요. 표를 보고 막대그래프를 완성해 보세요.",
+        "barGraph": {
+          "labels": ["축구", "야구", "농구", "수영"],
+          "valueVars": ["a", "b", "c", "d"],
+          "unit": "명",
+          "scale": 1
+        }
+      }},
+    {"id": "q-t-bar-003", "grade": 4, "unitId": "4-5", "skillId": "4-5-b", "difficulty": 3, "type": "bar-graph",
+      "template": {
+        "vars": { "a": {"min": 4, "max": 16, "step": 2}, "b": {"min": 4, "max": 16, "step": 2}, "c": {"min": 4, "max": 16, "step": 2}, "d": {"min": 4, "max": 16, "step": 2} },
+        "constraints": ["a != b", "a != c", "a != d", "b != c", "b != d", "c != d"],
+        "prompt": "반 학생들이 좋아하는 동물을 조사했어요. 표를 보고 눈금 한 칸이 2명인 막대그래프를 완성해 보세요.",
+        "barGraph": {
+          "labels": ["강아지", "고양이", "토끼", "햄스터"],
+          "valueVars": ["a", "b", "c", "d"],
+          "unit": "명",
+          "scale": 2
+        }
+      }},
+    {"id": "q-t-bar-004", "grade": 4, "unitId": "4-5", "skillId": "4-5-a", "difficulty": 3, "type": "bar-graph",
+      "template": {
+        "vars": { "a": {"min": 5, "max": 12}, "b": {"min": 5, "max": 12}, "c": {"min": 5, "max": 12} },
+        "constraints": ["a != b", "a != c", "b != c"],
+        "prompt": "한 달 동안 읽은 책 수를 조사했어요. 표를 보고 막대그래프를 완성해 보세요. (눈금이 4부터 시작해요!)",
+        "barGraph": {
+          "labels": ["1반", "2반", "3반"],
+          "valueVars": ["a", "b", "c"],
+          "unit": "권",
+          "scale": 1,
+          "yMin": 4
+        }
+      }},
     {"id": "q-t-0024", "grade": 4, "unitId": "4-6", "skillId": "4-6-a", "difficulty": 2, "type": "numeric",
       "template": {
         "vars": { "start": {"min": 2, "max": 9}, "step": {"min": 2, "max": 9} },
