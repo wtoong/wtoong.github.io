@@ -1,7 +1,7 @@
 {
   "_meta": {
     "description": "문제 은행 샤드 목록 (학년·학기별). question-bank.js가 이 목록을 읽어 필요한 조각만 불러온다.",
-    "updated": "2026-06-09"
+    "updated": "2026-06-10"
   },
   "shards": [
     {
@@ -76,7 +76,7 @@
         "4-5",
         "4-6"
       ],
-      "count": 84
+      "count": 88
     },
     {
       "file": "g4-s2.json",

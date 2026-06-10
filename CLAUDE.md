@@ -80,7 +80,7 @@
   `quizList`에 넣는 순간 `QuestionTemplate.instantiate(q)`를 거친다.
   - `template` 필드: `vars`(정수 변수 `{min,max,step?}`), `constraints`(불리언 식 배열 —
     모두 참이어야 채택, 음수 방지 `a >= b`·정확한 나눗셈 등을 표현), `derived`(파생값),
-    `prompt`(`{이름}` 자리표시자), `format`/`promptParts`(소수 `dec:N`·분수 `frac`·대분수 `mixed`),
+    `prompt`(`{이름}` 자리표시자), `format`/`promptParts`(소수 `dec:N`·분수 `frac`·대분수 `mixed`·한글읽기 `korean`),
     `answer`(numeric=산술식, mc는 `choices[0]`이 정답), `choices`(mc, 0번=정답·나머지 오답 유인지),
     `tolerance`(소수 오차).
   - 식 계산기는 **eval 미사용** 자체 파서. 함수는 화이트리스트(`floor,ceil,round,abs,gcd,lcm,

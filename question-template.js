@@ -16,7 +16,8 @@
        "constraints": ["a >= b", "a % b == 0"],   // 모두 참이어야 채택(아니면 재추첨)
        "derived":     { "g": "gcd(num,d)", ... }, // 선언 순서대로 계산되는 파생값
        "prompt":      "{a} ÷ {b} = ?",            // {이름} → 포맷된 값으로 치환
-       "format":      { "x": "dec:1", "pfrac": "frac", "ans": "mixed" },
+       "format":      { "x": "dec:1", "pfrac": "frac", "ans": "mixed", "n": "korean" },
+       //               dec:N=소수 N자리, frac=분수, mixed=대분수, korean=한글 읽기(큰 수)
        "promptParts": { "pfrac": ["p","d"], "ans": ["whole","rem","rd"] },
        "answer":      "a / b",        // numeric: 산술식 → 숫자
        "tolerance":   0.001,          // numeric(선택): 소수 오차 허용
@@ -143,6 +144,43 @@
     }
     function evalExpr(expr, scope) { return evalAst(compile(expr), scope); }
 
+    // ── 숫자 → 한글 읽기 (큰 수 단원: 만·억·조 단위) ───────────
+    // 예) 50507 → "오만 오백칠", 70205 → "칠만 이백오", 10507 → "만 오백칠"
+    //   · 천/백/십과 만·억·조 자리의 계수 1은 '일'을 떼고 단위만 읽음(만, 천 …).
+    //   · 0인 자리는 건너뜀(0이 포함된 큰 수 읽기 핵심).
+    const K_DIGITS = ['영', '일', '이', '삼', '사', '오', '육', '칠', '팔', '구'];
+    const K_SMALL = ['천', '백', '십', '']; // 네 자리 묶음 안 자릿값(천/백/십/일)
+    const K_BIG = ['', '만', '억', '조'];   // 네 자리 묶음 단위
+    function readFourDigits(n) { // 0..9999 → 한글
+        const d = [Math.floor(n / 1000) % 10, Math.floor(n / 100) % 10, Math.floor(n / 10) % 10, n % 10];
+        let s = '';
+        for (let i = 0; i < 4; i++) {
+            const digit = d[i];
+            if (digit === 0) continue;
+            // 천·백·십 자리의 계수 1은 '일'을 떼고 단위만(천, 백, 십)
+            if (digit === 1 && i < 3) s += K_SMALL[i];
+            else s += K_DIGITS[digit] + K_SMALL[i];
+        }
+        return s;
+    }
+    function numberToKorean(n) {
+        n = Math.round(n);
+        if (n === 0) return '영';
+        if (n < 0) return '마이너스 ' + numberToKorean(-n);
+        const groups = [];
+        let x = n;
+        while (x > 0) { groups.push(x % 10000); x = Math.floor(x / 10000); }
+        const parts = [];
+        for (let i = groups.length - 1; i >= 0; i--) {
+            const g = groups[i];
+            if (g === 0) continue;
+            // 만·억·조 자리의 계수 1은 '일'을 떼고 단위만(만, 억 …)
+            let gs = (g === 1 && i >= 1) ? '' : readFourDigits(g);
+            parts.push(gs + K_BIG[i]);
+        }
+        return parts.join(' ');
+    }
+
     // ── 숫자 정리/표시 ─────────────────────────────────────────
     function cleanNum(v) {
         if (typeof v !== 'number') return v;
@@ -203,6 +241,10 @@
         }
         if (typeof f === 'string' && f.indexOf('dec:') === 0) {
             return Number(scope[token]).toFixed(parseInt(f.slice(4), 10));
+        }
+        if (f === 'korean') {
+            if (!(token in scope)) throw new Error('알 수 없는 자리표시자: ' + token);
+            return numberToKorean(scope[token]);
         }
         // plain / int
         if (!(token in scope)) throw new Error('알 수 없는 자리표시자: ' + token);

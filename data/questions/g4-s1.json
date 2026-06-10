@@ -101,6 +101,44 @@
         "derived": { "dividend": "divisor * quotient" },
         "prompt": "{dividend} ÷ {divisor} = ?",
         "answer": "quotient"
+      }},
+    {"id": "q-t-0004", "grade": 4, "unitId": "4-1", "skillId": "4-1-a", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": { "a": {"min": 11, "max": 99} },
+        "derived": { "n": "a * 10000" },
+        "prompt": "{n}을(를) 숫자로 쓰면?",
+        "format": { "n": "korean" },
+        "answer": "n"
+      }},
+    {"id": "q-t-0005", "grade": 4, "unitId": "4-1", "skillId": "4-1-b", "difficulty": 2, "type": "numeric",
+      "template": {
+        "vars": { "man": {"min": 1, "max": 9}, "h": {"min": 1, "max": 9}, "o": {"min": 1, "max": 9} },
+        "derived": { "n": "man * 10000 + h * 100 + o" },
+        "prompt": "{n}을(를) 숫자로 쓰면?",
+        "format": { "n": "korean" },
+        "answer": "n"
+      }},
+    {"id": "q-t-0006", "grade": 4, "unitId": "4-1", "skillId": "4-1-b", "difficulty": 3, "type": "numeric",
+      "template": {
+        "vars": { "man": {"min": 1, "max": 9}, "th": {"min": 1, "max": 9}, "t": {"min": 1, "max": 9} },
+        "derived": { "n": "man * 10000 + th * 1000 + t * 10" },
+        "prompt": "{n}을(를) 숫자로 쓰면?",
+        "format": { "n": "korean" },
+        "answer": "n"
+      }},
+    {"id": "q-t-0007", "grade": 4, "unitId": "4-1", "skillId": "4-1-b", "difficulty": 2, "type": "mc",
+      "template": {
+        "vars": { "man": {"min": 1, "max": 9}, "h": {"min": 1, "max": 9}, "o": {"min": 1, "max": 9} },
+        "derived": {
+          "n": "man * 10000 + h * 100 + o",
+          "nk": "man * 10000 + h * 100 + o",
+          "w1": "man * 10000 + h * 1000 + o",
+          "w2": "man * 10000 + h * 100 + o * 10",
+          "w3": "man * 10000 + h * 1000 + o * 10"
+        },
+        "prompt": "{n}을(를) 바르게 읽은 것은?",
+        "format": { "nk": "korean", "w1": "korean", "w2": "korean", "w3": "korean" },
+        "choices": ["{nk}", "{w1}", "{w2}", "{w3}"]
       }}
   ]
 }
