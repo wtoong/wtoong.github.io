@@ -435,12 +435,51 @@
     overflow: visible;
 }
 
-/* 격자 래퍼 (왼쪽·하단 = 축선) */
+/* 격자 래퍼 (왼쪽 테두리 = Y축; 하단선은 .bg-axis-line으로 처리) */
 .bg-grid-wrap {
     display: flex;
     flex-direction: column;
     border-left: 3px solid #555;
-    border-bottom: 3px solid #555;
+}
+
+/* 축선 (인터랙티브 영역 하단 / 스텁 영역 하단) */
+.bg-axis-line {
+    height: 3px;
+    background: #555;
+}
+
+/* 물결 끊김 행 */
+.bg-wave-row {
+    height: 20px;
+    overflow: hidden;
+}
+
+/* 스텁 행·셀 (물결 아래 짧은 장식 영역) */
+.bg-stub-row { display: flex; }
+.bg-stub-cell {
+    width: 44px;
+    height: 10px;
+    border: 1px solid #e8e8e8;
+    background: #fafafa;
+    box-sizing: border-box;
+}
+.bg-stub-cell.stub-filled  { background: rgba(142, 197, 255, 0.35); }
+.bg-stub-cell.stub-correct { background: rgba(127, 216, 190, 0.5); }
+.bg-stub-cell.stub-hint    { background: rgba(127, 216, 190, 0.22); border: 1px dashed #5cc4a5; }
+
+/* Y축 물결·스텁 레이블 */
+.bg-ylabel-wave {
+    height: 20px;
+}
+.bg-ylabel-stub {
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-size: 12px;
+    font-weight: 700;
+    color: #555;
+    white-space: nowrap;
 }
 
 /* 행·셀 */

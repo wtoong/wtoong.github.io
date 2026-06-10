@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>수학 문제 탐색기 · 검증</title>
+  <link rel="stylesheet" href="../math.css?v=6">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f1f5f9; min-height: 100vh; color: #1e293b; }
@@ -93,9 +94,10 @@
     .pv-tol { color: #94a3b8; font-size: 0.78rem; }
     .pv-seed { margin-top: 8px; font-size: 0.68rem; color: #a78bfa; font-family: ui-monospace, monospace; }
     .pv-fail { margin-top: 6px; font-size: 0.8rem; color: #b91c1c; font-weight: 700; }
-    .pv-bg-tbl { border-collapse: collapse; margin: 6px 0 4px; font-size: 0.78rem; }
-    .pv-bg-tbl th, .pv-bg-tbl td { border: 1px solid #8ec5ff; padding: 3px 8px; text-align: center; }
-    .pv-bg-tbl th { background: #e0f0ff; font-weight: 700; }
+    /* 검증 미리보기에서 위젯의 내장 표·안내문 숨김 (정답 막대만 표시) */
+    .pv-bg-widget .bg-table { display: none; }
+    .pv-bg-widget .bg-instruction { display: none; }
+    .pv-bg-widget { transform: scale(0.85); transform-origin: top left; margin-bottom: -10px; }
   </style>
 </head>
 <body>
@@ -133,7 +135,7 @@
 
 <script src="../question-bank.js?v=1"></script>
 <script src="../question-template.js?v=2"></script>
-<script src="../question-figures.js?v=3"></script>
+<script src="../question-figures.js?v=4"></script>
 <script>
   QuestionBank.basePath = 'questions/';   // 이 페이지는 data/ 안에 있음
   let curriculum = null, questions = [];
@@ -361,13 +363,17 @@
     } else if (q.type === 'bar-graph') {
       const bg = c.barGraph || (q.template && q.template.barGraph);
       const vars = c._vars || {};
-      if (bg && bg.labels && bg.valueVars) {
-        const vals = bg.valueVars.map(v => vars[v] != null ? vars[v] : '?');
-        body += `<table class="pv-bg-tbl">
-          <tr><th>항목</th>${bg.labels.map(l => `<td>${esc(l)}</td>`).join('')}</tr>
-          <tr><th>${esc(bg.unit || '수')}</th>${vals.map(v => `<td><b>${v}</b></td>`).join('')}</tr>
-        </table>
-        <div class="pv-num" style="font-size:11px;color:#888">눈금 1칸=${bg.scale || 1}${bg.yMin ? ' · y축 시작=' + bg.yMin : ''} · 막대그래프 직접 그리기</div>`;
+      if (bg && bg.labels && bg.valueVars && window.BarGraphWidget) {
+        const vals = bg.valueVars.map(v => vars[v] != null ? Number(vars[v]) : 0);
+        // 실제 위젯 렌더링 (정답 미리 채운 채로 markAnswers로 초록 표시)
+        const bgw = BarGraphWidget.create({
+          labels: bg.labels, correctValues: vals,
+          unit: bg.unit || '', scale: bg.scale || 1, yMin: bg.yMin || 0,
+        });
+        bgw.prefill(vals);
+        bgw.markAnswers(vals, vals);
+        bgw.element.classList.add('pv-bg-widget');
+        body += bgw.element.outerHTML;
       } else {
         body += `<div class="pv-num">막대그래프 문제 (barGraph 설정 없음)</div>`;
       }
