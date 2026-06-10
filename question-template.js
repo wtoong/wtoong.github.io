@@ -327,6 +327,10 @@
             console.warn('[QuestionTemplate] 문제 생성 실패:', q.id, e && e.message);
             return Object.assign({}, q, { __templateFailed: true });
         }
+        if (tpl.figure) {
+            base.figure = tpl.figure;
+            base._vars = Object.assign({}, scope);
+        }
         return base;
     }
 

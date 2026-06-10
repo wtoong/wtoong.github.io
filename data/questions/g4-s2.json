@@ -32,7 +32,14 @@
     {"id": "q-0216", "grade": 4, "unitId": "4-8", "skillId": "4-8-d", "difficulty": 3, "type": "mc", "prompt": "세 각이 30°, 30°, 120°인 삼각형을 가장 알맞게 말한 것은?", "choices": ["둔각삼각형이면서 이등변삼각형", "예각삼각형", "직각삼각형", "정삼각형"], "answer": "둔각삼각형이면서 이등변삼각형"},
     {"id": "q-0217", "grade": 4, "unitId": "4-8", "skillId": "4-8-d", "difficulty": 3, "type": "mc", "prompt": "정삼각형은 다음 중 어떤 삼각형이라고도 할 수 있을까요?", "choices": ["예각삼각형이면서 이등변삼각형", "둔각삼각형", "직각삼각형", "해당 없음"], "answer": "예각삼각형이면서 이등변삼각형"},
     {"id": "q-0084", "grade": 4, "unitId": "4-8", "skillId": "4-8-e", "difficulty": 2, "type": "numeric", "prompt": "삼각형 세 각의 크기의 합은 몇 도일까요?", "answer": 180},
-    {"id": "q-0085", "grade": 4, "unitId": "4-8", "skillId": "4-8-e", "difficulty": 3, "type": "numeric", "prompt": "한 각이 70도, 다른 한 각이 60도인 삼각형의 나머지 한 각은 몇 도일까요?", "answer": 50},
+    {"id": "q-0085", "grade": 4, "unitId": "4-8", "skillId": "4-8-e", "difficulty": 3, "type": "numeric",
+      "template": {
+        "figure": "triangle-angles",
+        "vars": {"a": {"min": 30, "max": 90, "step": 10}, "b": {"min": 30, "max": 90, "step": 10}},
+        "constraints": ["a + b <= 140"],
+        "prompt": "한 각이 {a}°, 다른 한 각이 {b}°인 삼각형의 나머지 한 각은 몇 도일까요?",
+        "answer": "180 - a - b"
+      }},
     {"id": "q-0218", "grade": 4, "unitId": "4-8", "skillId": "4-8-e", "difficulty": 2, "type": "numeric", "prompt": "두 변이 각각 7cm이고 나머지 한 변이 5cm인 이등변삼각형의 둘레는 몇 cm일까요?", "answer": 19},
 
     {"id": "q-0219", "grade": 4, "unitId": "4-9", "skillId": "4-9-a", "difficulty": 2, "type": "numeric", "prompt": "0.01이 7개인 수를 소수로 쓰면? (예: 0.07)", "answer": 0.07, "tolerance": 0.001},
@@ -211,8 +218,9 @@
 
     {"id": "q-t-0022", "grade": 4, "unitId": "4-8", "skillId": "4-8-e", "difficulty": 3, "type": "numeric",
       "template": {
+        "figure": "triangle-angles",
         "vars": {"a": {"min": 30, "max": 90, "step": 10}, "b": {"min": 30, "max": 90, "step": 10}},
-        "constraints": ["a + b < 180"],
+        "constraints": ["a + b <= 140"],
         "prompt": "두 각이 {a}°, {b}°인 삼각형에서 나머지 한 각은 몇 도일까요?",
         "answer": "180 - a - b"
       }},
