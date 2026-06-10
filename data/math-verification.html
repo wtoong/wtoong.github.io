@@ -130,6 +130,7 @@
 
 <script src="../question-bank.js?v=1"></script>
 <script src="../question-template.js?v=1"></script>
+<script src="../question-figures.js?v=1"></script>
 <script>
   QuestionBank.basePath = 'questions/';   // 이 페이지는 data/ 안에 있음
   let curriculum = null, questions = [];
@@ -309,6 +310,10 @@
         return `<div class="pv-fail">⚠️ 자리표시자 미치환 — "${esc(String(c.prompt))}"</div>`;
     }
     let body = `<div class="pv-prompt">${esc(c.prompt)}</div>`;
+    if (c.figure && c._vars && window.QuestionFigures) {
+      const fig = QuestionFigures.render(c.figure, c._vars);
+      if (fig) body += fig.outerHTML;
+    }
     if (q.type === 'mc') {
       const chs = c.choices || [];
       body += `<div class="pv-choices">` + chs.map(ch => {
