@@ -22,9 +22,10 @@
     // vars: { a, b }  →  c = 180 - a - b (미지)
     function triangleAnglesSVG(vars) {
         const a = vars.a, b = vars.b, c = 180 - a - b;
+        const angles = [a, b, c];
         const aR = a * Math.PI / 180, bR = b * Math.PI / 180;
 
-        const VW = 220, VH = 200;
+        const VW = 240, VH = 210;
 
         // 단위 삼각형: P0=(0,0) ∠a, P1=(1,0) ∠b, P2=(tX,tY) ∠c
         const sinAB = Math.sin(aR + bR);
@@ -35,13 +36,13 @@
         const pad = 46;
         const avW = VW - 2 * pad, avH = VH - 2 * pad;
 
-        // 비율 유지 스케일
-        const scale = Math.min(avW / 1, avH / tY) * 0.80;
+        // 비율 유지 스케일 — 0.88로 여유 있게 채움
+        const scale = Math.min(avW / 1, avH / tY) * 0.88;
 
         // 삼각형을 뷰박스 중앙에 배치 (y-축 반전)
         const triW = scale, triH = tY * scale;
         const baseX = (VW - triW) / 2;
-        const baseY = (VH + triH) / 2;   // base 꼭짓점의 SVG y 좌표
+        const baseY = (VH + triH) / 2;
 
         function toSVG(mx, my) {
             return [baseX + mx * scale, baseY - my * scale];
@@ -56,7 +57,7 @@
         svg.setAttribute('width', '100%');
         svg.setAttribute('height', String(VH));
         svg.style.cssText =
-            'max-width:220px;display:block;margin:4px auto 0;' +
+            'max-width:240px;display:block;margin:4px auto 0;' +
             'background:rgba(142,197,255,0.07);border-radius:14px';
 
         // 삼각형 채우기 + 테두리
@@ -69,6 +70,7 @@
         }));
 
         const ARC_R = 18;
+        const SQ = 13;  // 직각 기호 크기
         const labels    = [`${a}°`, `${b}°`, '?'];
         const arcStroke = ['#4a90d9', '#4a90d9', '#e07010'];
         const txtFill   = ['#1d4e8a', '#1d4e8a', '#b85000'];
@@ -77,41 +79,66 @@
 
         P.forEach(([vx, vy], i) => {
             const [ax, ay] = P[(i + 1) % 3];
-            const [bx, by] = P[(i + 2) % 3];
+            const [bxp, byp] = P[(i + 2) % 3];
             const u1 = norm(ax - vx, ay - vy);
-            const u2 = norm(bx - vx, by - vy);
+            const u2 = norm(bxp - vx, byp - vy);
+            const isRight = angles[i] === 90;
 
-            // 호 끝점
-            const p1x = vx + u1[0] * ARC_R, p1y = vy + u1[1] * ARC_R;
-            const p2x = vx + u2[0] * ARC_R, p2y = vy + u2[1] * ARC_R;
-
-            // cross < 0 이면 SVG CCW sweep=0 이 삼각형 내부 호
-            const cross = u1[0] * u2[1] - u1[1] * u2[0];
-            const sweep = cross < 0 ? 0 : 1;
-
-            // 미지각: 부채꼴 배경 강조
-            if (i === 2) {
+            if (isRight) {
+                // 직각 기호: ㄱ 모양 사각형 꺾쇠
+                const q1x = vx + u1[0] * SQ, q1y = vy + u1[1] * SQ;
+                const qmx = vx + (u1[0] + u2[0]) * SQ, qmy = vy + (u1[1] + u2[1]) * SQ;
+                const q2x = vx + u2[0] * SQ, q2y = vy + u2[1] * SQ;
+                const stroke = i === 2 ? arcStroke[2] : arcStroke[0];
+                // 작은 정사각형 채우기 (안쪽 배경)
+                if (i === 2) {
+                    svg.appendChild(svgEl('path', {
+                        d: `M ${vx.toFixed(1)} ${vy.toFixed(1)} ` +
+                           `L ${q1x.toFixed(1)} ${q1y.toFixed(1)} ` +
+                           `L ${qmx.toFixed(1)} ${qmy.toFixed(1)} ` +
+                           `L ${q2x.toFixed(1)} ${q2y.toFixed(1)} Z`,
+                        fill: 'rgba(224,112,16,0.18)',
+                        stroke: 'none'
+                    }));
+                }
                 svg.appendChild(svgEl('path', {
-                    d: `M ${vx.toFixed(1)} ${vy.toFixed(1)} ` +
-                       `L ${p1x.toFixed(1)} ${p1y.toFixed(1)} ` +
-                       `A ${ARC_R} ${ARC_R} 0 0 ${sweep} ${p2x.toFixed(1)} ${p2y.toFixed(1)} Z`,
-                    fill: 'rgba(224,112,16,0.18)',
-                    stroke: 'none'
+                    d: `M ${q1x.toFixed(1)} ${q1y.toFixed(1)} ` +
+                       `L ${qmx.toFixed(1)} ${qmy.toFixed(1)} ` +
+                       `L ${q2x.toFixed(1)} ${q2y.toFixed(1)}`,
+                    fill: 'none',
+                    stroke,
+                    'stroke-width': '1.8',
+                    'stroke-linejoin': 'miter'
+                }));
+            } else {
+                // 일반 각도 호
+                const p1x = vx + u1[0] * ARC_R, p1y = vy + u1[1] * ARC_R;
+                const p2x = vx + u2[0] * ARC_R, p2y = vy + u2[1] * ARC_R;
+                const cross = u1[0] * u2[1] - u1[1] * u2[0];
+                const sweep = cross < 0 ? 0 : 1;
+
+                if (i === 2) {
+                    svg.appendChild(svgEl('path', {
+                        d: `M ${vx.toFixed(1)} ${vy.toFixed(1)} ` +
+                           `L ${p1x.toFixed(1)} ${p1y.toFixed(1)} ` +
+                           `A ${ARC_R} ${ARC_R} 0 0 ${sweep} ${p2x.toFixed(1)} ${p2y.toFixed(1)} Z`,
+                        fill: 'rgba(224,112,16,0.18)',
+                        stroke: 'none'
+                    }));
+                }
+                svg.appendChild(svgEl('path', {
+                    d: `M ${p1x.toFixed(1)} ${p1y.toFixed(1)} ` +
+                       `A ${ARC_R} ${ARC_R} 0 0 ${sweep} ${p2x.toFixed(1)} ${p2y.toFixed(1)}`,
+                    fill: 'none',
+                    stroke: arcStroke[i],
+                    'stroke-width': i === 2 ? '2.2' : '1.8'
                 }));
             }
 
-            // 각도 호
-            svg.appendChild(svgEl('path', {
-                d: `M ${p1x.toFixed(1)} ${p1y.toFixed(1)} ` +
-                   `A ${ARC_R} ${ARC_R} 0 0 ${sweep} ${p2x.toFixed(1)} ${p2y.toFixed(1)}`,
-                fill: 'none',
-                stroke: arcStroke[i],
-                'stroke-width': i === 2 ? '2.2' : '1.8'
-            }));
-
-            // 레이블: 꼭짓점 → 무게중심 방향으로 이동 (삼각형 내부에 위치)
+            // 레이블: 꼭짓점 → 무게중심 방향으로 이동
             const distC = Math.hypot(cxT - vx, cyT - vy) || 1;
-            const labelD = Math.min(ARC_R + 17, distC * 0.68);
+            const markerR = isRight ? SQ : ARC_R;
+            const labelD = Math.min(markerR + 17, distC * 0.68);
             const [dcx, dcy] = norm(cxT - vx, cyT - vy);
             const lx = vx + dcx * labelD, ly = vy + dcy * labelD;
 
