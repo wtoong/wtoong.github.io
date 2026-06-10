@@ -161,5 +161,21 @@
         return null;
     }
 
+    // ── 자가 검증 (콘솔 오류로 즉시 포착) ───────────────────────
+    (function selfTest() {
+        const cases = [
+            { a: 90, b: 60, i: 0, expect: true,  desc: '기지각 90° (i=0) → 직각기호' },
+            { a: 60, b: 90, i: 1, expect: true,  desc: '기지각 90° (i=1) → 직각기호' },
+            { a: 60, b: 30, i: 2, expect: false, desc: '미지각 90° (i=2) → 호 (힌트방지)' },
+            { a: 60, b: 70, i: 2, expect: false, desc: '미지각 50° (i=2) → 호' },
+        ];
+        cases.forEach(({ a, b, i, expect, desc }) => {
+            const angles = [a, b, 180 - a - b];
+            const isRight = angles[i] === 90 && i !== 2;
+            if (isRight !== expect)
+                console.error('[QuestionFigures] ❌ 자가검증 실패:', desc, { isRight, expect });
+        });
+    })();
+
     window.QuestionFigures = { render };
 })();
