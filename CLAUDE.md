@@ -32,6 +32,7 @@
 | `data/questions/index.json` | 공통 | 문제 은행 샤드 매니페스트 (샤드 파일·포함 unitId·문항 수) |
 | `data/questions/g{학년}-s{학기}.json` | 공통 | (학년·학기)별 문제 은행 샤드 (mc·numeric, grade/unitId/skillId 태깅) |
 | `data/math-question-builder.html` | 선생님 | 진단 문제를 추가해 샤드(`gX-sY.json`) 생성/편집 |
+| `data/math-llm-prompt.html` | 선생님 | 채팅형 LLM(Claude·ChatGPT 등)에 붙여넣을 **출제 프롬프트 생성기**. 학년·학기·단원·원하는 문제를 적으면 문제 은행 JSON 포맷·템플릿 명세·교육과정(unitId/skillId) 컨텍스트가 담긴 프롬프트를 생성. 현재 렌더러(mc/numeric/latex)로 표현 안 되는 문제는 "불가" 대신 **새 type 설계 + 렌더링 구현 명세(클로드코드 요청문 포함)**를 내놓도록 강제 |
 | `data/math-verification.html` | 선생님 | 단원·세부기능별 문제 수와 빠진 유형(0개)·orphan 문항을 점검하는 검증 페이지 |
 | `data/dataset-builder.html` | 선생님 | 교과 이미지 URL을 모아 `curriculum-images.json` 생성 |
 | `data/curriculum-images.json` | 공통 | 교과 과정 이미지 데이터셋 |
