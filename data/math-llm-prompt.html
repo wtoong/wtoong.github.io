@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LLM 문제 출제 프롬프트 생성기</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f1f5f9; min-height: 100vh; color: #1e293b; }
+
+    header { background: #1e293b; color: #fff; padding: 16px 24px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    header h1 { font-size: 1.1rem; font-weight: 700; }
+    header span { font-size: 0.82rem; color: #94a3b8; }
+    header a { color: #93c5fd; font-size: 0.8rem; margin-left: auto; }
+
+    .layout { display: grid; grid-template-columns: 400px 1fr; min-height: calc(100vh - 54px); }
+    @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+
+    .sidebar { background: #fff; border-right: 1px solid #e2e8f0; padding: 20px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; }
+    .sidebar h2 { font-size: 0.9rem; font-weight: 700; color: #334155; }
+
+    label.field { display: block; font-size: 0.78rem; color: #64748b; margin-bottom: 3px; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    select, input[type=text], input[type=number], textarea {
+      width: 100%; padding: 7px 9px; border: 1px solid #cbd5e1; border-radius: 7px; font-size: 0.85rem; font-family: inherit;
+    }
+    textarea { resize: vertical; line-height: 1.5; }
+    select:focus, input:focus, textarea:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+
+    .btn { padding: 9px 16px; border: none; border-radius: 7px; cursor: pointer; font-size: 0.88rem; font-weight: 600; transition: background 0.15s; }
+    .btn-primary { background: #3b82f6; color: #fff; width: 100%; }
+    .btn-primary:hover { background: #2563eb; }
+    .btn-success { background: #10b981; color: #fff; }
+    .btn-success:hover { background: #059669; }
+
+    .hint { font-size: 0.74rem; color: #94a3b8; line-height: 1.5; }
+
+    .unit-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .unit-chip { padding: 5px 11px; border: 1px solid #cbd5e1; border-radius: 999px; background: #fff; cursor: pointer; font-size: 0.8rem; color: #475569; }
+    .unit-chip.on { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+
+    .check-row { display: flex; gap: 14px; flex-wrap: wrap; font-size: 0.82rem; color: #475569; }
+    .check-row label { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+
+    .main { padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+
+    .out-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .out-head h2 { font-size: 0.95rem; color: #334155; }
+    .out-head .stat { font-size: 0.78rem; color: #94a3b8; }
+    #copyBtn { margin-left: auto; }
+    #promptOut {
+      width: 100%; min-height: 420px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.76rem; line-height: 1.55; background: #0f172a; color: #e2e8f0; border: none; border-radius: 10px; padding: 14px;
+    }
+
+    .guide { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px 16px; }
+    .guide h3 { font-size: 0.88rem; color: #334155; margin-bottom: 8px; }
+    .guide ol { margin-left: 18px; font-size: 0.82rem; color: #475569; line-height: 1.7; }
+    .guide code { background: #f1f5f9; border-radius: 4px; padding: 1px 5px; font-size: 0.76rem; }
+
+    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #10b981; color: #fff;
+      padding: 9px 18px; border-radius: 999px; font-size: 0.85rem; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>🤖 LLM 문제 출제 프롬프트 생성기</h1>
+  <span>원하는 문제를 적으면, 채팅형 LLM에 붙여넣을 출제 프롬프트를 만들어 줍니다</span>
+  <a href="math-question-builder.html">문제 빌더 →</a>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <h2>1) 출제 범위</h2>
+    <div class="row2">
+      <div>
+        <label class="field">학년</label>
+        <select id="gradeSel"></select>
+      </div>
+      <div>
+        <label class="field">학기</label>
+        <select id="semSel">
+          <option value="1">1학기</option>
+          <option value="2">2학기</option>
+        </select>
+      </div>
+    </div>
+    <div>
+      <label class="field">단원 (여러 개 선택 가능 · 안 고르면 학기 전체)</label>
+      <div class="unit-chips" id="unitChips"></div>
+    </div>
+
+    <h2>2) 출제 옵션</h2>
+    <div class="row2">
+      <div>
+        <label class="field">문항 수</label>
+        <input type="number" id="countInput" min="1" max="50" value="10">
+      </div>
+      <div>
+        <label class="field">난이도 (1 쉬움 ~ 3 어려움)</label>
+        <div class="check-row" style="padding-top:7px">
+          <label><input type="checkbox" class="diff" value="1" checked>1</label>
+          <label><input type="checkbox" class="diff" value="2" checked>2</label>
+          <label><input type="checkbox" class="diff" value="3" checked>3</label>
+        </div>
+      </div>
+    </div>
+    <div class="check-row">
+      <label><input type="checkbox" id="tplChk" checked>생성형(템플릿) 문항도 섞기 — 숫자가 매번 바뀜</label>
+    </div>
+
+    <h2>3) 원하는 문제 설명</h2>
+    <div>
+      <textarea id="reqText" rows="6" placeholder="예) 시계 그림을 보고 몇 시 몇 분인지 읽는 문제 5개,
+막대그래프를 해석하는 문제 3개,
+나머지는 곱셈 문장제로 만들어 주세요."></textarea>
+      <p class="hint">그림·그래프·시계처럼 지금 앱에 없는 형태를 적어도 됩니다.
+        프롬프트가 LLM에게 "못 만든다고 하지 말고 렌더링 구현 명세까지 설계하라"고 시킵니다.</p>
+    </div>
+
+    <button class="btn btn-primary" id="genBtn">✨ 프롬프트 만들기</button>
+    <p class="hint" id="loadStatus">교육과정 불러오는 중…</p>
+  </aside>
+
+  <main class="main">
+    <div class="out-head">
+      <h2>생성된 프롬프트</h2>
+      <span class="stat" id="charCount"></span>
+      <button class="btn btn-success" id="copyBtn">📋 복사하기</button>
+    </div>
+    <textarea id="promptOut" readonly placeholder="왼쪽에서 범위와 원하는 문제를 정하고 [프롬프트 만들기]를 누르세요.
+복사해서 Claude·ChatGPT 같은 채팅형 LLM에 붙여넣으면 됩니다."></textarea>
+
+    <div class="guide">
+      <h3>📌 받은 결과는 이렇게 쓰세요</h3>
+      <ol>
+        <li><b>✅ 바로 사용 가능한 문항</b> JSON → <code>math-question-builder.html</code>의 "JSON 가져오기"에 붙여넣어 샤드로 저장하거나,
+          클로드코드에 "이 문항들을 <code>data/questions/g학년-s학기.json</code> 샤드에 추가하고 <code>index.json</code> count를 갱신해줘"라고 요청.</li>
+        <li><b>🆕 새 유형 문항 + 🛠 렌더링 구현 명세</b>가 나오면 → 그 두 섹션을 통째로 클로드코드에 붙여넣고
+          "이 명세대로 렌더링 기능을 구현하고 문항도 샤드에 추가해줘"라고 요청. (수정 위치까지 명세에 적혀 나옵니다)</li>
+        <li>등록 후 <code>math-verification.html</code>에서 빠진 유형·템플릿 오류를 점검.</li>
+      </ol>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast">복사했어요! ✅</div>
+
+<script>
+(function () {
+  'use strict';
+
+  let curriculum = null;
+  const selectedUnits = new Set();
+
+  const $ = id => document.getElementById(id);
+  const gradeSel = $('gradeSel'), semSel = $('semSel'), unitChips = $('unitChips');
+
+  // ── 교육과정 로드 ─────────────────────────────────────────
+  fetch('math-curriculum.json')
+    .then(r => r.json())
+    .then(data => {
+      curriculum = data;
+      data.grades.forEach(g => {
+        const o = document.createElement('option');
+        o.value = g.grade; o.textContent = g.grade + '학년';
+        gradeSel.appendChild(o);
+      });
+      gradeSel.value = '4';
+      renderUnits();
+      $('loadStatus').textContent = '교육과정 로드 완료 (' + data.grades.length + '개 학년)';
+    })
+    .catch(() => { $('loadStatus').textContent = '⚠️ math-curriculum.json을 못 읽었어요. 정적 서버로 열어주세요.'; });
+
+  function unitSemester(u) {
+    if (u.semester) return u.semester;
+    const n = parseInt(String(u.unitId).split('-')[1], 10);
+    return n >= 3 ? 2 : 1; // math-diagnostic.js의 deriveSemester와 동일 규칙
+  }
+
+  function currentUnits() {
+    const g = curriculum.grades.find(x => String(x.grade) === gradeSel.value);
+    const sem = parseInt(semSel.value, 10);
+    return g ? g.units.filter(u => unitSemester(u) === sem) : [];
+  }
+
+  function renderUnits() {
+    selectedUnits.clear();
+    unitChips.innerHTML = '';
+    currentUnits().forEach(u => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'unit-chip';
+      b.textContent = u.unitId + ' ' + u.unitName;
+      b.addEventListener('click', () => {
+        if (selectedUnits.has(u.unitId)) { selectedUnits.delete(u.unitId); b.classList.remove('on'); }
+        else { selectedUnits.add(u.unitId); b.classList.add('on'); }
+      });
+      unitChips.appendChild(b);
+    });
+  }
+
+  gradeSel.addEventListener('change', renderUnits);
+  semSel.addEventListener('change', renderUnits);
+
+  // ── 프롬프트 조립 ─────────────────────────────────────────
+  function buildPrompt() {
+    const grade = gradeSel.value;
+    const sem = semSel.value;
+    const count = Math.max(1, parseInt($('countInput').value, 10) || 10);
+    const diffs = [...document.querySelectorAll('.diff:checked')].map(c => c.value);
+    const allowTpl = $('tplChk').checked;
+    const req = $('reqText').value.trim();
+
+    const units = currentUnits().filter(u => !selectedUnits.size || selectedUnits.has(u.unitId));
+    const unitTable = units.map(u =>
+      '- 단원 ' + u.unitId + ' 「' + u.unitName + '」\n' +
+      u.skills.map(s => '    - skillId "' + s.skillId + '" : ' + s.skillName).join('\n')
+    ).join('\n');
+
+    const F = '```'; // 코드펜스
+
+    return `당신은 한국 초등학교 수학 진단평가 문제 출제 전문가입니다.
+아래 명세를 빠짐없이 따라, 우리 학습 웹앱의 문제 은행 JSON 포맷에 맞는 문항을 만들어 주세요.
+
+## 1. 출제 요청
+- 대상: ${grade}학년 ${sem}학기
+- 출제 범위 단원과 세부유형(skill) — unitId/skillId는 반드시 이 목록의 값만 사용:
+${unitTable}
+- 총 문항 수: ${count}개 (요청사항에 개수가 따로 적혀 있으면 그걸 우선)
+- 난이도: ${diffs.length ? diffs.join(', ') : '1, 2, 3'} (1=쉬움, 2=보통, 3=어려움) 범위에서 고르게
+- 생성형(템플릿) 문항: ${allowTpl ? '허용 — 같은 풀이를 반복 연습할 유형은 3절의 template 문항으로 만들어 주세요(전체의 절반 안팎 권장)' : '사용하지 말 것 — 모든 문항을 고정 문항으로'}
+
+### 선생님 요청사항 (가장 중요 — 이 내용을 최우선으로 반영)
+"""
+${req || '(특별한 요청 없음 — 위 범위에서 세부유형이 고루 나오게 출제해 주세요)'}
+"""
+
+## 2. 문항 JSON 포맷 (필수 준수)
+각 문항은 다음 필드를 가진 JSON 객체이고, 최종 출력은 JSON 배열입니다.
+
+공통 필드:
+- "id": 고유 문자열. 일반 문항은 "q-llm-001"부터, 템플릿 문항은 "q-t-llm-001"부터 순서대로.
+- "grade": ${grade} (숫자)
+- "unitId": 위 1절 목록의 단원 id (예: "${units[0] ? units[0].unitId : grade + '-1'}")
+- "skillId": 위 1절 목록의 세부유형 id — 목록에 없는 값을 지어내면 안 됩니다.
+- "difficulty": 1 | 2 | 3
+- "type": "mc"(객관식) 또는 "numeric"(숫자 입력) — 이 둘로 표현이 안 되면 4절의 새 유형 규칙을 따르세요.
+- "prompt": 문제 텍스트. 일반 텍스트만(HTML 금지), 이모지는 환영.
+
+type별 필드:
+- "mc": "choices"에 보기 4개(문자열 배열), "answer"는 정답 문자열로 choices 중 하나와 완전히 일치해야 합니다. 보기 순서는 앱이 무작위로 섞으므로 "다음 중 첫 번째…" 같은 순서 의존 표현 금지.
+- "numeric": "answer"는 숫자. 소수 답이면 "tolerance"(허용 오차, 예: 0.01)를 함께.
+- 선택 "latex": true — prompt·choices·answer 안에서 $...$ 인라인 KaTeX 수식을 쓸 수 있습니다. 분수·복잡한 식은 latex 사용을 권장 (예: "prompt": "$\\\\frac{1}{2} + \\\\frac{1}{4}$ 는 얼마일까요?").
+
+예시:
+${F}json
+[
+  {"id": "q-llm-001", "grade": 4, "unitId": "4-3", "skillId": "4-3-a", "difficulty": 2, "type": "mc",
+   "prompt": "234 × 20 = ?", "choices": ["468", "4608", "4680", "4860"], "answer": "4680"},
+  {"id": "q-llm-002", "grade": 4, "unitId": "4-1", "skillId": "4-1-a", "difficulty": 3, "type": "numeric",
+   "prompt": "1억은 1000만이 몇 개일까요?", "answer": 10}
+]
+${F}
+
+## 3. 생성형(템플릿) 문항 — 숫자가 매번 바뀌는 문제
+학생이 답을 외우지 못하게, 출제할 때마다 숫자가 바뀌는 문항입니다. 공통 필드는 그대로 두고 "template" 객체를 추가합니다. template 안에는:
+- "vars": 정수 변수 정의. {"이름": {"min": 최소, "max": 최대, "step": 간격(선택)}}
+- "constraints": (선택) 불리언 식 문자열 배열 — 모두 참이어야 채택. 음수 방지("a >= b"), 나누어떨어짐("a % b == 0") 등을 표현. 만족 못 하면 재추첨(최대 200회)하므로 너무 빡빡한 제약은 금지.
+- "derived": (선택) 파생값. {"이름": "산술식"} — vars로 계산.
+- "prompt": "{변수이름}" 자리표시자가 들어간 문제 텍스트.
+- "format": (선택) 변수 표시 형식. "dec:N"(소수 N자리), "frac"(분수), "mixed"(대분수), "korean"(한글 수 읽기).
+- numeric이면 "answer"에 산술식 문자열. mc면 "choices"에 식 4개 — 반드시 0번째가 정답이고 나머지는 그럴듯한 오답 식(앱이 계산·셔플함).
+- "tolerance": (선택) 소수 허용 오차.
+
+식 계산기는 eval을 쓰지 않는 자체 파서입니다. 사용 가능: 사칙연산 + - * / %, 비교 < <= > >= == !=, 논리 && ||, 괄호, 그리고 함수는 floor, ceil, round, abs, gcd, lcm, min, max, pow 만. 다른 함수·문법은 쓰면 안 됩니다.
+
+예시:
+${F}json
+[
+  {"id": "q-t-llm-001", "grade": 4, "unitId": "4-3", "skillId": "4-3-d", "difficulty": 2, "type": "numeric",
+   "template": {
+     "vars": { "divisor": {"min": 2, "max": 9}, "quotient": {"min": 12, "max": 99} },
+     "derived": { "dividend": "divisor * quotient" },
+     "prompt": "{dividend} ÷ {divisor} = ?",
+     "answer": "quotient"
+   }},
+  {"id": "q-t-llm-002", "grade": 4, "unitId": "4-3", "skillId": "4-3-a", "difficulty": 2, "type": "mc",
+   "template": {
+     "vars": { "a": {"min": 101, "max": 499}, "b": {"min": 11, "max": 30} },
+     "prompt": "{a} × {b} = ?",
+     "choices": ["a * b", "a * b + a", "a * b - b", "a * (b + 10)"]
+   }}
+]
+${F}
+
+## 4. 앱의 현재 렌더링 능력과 "새 유형" 규칙 (매우 중요)
+현재 앱(math-diagnostic.js)이 화면에 그릴 수 있는 것은 다음이 전부입니다:
+- 텍스트 문제(prompt) + 이모지
+- "latex": true일 때 $...$ KaTeX 인라인 수식 (CDN lazy load)
+- "mc" → 보기 버튼 4개, "numeric" → 숫자 입력칸 + 확인 버튼
+- 채점은 gradeAnswer(): mc는 문자열 완전 일치, numeric은 |입력−answer| ≤ tolerance
+이미지·그림·그래프·표·시계·도형 조작·드래그 같은 렌더러는 아직 없습니다.
+
+그러나 선생님 요청이 현재 능력으로 표현되지 않는다고 해서, **절대 "구현할 수 없습니다"라고 답하거나 그 문제를 조용히 빼먹으면 안 됩니다.** 반드시 다음 절차를 따르세요:
+1. 새 type 이름을 직접 설계하세요. (예: "clock", "bar-chart", "fraction-shade", "shape-count")
+2. 그 유형을 그리는 데 필요한 데이터를 필드로 설계해 문항 JSON을 완성하세요. 이미지 파일 URL 대신, 데이터만으로 SVG/CSS로 그릴 수 있는 **데이터 기반 표현**을 우선하세요. (예: 시계 그림 → "clock": {"hour": 3, "minute": 30}, 막대그래프 → "chart": {"labels": [...], "values": [...]})
+3. 출력의 "🛠 렌더링 구현 명세" 섹션에 새 유형마다 아래 항목을 모두 적으세요. 이 명세는 개발 AI(클로드코드)가 그대로 구현할 수 있을 만큼 구체적이어야 합니다:
+   - **유형 이름과 용도**: 어떤 문제를 표현하는 type인지
+   - **필드 스키마**: 각 필드의 이름·타입·의미 (mc/numeric과 어떻게 조합되는지 — 예: 시계 SVG를 보여주되 답은 numeric 입력)
+   - **렌더링 방법**: 외부 라이브러리 없이(꼭 필요하면 CDN lazy load) 순수 JS + SVG/CSS로 어떻게 그릴지 — 좌표 계산, 크기, 색 등 구체적으로. 이 앱은 빌드 도구가 없는 정적 사이트라는 점을 지킬 것.
+   - **입력·채점 방식**: 기존 gradeAnswer(mc 문자열 비교 / numeric 오차 비교)를 재사용할 수 있게 설계하는 것을 최우선으로. 불가능할 때만 새 채점 로직을 명세.
+   - **구현 위치**: math-diagnostic.js의 renderQuestion() 안 q.type 분기(현재 'mc'/'numeric' 분기)에 새 분기 추가, 스타일은 math.css, 별자리 게임(constellation.js)도 같은 렌더 로직을 재사용한다는 점을 명시.
+   - **클로드코드 요청문**: 위 내용을 요약해 개발 AI에 그대로 붙여넣을 수 있는 구현 요청 한 단락.
+
+## 5. 품질 규칙
+- 초등학생 눈높이의 친근한 한국어로. 문장제는 짧고 명확하게, 이모지로 재미를.
+- mc 오답 보기는 무작위 숫자가 아니라 그럴듯한 실수(받아올림 누락, 자릿수 혼동, 연산 순서 실수 등)로 만들 것. 보기 중복 금지.
+- 모든 정답은 출력 전에 직접 검산할 것. 템플릿은 min/max 경계값에서도 성립하는지 확인할 것.
+- 같은 skillId 안에서도 문장·소재를 다양하게.
+- 1절 목록에 없는 unitId/skillId를 절대 만들어 쓰지 말 것.
+
+## 6. 출력 형식 (정확히 이 구조로)
+### ✅ 바로 사용 가능한 문항
+(현재 렌더러로 표시 가능한 mc/numeric/템플릿 문항만 — JSON 배열 코드블록 1개)
+### 🆕 새 유형 문항
+(새 type이 필요한 문항이 있을 때만 — JSON 배열 코드블록 1개)
+### 🛠 렌더링 구현 명세
+(🆕가 있을 때만 — 새 유형별 4절 항목 전부 + 클로드코드 요청문)
+### 📝 검수 노트
+(출제 의도, 난이도 분포, 주의할 점을 간단히)`;
+  }
+
+  $('genBtn').addEventListener('click', () => {
+    if (!curriculum) return;
+    const text = buildPrompt();
+    $('promptOut').value = text;
+    $('charCount').textContent = text.length.toLocaleString() + '자';
+  });
+
+  $('copyBtn').addEventListener('click', () => {
+    const out = $('promptOut');
+    if (!out.value) return;
+    const done = () => {
+      const t = $('toast');
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 1500);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(out.value).then(done).catch(() => { out.select(); document.execCommand('copy'); done(); });
+    } else {
+      out.select(); document.execCommand('copy'); done();
+    }
+  });
+})();
+</script>
+</body>
+</html>
