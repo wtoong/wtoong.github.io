@@ -322,6 +322,7 @@
         const base = {
             id: q.id, grade: q.grade, unitId: q.unitId,
             skillId: q.skillId, difficulty: q.difficulty, type: q.type,
+            latex: q.latex,
         };
         try {
             base.prompt = fillPlaceholders(tpl.prompt, scope, tpl.format, tpl.promptParts);

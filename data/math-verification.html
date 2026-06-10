@@ -159,6 +159,31 @@
     return String(s).replace(/[&<>"']/g, c =>
       ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
+
+  // LaTeX 렌더링 (latex:true 문항용) — $...$ 구간만 KaTeX로, 나머지는 esc
+  let _katexReady = false;
+  function ensureKatex(cb) {
+    if (_katexReady) { cb(); return; }
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css';
+    document.head.appendChild(link);
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js';
+    s.onload = () => { _katexReady = true; cb(); };
+    document.head.appendChild(s);
+  }
+
+  function renderDisplay(text, isLatex) {
+    if (!isLatex || !window.katex) return esc(String(text));
+    return String(text).split(/(\$[^$]+\$)/g).map((part, i) => {
+      if (i % 2 === 1) {
+        const math = part.slice(1, -1);
+        return katex.renderToString(math, { throwOnError: false, displayMode: false });
+      }
+      return esc(part);
+    }).join('');
+  }
   function randSeed() { return (Math.random() * 0xffffffff) >>> 0; }
   function typeLabel(t) { return t === 'mc' ? '객관식' : '단답형'; }
 
@@ -294,9 +319,14 @@
     previewList = questions.filter(q => q.unitId === unitId)
       .sort((a, b) => (a.template ? 1 : 0) - (b.template ? 1 : 0) || String(a.id).localeCompare(b.id));
     previewSeeds = previewList.map(q => q.template ? randSeed() : null);
-    renderPreview();
-    render(); // 선택 표시 갱신
-    document.getElementById('preview').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const needsLatex = previewList.some(q => q.latex);
+    const doRender = () => {
+      renderPreview();
+      render(); // 선택 표시 갱신
+      document.getElementById('preview').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    if (needsLatex) ensureKatex(doRender);
+    else doRender();
   }
 
   function instanceHTML(q, seed) {
@@ -309,7 +339,8 @@
       if (typeof c.prompt !== 'string' || /\{[a-zA-Z_]/.test(c.prompt))
         return `<div class="pv-fail">⚠️ 자리표시자 미치환 — "${esc(String(c.prompt))}"</div>`;
     }
-    let body = `<div class="pv-prompt">${esc(c.prompt)}</div>`;
+    const isLatex = !!q.latex;
+    let body = `<div class="pv-prompt">${renderDisplay(c.prompt, isLatex)}</div>`;
     if (c.figure && c._vars && window.QuestionFigures) {
       const fig = QuestionFigures.render(c.figure, c._vars);
       if (fig) body += fig.outerHTML;
@@ -318,12 +349,12 @@
       const chs = c.choices || [];
       body += `<div class="pv-choices">` + chs.map(ch => {
         const ok = String(ch) === String(c.answer);
-        return `<span class="pv-choice ${ok ? 'correct' : ''}">${ok ? '✓ ' : ''}${esc(String(ch))}</span>`;
+        return `<span class="pv-choice ${ok ? 'correct' : ''}">${ok ? '✓ ' : ''}${renderDisplay(String(ch), isLatex)}</span>`;
       }).join('') + `</div>`;
       if (chs.indexOf(c.answer) < 0)
-        body += `<div class="pv-fail">⚠️ 정답이 보기에 없음 (${esc(String(c.answer))})</div>`;
+        body += `<div class="pv-fail">⚠️ 정답이 보기에 없음 (${renderDisplay(String(c.answer), isLatex)})</div>`;
     } else {
-      body += `<div class="pv-num">정답: <b>${esc(String(c.answer))}</b>` +
+      body += `<div class="pv-num">정답: <b>${renderDisplay(String(c.answer), isLatex)}</b>` +
         (c.tolerance ? ` <span class="pv-tol">±${c.tolerance}</span>` : '') + `</div>`;
     }
     if (tmpl && seed != null) body += `<div class="pv-seed">seed ${seed}</div>`;
