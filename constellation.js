@@ -23,6 +23,31 @@
 
     const SVG_NS = 'http://www.w3.org/2000/svg';
 
+    // ── KaTeX 지연 로드 (math-diagnostic.js와 동일) ──────────────
+    let _katexPromise = null;
+    function loadKatex() {
+        if (_katexPromise) return _katexPromise;
+        _katexPromise = new Promise(resolve => {
+            if (window.katex) { resolve(); return; }
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css';
+            document.head.appendChild(link);
+            const s = document.createElement('script');
+            s.src = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js';
+            s.onload = resolve;
+            document.head.appendChild(s);
+        });
+        return _katexPromise;
+    }
+
+    function renderLatex(text) {
+        if (!window.katex) return String(text);
+        return String(text).replace(/\$([^$]+)\$/g, (_, math) =>
+            katex.renderToString(math, { throwOnError: false, displayMode: false })
+        );
+    }
+
     // ── 작은 유틸 (memory.js / math-diagnostic.js와 동일) ──────────
     function shuffle(arr) { // Fisher–Yates
         const a = arr.slice();
@@ -288,7 +313,11 @@
             answers = [];
             cursor = 0;
             goScreen(quizEl);
-            renderQuestion();
+            if (quizList.some(q => q.latex)) {
+                loadKatex().then(renderQuestion);
+            } else {
+                renderQuestion();
+            }
         }
 
         // ── 채점 (math-diagnostic.js와 동일) ─────────────────────
@@ -312,7 +341,10 @@
             const card = el('div', 'q-card');
             card.appendChild(el('div', 'q-grade-badge',
                 `${currentC.name} · ${currentUnitName}`));
-            card.appendChild(el('div', 'q-prompt', q.prompt));
+            const promptDiv = el('div', 'q-prompt');
+            if (q.latex) promptDiv.innerHTML = renderLatex(q.prompt);
+            else promptDiv.textContent = q.prompt;
+            card.appendChild(promptDiv);
 
             if (q.figure && q._vars && window.QuestionFigures) {
                 const fig = QuestionFigures.render(q.figure, q._vars);
@@ -328,9 +360,15 @@
                 const correct = gradeAnswer(q, given);
                 answers.push({ qId: q.id, correct });
                 answersWrap.querySelectorAll('button, input').forEach(n => n.disabled = true);
-                feedback.textContent = correct
-                    ? '정답이에요! 🎉'
-                    : `아쉬워요! 정답은 "${q.answer}" 예요.`;
+                if (q.latex) {
+                    feedback.innerHTML = correct
+                        ? '정답이에요! 🎉'
+                        : '아쉬워요! 정답은 ' + renderLatex(q.answer) + ' 예요.';
+                } else {
+                    feedback.textContent = correct
+                        ? '정답이에요! 🎉'
+                        : `아쉬워요! 정답은 "${q.answer}" 예요.`;
+                }
                 feedback.classList.add(correct ? 'ok' : 'no');
                 show(nextBtn);
                 nextBtn.focus();
@@ -338,7 +376,9 @@
 
             if (q.type === 'mc') {
                 shuffle(q.choices).forEach(choice => {
-                    const b = el('button', 'choice-btn', choice);
+                    const b = el('button', 'choice-btn');
+                    if (q.latex) b.innerHTML = renderLatex(choice);
+                    else b.textContent = choice;
                     b.type = 'button';
                     b.addEventListener('click', () => finishQuestion(choice));
                     answersWrap.appendChild(b);

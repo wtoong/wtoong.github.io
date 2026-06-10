@@ -1,25 +1,25 @@
 {
   "_meta": { "description": "문제 은행 샤드 — 4학년 2학기", "grade": 4, "semester": 2 },
   "questions": [
-    {"id": "q-0078", "grade": 4, "unitId": "4-7", "skillId": "4-7-a", "difficulty": 2, "type": "mc", "prompt": "2/5 + 1/5 = ?", "choices": ["3/5", "3/10", "2/5", "1/5"], "answer": "3/5"},
-    {"id": "q-0080", "grade": 4, "unitId": "4-7", "skillId": "4-7-a", "difficulty": 2, "type": "mc", "prompt": "3/8 + 4/8 = ?", "choices": ["7/8", "7/16", "1/8", "12/8"], "answer": "7/8"},
-    {"id": "q-0082", "grade": 4, "unitId": "4-7", "skillId": "4-7-a", "difficulty": 1, "type": "numeric", "prompt": "대분수 1과 2/5 에서 자연수 부분은 얼마일까요?", "answer": 1},
-    {"id": "q-0194", "grade": 4, "unitId": "4-7", "skillId": "4-7-a", "difficulty": 3, "type": "mc", "prompt": "5/9 + 7/9 의 합을 대분수로 나타내면?", "choices": ["1과 3/9", "12/9", "1과 1/9", "12/18"], "answer": "1과 3/9"},
-    {"id": "q-0195", "grade": 4, "unitId": "4-7", "skillId": "4-7-b", "difficulty": 2, "type": "mc", "prompt": "1과 2/5 + 2과 1/5 = ?", "choices": ["3과 3/5", "3과 3/10", "2과 3/5", "3과 1/5"], "answer": "3과 3/5"},
-    {"id": "q-0196", "grade": 4, "unitId": "4-7", "skillId": "4-7-b", "difficulty": 3, "type": "mc", "prompt": "2과 4/6 + 1과 5/6 = ? (분수 부분이 가분수가 되면 대분수로 고쳐요)", "choices": ["4과 3/6", "3과 9/6", "4과 9/6", "3과 3/6"], "answer": "4과 3/6"},
-    {"id": "q-0079", "grade": 4, "unitId": "4-7", "skillId": "4-7-c", "difficulty": 2, "type": "mc", "prompt": "4/7 - 2/7 = ?", "choices": ["2/7", "6/7", "2/14", "2/0"], "answer": "2/7"},
-    {"id": "q-0081", "grade": 4, "unitId": "4-7", "skillId": "4-7-c", "difficulty": 2, "type": "mc", "prompt": "5/6 - 1/6 = ?", "choices": ["4/6", "6/6", "4/12", "4/0"], "answer": "4/6"},
-    {"id": "q-0197", "grade": 4, "unitId": "4-7", "skillId": "4-7-d", "difficulty": 2, "type": "mc", "prompt": "1 - 4/5 = ? (1을 5/5로 바꾸어 빼요)", "choices": ["1/5", "4/5", "3/5", "1"], "answer": "1/5"},
-    {"id": "q-0198", "grade": 4, "unitId": "4-7", "skillId": "4-7-d", "difficulty": 3, "type": "mc", "prompt": "5 - 6/7 = ? (5에서 1을 7/7로 빌려와요)", "choices": ["4와 1/7", "5와 1/7", "4와 6/7", "1/7"], "answer": "4와 1/7"},
-    {"id": "q-0199", "grade": 4, "unitId": "4-7", "skillId": "4-7-d", "difficulty": 3, "type": "mc", "prompt": "4 - 2와 2/5 = ?", "choices": ["1과 3/5", "2와 3/5", "1과 2/5", "2와 2/5"], "answer": "1과 3/5"},
-    {"id": "q-0200", "grade": 4, "unitId": "4-7", "skillId": "4-7-d", "difficulty": 3, "type": "mc", "prompt": "3 - 1과 3/8 = ?", "choices": ["1과 5/8", "2와 5/8", "1과 3/8", "2와 3/8"], "answer": "1과 5/8"},
-    {"id": "q-0201", "grade": 4, "unitId": "4-7", "skillId": "4-7-e", "difficulty": 2, "type": "mc", "prompt": "3과 4/6 - 1과 2/6 = ? (자연수는 자연수끼리, 분수는 분수끼리)", "choices": ["2과 2/6", "2과 6/6", "4과 2/6", "2과 2/0"], "answer": "2과 2/6"},
-    {"id": "q-0202", "grade": 4, "unitId": "4-7", "skillId": "4-7-e", "difficulty": 2, "type": "mc", "prompt": "5과 7/9 - 2과 3/9 = ?", "choices": ["3과 4/9", "3과 10/9", "7과 4/9", "3과 4/0"], "answer": "3과 4/9"},
-    {"id": "q-0203", "grade": 4, "unitId": "4-7", "skillId": "4-7-f", "difficulty": 3, "type": "mc", "prompt": "3과 3/6 - 1과 4/6 = ? (분수끼리 뺄 수 없어 자연수에서 1을 받아내려요)", "choices": ["1과 5/6", "2과 1/6", "1과 1/6", "2과 5/6"], "answer": "1과 5/6"},
-    {"id": "q-0204", "grade": 4, "unitId": "4-7", "skillId": "4-7-f", "difficulty": 3, "type": "mc", "prompt": "4와 1/5 - 1과 3/5 = ?", "choices": ["2과 3/5", "3과 2/5", "2과 2/5", "3과 3/5"], "answer": "2과 3/5"},
-    {"id": "q-0205", "grade": 4, "unitId": "4-7", "skillId": "4-7-f", "difficulty": 3, "type": "mc", "prompt": "5와 2/7 - 2과 5/7 = ?", "choices": ["2과 4/7", "3과 4/7", "2과 3/7", "3과 3/7"], "answer": "2과 4/7"},
-    {"id": "q-0206", "grade": 4, "unitId": "4-7", "skillId": "4-7-g", "difficulty": 2, "type": "mc", "prompt": "물을 어제 3/8 L, 오늘 2/8 L 마셨어요. 모두 몇 L 마셨을까요?", "choices": ["5/8 L", "5/16 L", "1/8 L", "6/8 L"], "answer": "5/8 L"},
-    {"id": "q-0207", "grade": 4, "unitId": "4-7", "skillId": "4-7-g", "difficulty": 2, "type": "mc", "prompt": "리본이 7/9 m 있었는데 4/9 m를 썼어요. 남은 리본은 몇 m일까요?", "choices": ["3/9 m", "11/9 m", "3/18 m", "4/9 m"], "answer": "3/9 m"},
+    {"id": "q-0078", "grade": 4, "unitId": "4-7", "skillId": "4-7-a", "difficulty": 2, "type": "mc", "latex": true, "prompt": "$\\dfrac{2}{5} + \\dfrac{1}{5} = ?$", "choices": ["$\\dfrac{3}{5}$", "$\\dfrac{3}{10}$", "$\\dfrac{2}{5}$", "$\\dfrac{1}{5}$"], "answer": "$\\dfrac{3}{5}$"},
+    {"id": "q-0080", "grade": 4, "unitId": "4-7", "skillId": "4-7-a", "difficulty": 2, "type": "mc", "latex": true, "prompt": "$\\dfrac{3}{8} + \\dfrac{4}{8} = ?$", "choices": ["$\\dfrac{7}{8}$", "$\\dfrac{7}{16}$", "$\\dfrac{1}{8}$", "$\\dfrac{12}{8}$"], "answer": "$\\dfrac{7}{8}$"},
+    {"id": "q-0082", "grade": 4, "unitId": "4-7", "skillId": "4-7-a", "difficulty": 1, "type": "numeric", "latex": true, "prompt": "대분수 $1\\dfrac{2}{5}$ 에서 자연수 부분은 얼마일까요?", "answer": 1},
+    {"id": "q-0194", "grade": 4, "unitId": "4-7", "skillId": "4-7-a", "difficulty": 3, "type": "mc", "latex": true, "prompt": "$\\dfrac{5}{9} + \\dfrac{7}{9}$의 합을 대분수로 나타내면?", "choices": ["$1\\dfrac{3}{9}$", "$\\dfrac{12}{9}$", "$1\\dfrac{1}{9}$", "$\\dfrac{12}{18}$"], "answer": "$1\\dfrac{3}{9}$"},
+    {"id": "q-0195", "grade": 4, "unitId": "4-7", "skillId": "4-7-b", "difficulty": 2, "type": "mc", "latex": true, "prompt": "$1\\dfrac{2}{5} + 2\\dfrac{1}{5} = ?$", "choices": ["$3\\dfrac{3}{5}$", "$3\\dfrac{3}{10}$", "$2\\dfrac{3}{5}$", "$3\\dfrac{1}{5}$"], "answer": "$3\\dfrac{3}{5}$"},
+    {"id": "q-0196", "grade": 4, "unitId": "4-7", "skillId": "4-7-b", "difficulty": 3, "type": "mc", "latex": true, "prompt": "$2\\dfrac{4}{6} + 1\\dfrac{5}{6} = ?$ (분수 부분이 가분수가 되면 대분수로 고쳐요)", "choices": ["$4\\dfrac{3}{6}$", "$3\\dfrac{9}{6}$", "$4\\dfrac{9}{6}$", "$3\\dfrac{3}{6}$"], "answer": "$4\\dfrac{3}{6}$"},
+    {"id": "q-0079", "grade": 4, "unitId": "4-7", "skillId": "4-7-c", "difficulty": 2, "type": "mc", "latex": true, "prompt": "$\\dfrac{4}{7} - \\dfrac{2}{7} = ?$", "choices": ["$\\dfrac{2}{7}$", "$\\dfrac{6}{7}$", "$\\dfrac{2}{14}$", "$\\dfrac{2}{0}$"], "answer": "$\\dfrac{2}{7}$"},
+    {"id": "q-0081", "grade": 4, "unitId": "4-7", "skillId": "4-7-c", "difficulty": 2, "type": "mc", "latex": true, "prompt": "$\\dfrac{5}{6} - \\dfrac{1}{6} = ?$", "choices": ["$\\dfrac{4}{6}$", "$\\dfrac{6}{6}$", "$\\dfrac{4}{12}$", "$\\dfrac{4}{0}$"], "answer": "$\\dfrac{4}{6}$"},
+    {"id": "q-0197", "grade": 4, "unitId": "4-7", "skillId": "4-7-d", "difficulty": 2, "type": "mc", "latex": true, "prompt": "$1 - \\dfrac{4}{5} = ?$ (1을 $\\dfrac{5}{5}$로 바꾸어 빼요)", "choices": ["$\\dfrac{1}{5}$", "$\\dfrac{4}{5}$", "$\\dfrac{3}{5}$", "1"], "answer": "$\\dfrac{1}{5}$"},
+    {"id": "q-0198", "grade": 4, "unitId": "4-7", "skillId": "4-7-d", "difficulty": 3, "type": "mc", "latex": true, "prompt": "$5 - \\dfrac{6}{7} = ?$ (5에서 1을 $\\dfrac{7}{7}$로 빌려와요)", "choices": ["$4\\dfrac{1}{7}$", "$5\\dfrac{1}{7}$", "$4\\dfrac{6}{7}$", "$\\dfrac{1}{7}$"], "answer": "$4\\dfrac{1}{7}$"},
+    {"id": "q-0199", "grade": 4, "unitId": "4-7", "skillId": "4-7-d", "difficulty": 3, "type": "mc", "latex": true, "prompt": "$4 - 2\\dfrac{2}{5} = ?$", "choices": ["$1\\dfrac{3}{5}$", "$2\\dfrac{3}{5}$", "$1\\dfrac{2}{5}$", "$2\\dfrac{2}{5}$"], "answer": "$1\\dfrac{3}{5}$"},
+    {"id": "q-0200", "grade": 4, "unitId": "4-7", "skillId": "4-7-d", "difficulty": 3, "type": "mc", "latex": true, "prompt": "$3 - 1\\dfrac{3}{8} = ?$", "choices": ["$1\\dfrac{5}{8}$", "$2\\dfrac{5}{8}$", "$1\\dfrac{3}{8}$", "$2\\dfrac{3}{8}$"], "answer": "$1\\dfrac{5}{8}$"},
+    {"id": "q-0201", "grade": 4, "unitId": "4-7", "skillId": "4-7-e", "difficulty": 2, "type": "mc", "latex": true, "prompt": "$3\\dfrac{4}{6} - 1\\dfrac{2}{6} = ?$ (자연수는 자연수끼리, 분수는 분수끼리)", "choices": ["$2\\dfrac{2}{6}$", "$2\\dfrac{6}{6}$", "$4\\dfrac{2}{6}$", "$2\\dfrac{2}{0}$"], "answer": "$2\\dfrac{2}{6}$"},
+    {"id": "q-0202", "grade": 4, "unitId": "4-7", "skillId": "4-7-e", "difficulty": 2, "type": "mc", "latex": true, "prompt": "$5\\dfrac{7}{9} - 2\\dfrac{3}{9} = ?$", "choices": ["$3\\dfrac{4}{9}$", "$3\\dfrac{10}{9}$", "$7\\dfrac{4}{9}$", "$3\\dfrac{4}{0}$"], "answer": "$3\\dfrac{4}{9}$"},
+    {"id": "q-0203", "grade": 4, "unitId": "4-7", "skillId": "4-7-f", "difficulty": 3, "type": "mc", "latex": true, "prompt": "$3\\dfrac{3}{6} - 1\\dfrac{4}{6} = ?$ (분수끼리 뺄 수 없어 자연수에서 1을 받아내려요)", "choices": ["$1\\dfrac{5}{6}$", "$2\\dfrac{1}{6}$", "$1\\dfrac{1}{6}$", "$2\\dfrac{5}{6}$"], "answer": "$1\\dfrac{5}{6}$"},
+    {"id": "q-0204", "grade": 4, "unitId": "4-7", "skillId": "4-7-f", "difficulty": 3, "type": "mc", "latex": true, "prompt": "$4\\dfrac{1}{5} - 1\\dfrac{3}{5} = ?$", "choices": ["$2\\dfrac{3}{5}$", "$3\\dfrac{2}{5}$", "$2\\dfrac{2}{5}$", "$3\\dfrac{3}{5}$"], "answer": "$2\\dfrac{3}{5}$"},
+    {"id": "q-0205", "grade": 4, "unitId": "4-7", "skillId": "4-7-f", "difficulty": 3, "type": "mc", "latex": true, "prompt": "$5\\dfrac{2}{7} - 2\\dfrac{5}{7} = ?$", "choices": ["$2\\dfrac{4}{7}$", "$3\\dfrac{4}{7}$", "$2\\dfrac{3}{7}$", "$3\\dfrac{3}{7}$"], "answer": "$2\\dfrac{4}{7}$"},
+    {"id": "q-0206", "grade": 4, "unitId": "4-7", "skillId": "4-7-g", "difficulty": 2, "type": "mc", "latex": true, "prompt": "물을 어제 $\\dfrac{3}{8}$ L, 오늘 $\\dfrac{2}{8}$ L 마셨어요. 모두 몇 L 마셨을까요?", "choices": ["$\\dfrac{5}{8}$ L", "$\\dfrac{5}{16}$ L", "$\\dfrac{1}{8}$ L", "$\\dfrac{6}{8}$ L"], "answer": "$\\dfrac{5}{8}$ L"},
+    {"id": "q-0207", "grade": 4, "unitId": "4-7", "skillId": "4-7-g", "difficulty": 2, "type": "mc", "latex": true, "prompt": "리본이 $\\dfrac{7}{9}$ m 있었는데 $\\dfrac{4}{9}$ m를 썼어요. 남은 리본은 몇 m일까요?", "choices": ["$\\dfrac{3}{9}$ m", "$\\dfrac{11}{9}$ m", "$\\dfrac{3}{18}$ m", "$\\dfrac{4}{9}$ m"], "answer": "$\\dfrac{3}{9}$ m"},
 
     {"id": "q-0208", "grade": 4, "unitId": "4-8", "skillId": "4-8-a", "difficulty": 1, "type": "numeric", "prompt": "이등변삼각형은 길이가 같은 변이 몇 개 있을까요?", "answer": 2},
     {"id": "q-0209", "grade": 4, "unitId": "4-8", "skillId": "4-8-a", "difficulty": 2, "type": "numeric", "prompt": "이등변삼각형에서 두 밑각 중 한 각이 50°이면 다른 한 밑각은 몇 도일까요?", "answer": 50},
@@ -102,103 +102,103 @@
         "answer": "x + y",
         "tolerance": 0.001
       }},
-    {"id": "q-t-0011", "grade": 4, "unitId": "4-7", "skillId": "4-7-a", "difficulty": 2, "type": "mc",
+    {"id": "q-t-0011", "grade": 4, "unitId": "4-7", "skillId": "4-7-a", "difficulty": 2, "type": "mc", "latex": true,
       "template": {
         "vars": { "d": {"min": 4, "max": 9}, "p": {"min": 1, "max": 7}, "q": {"min": 1, "max": 7} },
         "constraints": ["p < d", "q < d", "p + q < d"],
         "derived": { "s": "p + q", "dd": "d + d" },
-        "format": { "fp": "frac", "fq": "frac", "cans": "frac", "cw1": "frac", "cw2": "frac", "cw3": "frac" },
+        "format": { "fp": "frac-tex", "fq": "frac-tex", "cans": "frac-tex", "cw1": "frac-tex", "cw2": "frac-tex", "cw3": "frac-tex" },
         "promptParts": { "fp": ["p", "d"], "fq": ["q", "d"], "cans": ["s", "d"], "cw1": ["s", "dd"], "cw2": ["p", "d"], "cw3": ["q", "d"] },
-        "prompt": "{fp} + {fq} = ?",
-        "choices": ["{cans}", "{cw1}", "{cw2}", "{cw3}"]
+        "prompt": "${fp} + {fq} = ?$",
+        "choices": ["${cans}$", "${cw1}$", "${cw2}$", "${cw3}$"]
       }},
 
-    {"id": "q-t-0012", "grade": 4, "unitId": "4-7", "skillId": "4-7-c", "difficulty": 2, "type": "mc",
+    {"id": "q-t-0012", "grade": 4, "unitId": "4-7", "skillId": "4-7-c", "difficulty": 2, "type": "mc", "latex": true,
       "template": {
         "vars": {"d": {"min": 4, "max": 9}, "p": {"min": 2, "max": 8}, "q": {"min": 1, "max": 6}},
         "constraints": ["p < d", "q < d", "p > q"],
         "derived": {"s": "p - q", "ps": "p + q", "dd": "d + d"},
-        "format": {"fp": "frac", "fq": "frac", "cans": "frac", "cw1": "frac", "cw2": "frac", "cw3": "frac"},
+        "format": {"fp": "frac-tex", "fq": "frac-tex", "cans": "frac-tex", "cw1": "frac-tex", "cw2": "frac-tex", "cw3": "frac-tex"},
         "promptParts": {"fp": ["p", "d"], "fq": ["q", "d"], "cans": ["s", "d"], "cw1": ["ps", "d"], "cw2": ["s", "dd"], "cw3": ["p", "d"]},
-        "prompt": "{fp} - {fq} = ?",
-        "choices": ["{cans}", "{cw1}", "{cw2}", "{cw3}"]
+        "prompt": "${fp} - {fq} = ?$",
+        "choices": ["${cans}$", "${cw1}$", "${cw2}$", "${cw3}$"]
       }},
 
-    {"id": "q-t-0013", "grade": 4, "unitId": "4-7", "skillId": "4-7-a", "difficulty": 3, "type": "mc",
+    {"id": "q-t-0013", "grade": 4, "unitId": "4-7", "skillId": "4-7-a", "difficulty": 3, "type": "mc", "latex": true,
       "template": {
         "vars": {"d": {"min": 3, "max": 8}, "p": {"min": 1, "max": 7}, "q": {"min": 1, "max": 7}},
         "constraints": ["p < d", "q < d", "p + q > d", "p + q < 2 * d"],
         "derived": {"s": "p + q", "w": "floor(s / d)", "r": "s - d", "dd": "d + d"},
-        "format": {"fp": "frac", "fq": "frac", "cans": "mixed", "cw1": "frac", "cw2": "mixed", "cw3": "frac"},
+        "format": {"fp": "frac-tex", "fq": "frac-tex", "cans": "mixed-tex", "cw1": "frac-tex", "cw2": "mixed-tex", "cw3": "frac-tex"},
         "promptParts": {"fp": ["p", "d"], "fq": ["q", "d"], "cans": ["w", "r", "d"], "cw1": ["s", "d"], "cw2": ["w", "r", "dd"], "cw3": ["r", "d"]},
-        "prompt": "{fp} + {fq} = ? (합이 1보다 크면 대분수로 나타내요)",
-        "choices": ["{cans}", "{cw1}", "{cw2}", "{cw3}"]
+        "prompt": "${fp} + {fq} = ?$ (합이 1보다 크면 대분수로 나타내요)",
+        "choices": ["${cans}$", "${cw1}$", "${cw2}$", "${cw3}$"]
       }},
 
-    {"id": "q-t-0014", "grade": 4, "unitId": "4-7", "skillId": "4-7-b", "difficulty": 2, "type": "mc",
+    {"id": "q-t-0014", "grade": 4, "unitId": "4-7", "skillId": "4-7-b", "difficulty": 2, "type": "mc", "latex": true,
       "template": {
         "vars": {"d": {"min": 4, "max": 9}, "p": {"min": 1, "max": 6}, "q": {"min": 1, "max": 6}, "A": {"min": 1, "max": 4}, "B": {"min": 1, "max": 4}},
         "constraints": ["p < d", "q < d", "p + q < d", "A != B"],
         "derived": {"sw": "A + B", "sf": "p + q", "dd": "d + d"},
-        "format": {"ma": "mixed", "mb": "mixed", "cans": "mixed", "cw1": "mixed", "cw2": "mixed", "cw3": "mixed"},
+        "format": {"ma": "mixed-tex", "mb": "mixed-tex", "cans": "mixed-tex", "cw1": "mixed-tex", "cw2": "mixed-tex", "cw3": "mixed-tex"},
         "promptParts": {"ma": ["A", "p", "d"], "mb": ["B", "q", "d"], "cans": ["sw", "sf", "d"], "cw1": ["sw", "sf", "dd"], "cw2": ["A", "sf", "d"], "cw3": ["B", "sf", "d"]},
-        "prompt": "{ma} + {mb} = ?",
-        "choices": ["{cans}", "{cw1}", "{cw2}", "{cw3}"]
+        "prompt": "${ma} + {mb} = ?$",
+        "choices": ["${cans}$", "${cw1}$", "${cw2}$", "${cw3}$"]
       }},
 
-    {"id": "q-t-0015", "grade": 4, "unitId": "4-7", "skillId": "4-7-b", "difficulty": 3, "type": "mc",
+    {"id": "q-t-0015", "grade": 4, "unitId": "4-7", "skillId": "4-7-b", "difficulty": 3, "type": "mc", "latex": true,
       "template": {
         "vars": {"d": {"min": 3, "max": 8}, "p": {"min": 1, "max": 7}, "q": {"min": 1, "max": 7}, "A": {"min": 1, "max": 4}, "B": {"min": 1, "max": 4}},
         "constraints": ["p < d", "q < d", "p + q > d", "p + q < 2 * d", "A != B"],
         "derived": {"sw": "A + B + 1", "sw0": "A + B", "r": "p + q - d", "sf": "p + q"},
-        "format": {"ma": "mixed", "mb": "mixed", "cans": "mixed", "cw1": "mixed", "cw2": "mixed", "cw3": "mixed"},
+        "format": {"ma": "mixed-tex", "mb": "mixed-tex", "cans": "mixed-tex", "cw1": "mixed-tex", "cw2": "mixed-tex", "cw3": "mixed-tex"},
         "promptParts": {"ma": ["A", "p", "d"], "mb": ["B", "q", "d"], "cans": ["sw", "r", "d"], "cw1": ["sw0", "sf", "d"], "cw2": ["sw", "sf", "d"], "cw3": ["sw0", "r", "d"]},
-        "prompt": "{ma} + {mb} = ? (분수의 합이 1 이상이면 자연수에 1을 더해요)",
-        "choices": ["{cans}", "{cw1}", "{cw2}", "{cw3}"]
+        "prompt": "${ma} + {mb} = ?$ (분수의 합이 1 이상이면 자연수에 1을 더해요)",
+        "choices": ["${cans}$", "${cw1}$", "${cw2}$", "${cw3}$"]
       }},
 
-    {"id": "q-t-0016", "grade": 4, "unitId": "4-7", "skillId": "4-7-d", "difficulty": 2, "type": "mc",
+    {"id": "q-t-0016", "grade": 4, "unitId": "4-7", "skillId": "4-7-d", "difficulty": 2, "type": "mc", "latex": true,
       "template": {
         "vars": {"d": {"min": 3, "max": 8}, "p": {"min": 1, "max": 7}, "n": {"min": 2, "max": 6}},
         "constraints": ["p < d", "2 * p != d"],
         "derived": {"r": "d - p", "nm1": "n - 1"},
-        "format": {"fp": "frac", "cans": "mixed", "cw1": "mixed", "cw2": "mixed", "cw3": "mixed"},
+        "format": {"fp": "frac-tex", "cans": "mixed-tex", "cw1": "mixed-tex", "cw2": "mixed-tex", "cw3": "mixed-tex"},
         "promptParts": {"fp": ["p", "d"], "cans": ["nm1", "r", "d"], "cw1": ["n", "r", "d"], "cw2": ["nm1", "p", "d"], "cw3": ["n", "p", "d"]},
-        "prompt": "{n} - {fp} = ?",
-        "choices": ["{cans}", "{cw1}", "{cw2}", "{cw3}"]
+        "prompt": "${n} - {fp} = ?$",
+        "choices": ["${cans}$", "${cw1}$", "${cw2}$", "${cw3}$"]
       }},
 
-    {"id": "q-t-0017", "grade": 4, "unitId": "4-7", "skillId": "4-7-d", "difficulty": 3, "type": "mc",
+    {"id": "q-t-0017", "grade": 4, "unitId": "4-7", "skillId": "4-7-d", "difficulty": 3, "type": "mc", "latex": true,
       "template": {
         "vars": {"d": {"min": 3, "max": 8}, "p": {"min": 1, "max": 7}, "A": {"min": 1, "max": 3}, "n": {"min": 3, "max": 7}},
         "constraints": ["p < d", "n >= A + 2", "2 * p != d"],
         "derived": {"r": "d - p", "whole": "n - A - 1", "nA": "n - A"},
-        "format": {"ma": "mixed", "cans": "mixed", "cw1": "mixed", "cw2": "mixed", "cw3": "mixed"},
+        "format": {"ma": "mixed-tex", "cans": "mixed-tex", "cw1": "mixed-tex", "cw2": "mixed-tex", "cw3": "mixed-tex"},
         "promptParts": {"ma": ["A", "p", "d"], "cans": ["whole", "r", "d"], "cw1": ["nA", "r", "d"], "cw2": ["whole", "p", "d"], "cw3": ["nA", "p", "d"]},
-        "prompt": "{n} - {ma} = ?",
-        "choices": ["{cans}", "{cw1}", "{cw2}", "{cw3}"]
+        "prompt": "${n} - {ma} = ?$",
+        "choices": ["${cans}$", "${cw1}$", "${cw2}$", "${cw3}$"]
       }},
 
-    {"id": "q-t-0018", "grade": 4, "unitId": "4-7", "skillId": "4-7-e", "difficulty": 2, "type": "mc",
+    {"id": "q-t-0018", "grade": 4, "unitId": "4-7", "skillId": "4-7-e", "difficulty": 2, "type": "mc", "latex": true,
       "template": {
         "vars": {"d": {"min": 4, "max": 9}, "p": {"min": 2, "max": 8}, "q": {"min": 1, "max": 6}, "A": {"min": 2, "max": 6}, "B": {"min": 1, "max": 4}},
         "constraints": ["p < d", "q < d", "p > q", "A > B"],
         "derived": {"wdiff": "A - B", "fdiff": "p - q", "wsum": "A + B", "fsum": "p + q"},
-        "format": {"ma": "mixed", "mb": "mixed", "cans": "mixed", "cw1": "mixed", "cw2": "mixed", "cw3": "mixed"},
+        "format": {"ma": "mixed-tex", "mb": "mixed-tex", "cans": "mixed-tex", "cw1": "mixed-tex", "cw2": "mixed-tex", "cw3": "mixed-tex"},
         "promptParts": {"ma": ["A", "p", "d"], "mb": ["B", "q", "d"], "cans": ["wdiff", "fdiff", "d"], "cw1": ["wsum", "fdiff", "d"], "cw2": ["wdiff", "fsum", "d"], "cw3": ["A", "fdiff", "d"]},
-        "prompt": "{ma} - {mb} = ?",
-        "choices": ["{cans}", "{cw1}", "{cw2}", "{cw3}"]
+        "prompt": "${ma} - {mb} = ?$",
+        "choices": ["${cans}$", "${cw1}$", "${cw2}$", "${cw3}$"]
       }},
 
-    {"id": "q-t-0019", "grade": 4, "unitId": "4-7", "skillId": "4-7-f", "difficulty": 3, "type": "mc",
+    {"id": "q-t-0019", "grade": 4, "unitId": "4-7", "skillId": "4-7-f", "difficulty": 3, "type": "mc", "latex": true,
       "template": {
         "vars": {"d": {"min": 3, "max": 8}, "p": {"min": 1, "max": 6}, "q": {"min": 2, "max": 7}, "A": {"min": 2, "max": 6}, "B": {"min": 1, "max": 4}},
         "constraints": ["p < d", "q < d", "q > p", "A > B + 1"],
         "derived": {"whole": "A - B - 1", "r": "d + p - q", "wdiff": "A - B"},
-        "format": {"ma": "mixed", "mb": "mixed", "cans": "mixed", "cw1": "mixed", "cw2": "mixed", "cw3": "mixed"},
+        "format": {"ma": "mixed-tex", "mb": "mixed-tex", "cans": "mixed-tex", "cw1": "mixed-tex", "cw2": "mixed-tex", "cw3": "mixed-tex"},
         "promptParts": {"ma": ["A", "p", "d"], "mb": ["B", "q", "d"], "cans": ["whole", "r", "d"], "cw1": ["wdiff", "r", "d"], "cw2": ["whole", "p", "d"], "cw3": ["wdiff", "p", "d"]},
-        "prompt": "{ma} - {mb} = ? (분수끼리 뺄 수 없으면 자연수에서 1을 빌려요)",
-        "choices": ["{cans}", "{cw1}", "{cw2}", "{cw3}"]
+        "prompt": "${ma} - {mb} = ?$ (분수끼리 뺄 수 없으면 자연수에서 1을 빌려요)",
+        "choices": ["${cans}$", "${cw1}$", "${cw2}$", "${cw3}$"]
       }},
 
     {"id": "q-t-0020", "grade": 4, "unitId": "4-8", "skillId": "4-8-a", "difficulty": 3, "type": "numeric",
@@ -351,15 +351,15 @@
         "answer": "s * 6"
       }},
 
-    {"id": "q-t-0037", "grade": 4, "unitId": "4-7", "skillId": "4-7-g", "difficulty": 2, "type": "mc",
+    {"id": "q-t-0037", "grade": 4, "unitId": "4-7", "skillId": "4-7-g", "difficulty": 2, "type": "mc", "latex": true,
       "template": {
         "vars": {"d": {"min": 4, "max": 9}, "p": {"min": 2, "max": 8}, "q": {"min": 1, "max": 6}},
         "constraints": ["p < d", "q < d", "p > q"],
         "derived": {"s": "p - q", "ps": "p + q", "dd": "d + d"},
-        "format": {"fp": "frac", "fq": "frac", "cans": "frac", "cw1": "frac", "cw2": "frac", "cw3": "frac"},
+        "format": {"fp": "frac-tex", "fq": "frac-tex", "cans": "frac-tex", "cw1": "frac-tex", "cw2": "frac-tex", "cw3": "frac-tex"},
         "promptParts": {"fp": ["p", "d"], "fq": ["q", "d"], "cans": ["s", "d"], "cw1": ["ps", "d"], "cw2": ["s", "dd"], "cw3": ["p", "d"]},
-        "prompt": "리본이 {fp} m 있었는데 {fq} m를 잘라 썼어요. 남은 리본은 몇 m일까요?",
-        "choices": ["{cans} m", "{cw1} m", "{cw2} m", "{cw3} m"]
+        "prompt": "리본이 ${fp}$ m 있었는데 ${fq}$ m를 잘라 썼어요. 남은 리본은 몇 m일까요?",
+        "choices": ["${cans}$ m", "${cw1}$ m", "${cw2}$ m", "${cw3}$ m"]
       }}
   ]
 }

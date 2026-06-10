@@ -239,6 +239,17 @@
             if (w === 0) return r + '/' + d;
             return w + ' ' + r + '/' + d;
         }
+        if (f === 'frac-tex') {
+            const t = parts[token];
+            return '\\dfrac{' + cleanNum(scope[t[0]]) + '}{' + cleanNum(scope[t[1]]) + '}';
+        }
+        if (f === 'mixed-tex') {
+            const t = parts[token];
+            const w = cleanNum(scope[t[0]]), r = cleanNum(scope[t[1]]), d = cleanNum(scope[t[2]]);
+            if (r === 0) return String(w);
+            if (w === 0) return '\\dfrac{' + r + '}{' + d + '}';
+            return w + '\\dfrac{' + r + '}{' + d + '}';
+        }
         if (typeof f === 'string' && f.indexOf('dec:') === 0) {
             return Number(scope[token]).toFixed(parseInt(f.slice(4), 10));
         }
