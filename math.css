@@ -448,39 +448,28 @@
     background: #555;
 }
 
-/* 물결 끊김 행 */
-.bg-wave-row {
-    height: 20px;
+/* 물결(끊김) 띠 — 막대를 잘라 보이게 하는 구간 */
+.bg-break {
+    height: 26px;
+    line-height: 0;
     overflow: hidden;
 }
 
-/* 스텁 행·셀 (물결 아래 짧은 장식 영역) */
-.bg-stub-row { display: flex; }
-.bg-stub-cell {
+/* 물결 아래 행·셀 (값 1~) — 클릭 불가, 막대가 이어져 보이는 구간 */
+.bg-below-row { display: flex; }
+.bg-below-cell {
     width: 44px;
-    height: 10px;
-    border: 1px solid #e8e8e8;
-    background: #fafafa;
+    height: 34px;
+    border: 1.5px solid #d4e9ff;
+    background: #f5faff;
     box-sizing: border-box;
 }
-.bg-stub-cell.stub-filled  { background: rgba(142, 197, 255, 0.35); }
-.bg-stub-cell.stub-correct { background: rgba(127, 216, 190, 0.5); }
-.bg-stub-cell.stub-hint    { background: rgba(127, 216, 190, 0.22); border: 1px dashed #5cc4a5; }
+.bg-below-cell.below-filled  { background: var(--candy-sky, #8ec5ff); border-color: #6db3f0; }
+.bg-below-cell.below-correct { background: var(--candy-mint, #7fd8be); border-color: #55c9a8; }
+.bg-below-cell.below-hint    { background: rgba(127, 216, 190, 0.22); border: 2px dashed #5cc4a5; }
 
-/* Y축 물결·스텁 레이블 */
-.bg-ylabel-wave {
-    height: 20px;
-}
-.bg-ylabel-stub {
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    font-size: 12px;
-    font-weight: 700;
-    color: #555;
-    white-space: nowrap;
-}
+/* Y축 물결 자리 (아래 행 레이블은 .bg-ylabel 재사용) */
+.bg-ylabel-break { height: 26px; }
 
 /* 행·셀 */
 .bg-row { display: flex; }

@@ -207,6 +207,13 @@
         const yMax    = Math.ceil((maxVal + scale) / scale) * scale;
         const numRows = (yMax - yMin) / scale;
 
+        // 물결 아래(0~yMin)에 보여줄 행 수 — 난이도 조절용.
+        // 항상 잘림(break) 구간이 남도록 [1, yMin/scale - 1]로 클램프.
+        const belowRows = hasWave
+            ? Math.max(1, Math.min(Number(opts.belowRows) || 1, Math.max(1, Math.round(yMin / scale) - 1)))
+            : 0;
+        const CELL_W = 44, CELL_H = 34, BREAK_H = 26;
+
         // 각 막대의 현재 높이 (0 = 비어있음)
         const barHeights = new Array(n).fill(0);
 
@@ -262,13 +269,14 @@
             lbl.textContent = val;
             yaxis.appendChild(lbl);
         }
-        // 물결 구간 (yMin > 0일 때)
+        // 물결(끊김) 구간 + 물결 아래 행 레이블 (yMin > 0일 때)
         if (hasWave) {
-            var wLbl = div('bg-ylabel-wave');
-            yaxis.appendChild(wLbl);
-            var stubLbl = div('bg-ylabel-stub');
-            stubLbl.textContent = scale;  // 아래 표시할 최소 눈금 값
-            yaxis.appendChild(stubLbl);
+            yaxis.appendChild(div('bg-ylabel-break'));      // 물결 높이만큼 빈 칸
+            for (var bl = belowRows; bl >= 1; bl--) {        // 물결 아래 행: belowRows*scale … scale
+                var blLbl = div('bg-ylabel');
+                blLbl.textContent = bl * scale;
+                yaxis.appendChild(blLbl);
+            }
             var zeroLbl = div('bg-ylabel bg-ylabel-min');
             zeroLbl.textContent = '0';
             yaxis.appendChild(zeroLbl);
@@ -295,48 +303,91 @@
             gridWrap.appendChild(row);
         }
 
-        // 인터랙티브 영역 하단 축선
-        gridWrap.appendChild(div('bg-axis-line'));
+        var belowCells = [];   // belowCells[행][col] — 물결 아래 행 셀
+        var breakBars  = [];   // breakBars[col] — 물결 구간 막대 연장(SVG rect)
+        if (!hasWave) {
+            // X축 바닥선 (0)
+            gridWrap.appendChild(div('bg-axis-line'));
+        } else {
+            // ── 물결(끊김) 띠 ──
+            // 막대를 배경처럼 연장해 그린 뒤, 위아래가 물결이고 안쪽이 배경색인
+            // 도형을 올려 가운데를 잘라낸다(두 줄기 사이 = 빈 상태).
+            var breakBand = div('bg-break');
+            var breakW = n * CELL_W;
+            var bsvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            bsvg.setAttribute('width', breakW);
+            bsvg.setAttribute('height', BREAK_H);
+            bsvg.setAttribute('viewBox', '0 0 ' + breakW + ' ' + BREAK_H);
+            bsvg.style.display = 'block';
 
-        // 물결 끊김 구간
-        var stubCells = [];  // stubCells[행][col]
-        if (hasWave) {
-            // 물결 SVG 행
-            var waveRow = div('bg-wave-row');
-            var waveW = n * 44;
-            var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('width', waveW);
-            svg.setAttribute('height', 20);
-            svg.style.display = 'block';
-            var seg = 18;
-            var pd = 'M0,10';
-            for (var wx = 0; wx < waveW + seg; wx += seg) {
-                pd += ' Q' + (wx + seg * 0.25) + ',3 ' + (wx + seg * 0.5) + ',10';
-                pd += ' Q' + (wx + seg * 0.75) + ',17 ' + (wx + seg) + ',10';
+            // 빈 격자 배경 (빈 셀과 같은 색)
+            var bgRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            bgRect.setAttribute('x', 0); bgRect.setAttribute('y', 0);
+            bgRect.setAttribute('width', breakW); bgRect.setAttribute('height', BREAK_H);
+            bgRect.setAttribute('fill', '#f5faff');
+            bsvg.appendChild(bgRect);
+
+            // 칸마다 막대 연장 (채움색은 redrawCol/markAnswers에서 지정)
+            for (var bc = 0; bc < n; bc++) {
+                var brect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                brect.setAttribute('x', bc * CELL_W); brect.setAttribute('y', 0);
+                brect.setAttribute('width', CELL_W); brect.setAttribute('height', BREAK_H);
+                brect.setAttribute('fill', 'none');
+                bsvg.appendChild(brect);
+                breakBars.push(brect);
             }
-            var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            path.setAttribute('d', pd);
-            path.setAttribute('fill', 'none');
-            path.setAttribute('stroke', '#555');
-            path.setAttribute('stroke-width', '2.5');
-            svg.appendChild(path);
-            waveRow.appendChild(svg);
-            gridWrap.appendChild(waveRow);
 
-            // 2개의 짧은 스텁 행 (장식)
-            for (var si = 0; si < 2; si++) {
-                var stubRow = div('bg-stub-row');
-                var stubRowCells = [];
-                for (var sci = 0; sci < n; sci++) {
-                    var sc = div('bg-stub-cell');
-                    stubRow.appendChild(sc);
-                    stubRowCells.push(sc);
+            // 물결 잘림 도형
+            var amp = 3.5, segW = 13;
+            var tyB = BREAK_H * 0.34, byB = BREAK_H * 0.66; // 두 줄기 위치
+            var waveD = function (baseY) {
+                var d = 'M0,' + baseY, x;
+                for (x = 0; x < breakW; x += segW) {
+                    d += ' Q' + (x + segW * 0.25) + ',' + (baseY - amp) + ' ' + (x + segW * 0.5) + ',' + baseY +
+                         ' Q' + (x + segW * 0.75) + ',' + (baseY + amp) + ' ' + (x + segW) + ',' + baseY;
                 }
-                gridWrap.appendChild(stubRow);
-                stubCells.push(stubRowCells);
+                return d;
+            };
+            var waveDRev = function (baseY) {
+                var d = '', x;
+                for (x = breakW; x > 0; x -= segW) {
+                    d += ' Q' + (x - segW * 0.25) + ',' + (baseY + amp) + ' ' + (x - segW * 0.5) + ',' + baseY +
+                         ' Q' + (x - segW * 0.75) + ',' + (baseY - amp) + ' ' + (x - segW) + ',' + baseY;
+                }
+                return d;
+            };
+            // 두 물결 사이를 배경색으로 채워 막대를 잘라냄
+            var cut = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            cut.setAttribute('d', waveD(tyB) + ' L' + breakW + ',' + byB + waveDRev(byB) + ' Z');
+            cut.setAttribute('fill', '#f5faff');
+            bsvg.appendChild(cut);
+            // 두 줄기(물결선)
+            [tyB, byB].forEach(function (baseY) {
+                var ln = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                ln.setAttribute('d', waveD(baseY));
+                ln.setAttribute('fill', 'none');
+                ln.setAttribute('stroke', '#555');
+                ln.setAttribute('stroke-width', '2');
+                ln.setAttribute('stroke-linecap', 'round');
+                bsvg.appendChild(ln);
+            });
+            breakBand.appendChild(bsvg);
+            gridWrap.appendChild(breakBand);
+
+            // ── 물결 아래 행 (값 1…belowRows) — 클릭 불가, 막대가 이어져 보임 ──
+            for (var brow = 0; brow < belowRows; brow++) {
+                var bRow = div('bg-below-row');
+                var bRowCells = [];
+                for (var bci = 0; bci < n; bci++) {
+                    var bcell = div('bg-below-cell');
+                    bRow.appendChild(bcell);
+                    bRowCells.push(bcell);
+                }
+                gridWrap.appendChild(bRow);
+                belowCells.push(bRowCells);
             }
 
-            // X축 바닥선
+            // X축 바닥선 (0)
             gridWrap.appendChild(div('bg-axis-line'));
         }
 
@@ -364,18 +415,24 @@
             return Math.round((yMax - h) / scale);
         }
 
-        function updateStubs(col, cls) {
-            // cls가 있으면 채점 후 색상 적용, 없으면 filled 토글
+        // 물결 구간 막대 연장 색칠
+        function paintBreakBar(col, state) {
+            if (!hasWave || !breakBars[col]) return;
+            var fill = state === 'correct' ? '#7fd8be'
+                     : state === 'hint'    ? 'rgba(127,216,190,0.30)'
+                     : state === 'sky'     ? '#8ec5ff'
+                     : 'none';
+            breakBars[col].setAttribute('fill', fill);
+        }
+
+        // 물결 아래 행 셀 색칠
+        function updateBelow(col, cls) {
+            // cls: 'below-filled' | 'below-correct' | 'below-hint' | null
             if (!hasWave) return;
-            var filled = (cls != null) ? false : barHeights[col] > yMin;
-            stubCells.forEach(function (sRow) {
-                var sc = sRow[col];
-                sc.classList.remove('stub-filled', 'stub-correct', 'stub-hint');
-                if (cls != null) {
-                    sc.classList.add(cls);
-                } else if (filled) {
-                    sc.classList.add('stub-filled');
-                }
+            belowCells.forEach(function (bRow) {
+                var bc = bRow[col];
+                bc.classList.remove('below-filled', 'below-correct', 'below-hint');
+                if (cls) bc.classList.add(cls);
             });
         }
 
@@ -384,7 +441,9 @@
             for (var r = 0; r < numRows; r++) {
                 cells[r][col].classList.toggle('filled', r >= tr);
             }
-            updateStubs(col, null);
+            var on = barHeights[col] > yMin;
+            updateBelow(col, on ? 'below-filled' : null);
+            paintBreakBar(col, on ? 'sky' : null);
         }
 
         function handleClick(col, rIdx) {
@@ -409,7 +468,8 @@
                     cell.classList.remove('filled');
                     if (r >= cTop) cell.classList.add(ok ? 'bg-correct' : 'bg-hint');
                 }
-                updateStubs(c, ok ? 'stub-correct' : 'stub-hint');
+                updateBelow(c, ok ? 'below-correct' : 'below-hint');
+                paintBreakBar(c, ok ? 'correct' : 'hint');
             }
         }
 
