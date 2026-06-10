@@ -375,6 +375,7 @@
                     unit: bg.unit || '',
                     scale: bg.scale || 1,
                     yMin: bg.yMin || 0,
+                    belowRows: bg.belowRowsVar ? Number(q._vars[bg.belowRowsVar]) : (bg.belowRows || 1),
                 });
                 answersWrap.appendChild(bgw.element);
                 const checkBtn = el('button', 'secondary', '정답 확인 ✏️');

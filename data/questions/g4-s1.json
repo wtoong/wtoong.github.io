@@ -289,7 +289,7 @@
       }},
     {"id": "q-t-bar-004", "grade": 4, "unitId": "4-5", "skillId": "4-5-a", "difficulty": 3, "type": "bar-graph",
       "template": {
-        "vars": { "a": {"min": 5, "max": 12}, "b": {"min": 5, "max": 12}, "c": {"min": 5, "max": 12} },
+        "vars": { "a": {"min": 5, "max": 12}, "b": {"min": 5, "max": 12}, "c": {"min": 5, "max": 12}, "below": {"min": 1, "max": 2} },
         "constraints": ["a != b", "a != c", "b != c"],
         "prompt": "한 달 동안 읽은 책 수를 조사했어요. 표를 보고 막대그래프를 완성해 보세요. (눈금이 4부터 시작해요!)",
         "barGraph": {
@@ -297,7 +297,8 @@
           "valueVars": ["a", "b", "c"],
           "unit": "권",
           "scale": 1,
-          "yMin": 4
+          "yMin": 4,
+          "belowRowsVar": "below"
         }
       }},
     {"id": "q-t-0024", "grade": 4, "unitId": "4-6", "skillId": "4-6-a", "difficulty": 2, "type": "numeric",
