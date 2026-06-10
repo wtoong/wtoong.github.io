@@ -323,6 +323,7 @@
         // ── 채점 (math-diagnostic.js와 동일) ─────────────────────
         function gradeAnswer(q, given) {
             if (given == null || given === '') return false;
+            if (q.type === 'bar-graph') return given === true;
             if (q.type === 'numeric') {
                 const val = parseFloat(String(given).replace(/\s/g, '').replace(',', '.'));
                 if (isNaN(val)) return false;
@@ -360,7 +361,11 @@
                 const correct = gradeAnswer(q, given);
                 answers.push({ qId: q.id, correct });
                 answersWrap.querySelectorAll('button, input').forEach(n => n.disabled = true);
-                if (q.latex) {
+                if (q.type === 'bar-graph') {
+                    feedback.textContent = correct
+                        ? '정답이에요! 🎉'
+                        : '아쉬워요! 초록 점선이 정답 막대를 알려줘요 🌟';
+                } else if (q.latex) {
                     feedback.innerHTML = correct
                         ? '정답이에요! 🎉'
                         : '아쉬워요! 정답은 ' + renderLatex(q.answer) + ' 예요.';
@@ -383,6 +388,27 @@
                     b.addEventListener('click', () => finishQuestion(choice));
                     answersWrap.appendChild(b);
                 });
+            } else if (q.type === 'bar-graph' && q.barGraph && q._vars && window.BarGraphWidget) {
+                const bg = q.barGraph;
+                const correctVals = bg.valueVars.map(v => q._vars[v]);
+                const bgw = BarGraphWidget.create({
+                    labels: bg.labels,
+                    correctValues: correctVals,
+                    unit: bg.unit || '',
+                    scale: bg.scale || 1,
+                    yMin: bg.yMin || 0,
+                });
+                answersWrap.appendChild(bgw.element);
+                const checkBtn = el('button', 'secondary', '정답 확인 ✏️');
+                checkBtn.type = 'button';
+                checkBtn.addEventListener('click', () => {
+                    const userVals = bgw.getValues();
+                    const isCorrect = correctVals.every((v, i) => userVals[i] === v);
+                    bgw.markAnswers(userVals, correctVals);
+                    checkBtn.disabled = true;
+                    finishQuestion(isCorrect);
+                });
+                answersWrap.appendChild(checkBtn);
             } else { // numeric
                 const inputRow = el('div', 'q-input-row');
                 const input = document.createElement('input');

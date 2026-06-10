@@ -179,3 +179,169 @@
 
     window.QuestionFigures = { render };
 })();
+
+/* ── 막대그래프 인터랙티브 위젯 ──────────────────────────────────────────
+   window.BarGraphWidget.create(opts) → { element, getValues, markAnswers }
+   opts: {
+     labels        string[]   — 항목 이름 (x축 레이블)
+     correctValues number[]   — 각 항목의 정답 값
+     unit          string     — 단위 (예: "명")
+     scale         number     — 눈금 한 칸의 값 (기본 1)
+     yMin          number     — y축 시작값 (기본 0; 0 이상이면 하단 생략)
+   }
+*/
+(function () {
+    'use strict';
+
+    function create(opts) {
+        const labels        = opts.labels        || [];
+        const correctValues = opts.correctValues || [];
+        const unit          = opts.unit          || '';
+        const scale         = opts.scale         || 1;
+        const n             = labels.length;
+
+        // y축 범위 계산
+        const maxVal = correctValues.length ? Math.max.apply(null, correctValues) : scale;
+        const yMin   = Math.floor((opts.yMin || 0) / scale) * scale;
+        const yMax   = Math.ceil((maxVal + scale) / scale) * scale;
+        const numRows = (yMax - yMin) / scale;
+
+        // 각 막대의 현재 높이 (0 = 비어있음)
+        const barHeights = new Array(n).fill(0);
+
+        function div(cls) {
+            const d = document.createElement('div');
+            d.className = cls;
+            return d;
+        }
+
+        const widget = div('bg-widget');
+
+        // ── 데이터 표 ──────────────────────────────────────────────
+        const tbl = document.createElement('table');
+        tbl.className = 'bg-table';
+
+        const trLbl = document.createElement('tr');
+        const thItem = document.createElement('th');
+        thItem.textContent = '항목';
+        trLbl.appendChild(thItem);
+        labels.forEach(function (l) {
+            const td = document.createElement('td');
+            td.textContent = l;
+            trLbl.appendChild(td);
+        });
+
+        const trVal = document.createElement('tr');
+        const thVal = document.createElement('th');
+        thVal.textContent = unit ? '수 (' + unit + ')' : '수';
+        trVal.appendChild(thVal);
+        correctValues.forEach(function (v) {
+            const td = document.createElement('td');
+            td.textContent = v;
+            trVal.appendChild(td);
+        });
+
+        tbl.appendChild(trLbl);
+        tbl.appendChild(trVal);
+        widget.appendChild(tbl);
+
+        const instr = div('bg-instruction');
+        instr.textContent = '✏️ 막대를 눌러 높이를 맞춰보세요!';
+        widget.appendChild(instr);
+
+        // ── 그래프 영역 ────────────────────────────────────────────
+        const graphArea = div('bg-graph');
+
+        // Y축 레이블
+        const yaxis = div('bg-yaxis');
+        for (var r = 0; r <= numRows; r++) {
+            var val = yMax - r * scale;
+            var lbl = div(r < numRows ? 'bg-ylabel' : 'bg-ylabel bg-ylabel-min');
+            lbl.textContent = val;
+            yaxis.appendChild(lbl);
+        }
+        graphArea.appendChild(yaxis);
+
+        // 격자 래퍼 (왼쪽·아래 테두리 = 축)
+        const gridWrap = div('bg-grid-wrap');
+
+        // 셀 행렬 cells[row][col]
+        var cells = [];
+        for (var ri = 0; ri < numRows; ri++) {
+            var row = div('bg-row');
+            var rowCells = [];
+            for (var ci = 0; ci < n; ci++) {
+                var cell = div('bg-cell');
+                (function (col, rIdx) {
+                    cell.addEventListener('click', function () { handleClick(col, rIdx); });
+                })(ci, ri);
+                row.appendChild(cell);
+                rowCells.push(cell);
+            }
+            cells.push(rowCells);
+            gridWrap.appendChild(row);
+        }
+
+        // X축 레이블
+        const xlabels = div('bg-xlabels');
+        labels.forEach(function (l) {
+            const xl = div('bg-xlabel');
+            xl.textContent = l;
+            xlabels.appendChild(xl);
+        });
+        gridWrap.appendChild(xlabels);
+
+        if (unit) {
+            const unitLbl = div('bg-graph-unit');
+            unitLbl.textContent = '(단위: ' + unit + ')';
+            gridWrap.appendChild(unitLbl);
+        }
+
+        graphArea.appendChild(gridWrap);
+        widget.appendChild(graphArea);
+
+        // ── 인터랙션 ──────────────────────────────────────────────
+        function topRow(h) {
+            // 막대 높이 h에 해당하는 최상단 채워진 행 인덱스
+            if (h <= yMin) return numRows; // 빈 막대
+            return Math.round((yMax - h) / scale);
+        }
+
+        function redrawCol(col) {
+            var tr = topRow(barHeights[col]);
+            for (var r = 0; r < numRows; r++) {
+                cells[r][col].classList.toggle('filled', r >= tr);
+            }
+        }
+
+        function handleClick(col, rIdx) {
+            if (widget.classList.contains('bg-checked')) return;
+            var val = yMax - rIdx * scale;
+            // 같은 높이를 다시 누르면 초기화
+            barHeights[col] = (barHeights[col] === val) ? 0 : val;
+            redrawCol(col);
+        }
+
+        // ── 공개 메서드 ───────────────────────────────────────────
+        function getValues() { return barHeights.slice(); }
+
+        function markAnswers(userVals, correctVals) {
+            widget.classList.add('bg-checked');
+            for (var c = 0; c < n; c++) {
+                var uH = userVals[c];
+                var cH = correctVals[c];
+                var ok = (uH === cH);
+                var cTop = topRow(cH);
+                for (var r = 0; r < numRows; r++) {
+                    var cell = cells[r][c];
+                    cell.classList.remove('filled');
+                    if (r >= cTop) cell.classList.add(ok ? 'bg-correct' : 'bg-hint');
+                }
+            }
+        }
+
+        return { element: widget, getValues: getValues, markAnswers: markAnswers };
+    }
+
+    window.BarGraphWidget = { create: create };
+})();

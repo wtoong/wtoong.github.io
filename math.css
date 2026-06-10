@@ -368,3 +368,135 @@
     .q-prompt { font-size: 1.25rem; }
     .bar-pct { width: 78px; font-size: 0.78rem; }
 }
+
+/* ── 막대그래프 인터랙티브 위젯 (bar-graph type) ─────────────────────── */
+.bg-widget {
+    margin: 10px auto;
+    font-family: 'Jua', 'Gaegu', cursive;
+    user-select: none;
+}
+
+/* 데이터 표 */
+.bg-table {
+    border-collapse: collapse;
+    margin: 0 auto 10px;
+    font-size: 13px;
+}
+.bg-table th, .bg-table td {
+    border: 2px solid var(--candy-sky, #8ec5ff);
+    padding: 5px 10px;
+    text-align: center;
+}
+.bg-table th {
+    background: var(--candy-sky, #8ec5ff);
+    color: #1d4e8a;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* 안내 문구 */
+.bg-instruction {
+    text-align: center;
+    font-size: 13px;
+    color: #888;
+    margin: 2px 0 8px;
+}
+
+/* 그래프 영역 전체 */
+.bg-graph {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    overflow-x: auto;
+}
+
+/* Y축 레이블 열 */
+.bg-yaxis {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding-right: 5px;
+    flex-shrink: 0;
+}
+.bg-ylabel {
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-size: 12px;
+    font-weight: 700;
+    color: #555;
+    white-space: nowrap;
+}
+/* 최하단 yMin 레이블 — 축 선에 맞춤 */
+.bg-ylabel.bg-ylabel-min {
+    height: 3px;
+    align-items: flex-start;
+    overflow: visible;
+}
+
+/* 격자 래퍼 (왼쪽·하단 = 축선) */
+.bg-grid-wrap {
+    display: flex;
+    flex-direction: column;
+    border-left: 3px solid #555;
+    border-bottom: 3px solid #555;
+}
+
+/* 행·셀 */
+.bg-row { display: flex; }
+.bg-cell {
+    width: 44px;
+    height: 34px;
+    border: 1.5px solid #d4e9ff;
+    background: #f5faff;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: background 0.1s;
+}
+.bg-cell:hover {
+    background: #daeeff;
+}
+.bg-cell.filled {
+    background: var(--candy-sky, #8ec5ff);
+    border-color: #6db3f0;
+}
+
+/* 채점 후 — 클릭 잠금 */
+.bg-checked .bg-cell {
+    cursor: default;
+    pointer-events: none;
+}
+/* 정답 막대 (초록) */
+.bg-cell.bg-correct {
+    background: var(--candy-mint, #7fd8be);
+    border-color: #55c9a8;
+}
+/* 틀린 막대의 정답 위치 힌트 (점선 민트) */
+.bg-cell.bg-hint {
+    background: rgba(127, 216, 190, 0.22);
+    border: 2px dashed #5cc4a5;
+}
+
+/* X축 레이블 */
+.bg-xlabels { display: flex; }
+.bg-xlabel {
+    width: 44px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #444;
+    padding: 4px 0 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 단위 레이블 */
+.bg-graph-unit {
+    text-align: right;
+    font-size: 11px;
+    color: #aaa;
+    padding-right: 2px;
+    margin-top: 1px;
+}
