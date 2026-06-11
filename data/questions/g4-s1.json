@@ -245,11 +245,18 @@
         "prompt": "막대그래프에서 어떤 막대가 {cells}칸이고 한 칸이 {per}명을 나타내면 모두 몇 명일까요?",
         "answer": "cells * per"
       }},
-    {"id": "q-t-0022", "grade": 4, "unitId": "4-5", "skillId": "4-5-c", "difficulty": 2, "type": "numeric",
+    {"id": "q-t-0022", "grade": 4, "unitId": "4-5", "skillId": "4-5-c", "difficulty": 2, "type": "bar-graph-read",
       "template": {
-        "vars": { "a": {"min": 2, "max": 9}, "b": {"min": 2, "max": 9}, "c": {"min": 2, "max": 9} },
-        "constraints": ["a != b", "b != c", "a != c"],
-        "prompt": "막대그래프에서 빨강 {a}명, 파랑 {b}명, 노랑 {c}명이에요. 가장 적게 나온 색의 학생 수는 몇 명일까요?",
+        "vars": { "scale": {"min": 1, "max": 5}, "ac": {"min": 2, "max": 9}, "bc": {"min": 2, "max": 9}, "cc": {"min": 2, "max": 9} },
+        "constraints": ["ac != bc", "bc != cc", "ac != cc"],
+        "derived": { "a": "ac * scale", "b": "bc * scale", "c": "cc * scale" },
+        "prompt": "막대그래프를 보고 가장 적게 나온 색의 학생 수는 몇 명일까요?",
+        "barGraph": {
+          "labels": ["빨강", "파랑", "노랑"],
+          "valueVars": ["a", "b", "c"],
+          "unit": "명",
+          "scaleVar": "scale"
+        },
         "answer": "min(min(a, b), c)"
       }},
     {"id": "q-t-0023", "grade": 4, "unitId": "4-5", "skillId": "4-5-d", "difficulty": 2, "type": "numeric",

@@ -330,10 +330,12 @@
                 const built = buildChoices(tpl, scope);
                 base.choices = built.choices;
                 base.answer = built.answer; // 0번 선택지와 글자까지 동일(같은 포매터)
-            } else if (q.type === 'bar-graph') {
-                // 정답은 위젯이 직접 채점 — answer 식 불필요
+            } else if (q.type === 'bar-graph' || q.type === 'bar-graph-read') {
                 if (tpl.barGraph) base.barGraph = tpl.barGraph;
                 base._vars = Object.assign({}, scope);
+                if (q.type === 'bar-graph-read' && tpl.answer) {
+                    base.answer = cleanNum(evalExpr(tpl.answer, scope));
+                }
             } else {
                 base.answer = cleanNum(evalExpr(tpl.answer, scope));
                 const tol = tpl.tolerance;
