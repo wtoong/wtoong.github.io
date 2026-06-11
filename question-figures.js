@@ -155,9 +155,119 @@
         return svg;
     }
 
+    // ── 이등변삼각형 각도 렌더 ──────────────────────────────────
+    // isosceles-apex: vars={a} → 꼭지각 a°(알려짐), 밑각 ?(구해야 함)
+    // isosceles-base: vars={b} → 밑각 b°(알려짐), 꼭지각 ?(구해야 함)
+    function isoscelesSVG(vars, apexGiven) {
+        const VW = 240, VH = 210;
+
+        const apexAngle = apexGiven ? vars.a : 180 - 2 * vars.b;
+        const safeApex = Math.max(15, Math.min(150, apexAngle));
+        const apexR = safeApex * Math.PI / 180;
+
+        const halfBase = 1.0;
+        const triH = halfBase / Math.tan(apexR / 2);
+        const pad = 46;
+        const scale = Math.min((VW - 2 * pad) / (2 * halfBase), (VH - 2 * pad) / triH) * 0.85;
+
+        const cx = VW / 2;
+        const scaledHB = halfBase * scale;
+        const scaledHH = triH * scale;
+        const topY = (VH - scaledHH) / 2;
+        const botY = topY + scaledHH;
+
+        // P[0]=꼭지(apex), P[1]=밑-왼쪽, P[2]=밑-오른쪽
+        const P = [[cx, topY], [cx - scaledHB, botY], [cx + scaledHB, botY]];
+        const cxT = (P[0][0] + P[1][0] + P[2][0]) / 3;
+        const cyT = (P[0][1] + P[1][1] + P[2][1]) / 3;
+
+        const svg = document.createElementNS(NS, 'svg');
+        svg.setAttribute('viewBox', `0 0 ${VW} ${VH}`);
+        svg.setAttribute('width', '100%');
+        svg.setAttribute('height', String(VH));
+        svg.style.cssText =
+            'max-width:240px;display:block;margin:4px auto 0;' +
+            'background:rgba(142,197,255,0.07);border-radius:14px';
+
+        svg.appendChild(svgEl('polygon', {
+            points: P.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' '),
+            fill: 'rgba(142,197,255,0.20)',
+            stroke: '#4a90d9',
+            'stroke-width': '2.2',
+            'stroke-linejoin': 'round'
+        }));
+
+        // 같은 변(두 다리) 위에 눈금 표시
+        function addTick(Pa, Pb) {
+            const mx = (Pa[0] + Pb[0]) / 2, my = (Pa[1] + Pb[1]) / 2;
+            const dx = Pb[0] - Pa[0], dy = Pb[1] - Pa[1];
+            const len = Math.hypot(dx, dy) || 1;
+            const nx = -dy / len * 6, ny = dx / len * 6;
+            svg.appendChild(svgEl('line', {
+                x1: (mx + nx).toFixed(1), y1: (my + ny).toFixed(1),
+                x2: (mx - nx).toFixed(1), y2: (my - ny).toFixed(1),
+                stroke: '#4a90d9', 'stroke-width': '2.2', 'stroke-linecap': 'round'
+            }));
+        }
+        addTick(P[0], P[1]);
+        addTick(P[0], P[2]);
+
+        // 각 꼭짓점별 레이블 설정
+        // apexGiven: [0]=a°, [1]=?, [2]=?
+        // baseGiven: [0]=?,  [1]=b°, [2]=b°
+        const cfg = apexGiven
+            ? [{ label: `${vars.a}°`, unk: false }, { label: '?', unk: true }, { label: '?', unk: true }]
+            : [{ label: '?', unk: true }, { label: `${vars.b}°`, unk: false }, { label: `${vars.b}°`, unk: false }];
+
+        const ARC_R = 18;
+        P.forEach(([vx, vy], i) => {
+            const [ax, ay] = P[(i + 1) % 3];
+            const [bxp, byp] = P[(i + 2) % 3];
+            const u1 = norm(ax - vx, ay - vy);
+            const u2 = norm(bxp - vx, byp - vy);
+            const cross = u1[0] * u2[1] - u1[1] * u2[0];
+            const sweep = cross < 0 ? 0 : 1;
+            const p1x = vx + u1[0] * ARC_R, p1y = vy + u1[1] * ARC_R;
+            const p2x = vx + u2[0] * ARC_R, p2y = vy + u2[1] * ARC_R;
+            const unk = cfg[i].unk;
+            const stroke = unk ? '#e07010' : '#4a90d9';
+
+            if (unk) {
+                svg.appendChild(svgEl('path', {
+                    d: `M ${vx.toFixed(1)} ${vy.toFixed(1)} ` +
+                       `L ${p1x.toFixed(1)} ${p1y.toFixed(1)} ` +
+                       `A ${ARC_R} ${ARC_R} 0 0 ${sweep} ${p2x.toFixed(1)} ${p2y.toFixed(1)} Z`,
+                    fill: 'rgba(224,112,16,0.18)', stroke: 'none'
+                }));
+            }
+            svg.appendChild(svgEl('path', {
+                d: `M ${p1x.toFixed(1)} ${p1y.toFixed(1)} ` +
+                   `A ${ARC_R} ${ARC_R} 0 0 ${sweep} ${p2x.toFixed(1)} ${p2y.toFixed(1)}`,
+                fill: 'none', stroke, 'stroke-width': unk ? '2.2' : '1.8'
+            }));
+
+            // 레이블: 꼭짓점 → 무게중심 방향
+            const distC = Math.hypot(cxT - vx, cyT - vy) || 1;
+            const labelD = Math.min(ARC_R + 16, distC * 0.68);
+            const lx = vx + (cxT - vx) / distC * labelD;
+            const ly = vy + (cyT - vy) / distC * labelD;
+            svg.appendChild(svgEl('text', {
+                x: lx.toFixed(1), y: ly.toFixed(1),
+                'text-anchor': 'middle', 'dominant-baseline': 'middle',
+                'font-size': unk ? '16' : '13',
+                'font-weight': unk ? '900' : '700',
+                fill: unk ? '#b85000' : '#1d4e8a'
+            }, cfg[i].label));
+        });
+
+        return svg;
+    }
+
     // ── 진입점 ────────────────────────────────────────────────────
     function render(type, vars) {
         if (type === 'triangle-angles') return triangleAnglesSVG(vars);
+        if (type === 'isosceles-apex') return isoscelesSVG(vars, true);
+        if (type === 'isosceles-base') return isoscelesSVG(vars, false);
         return null;
     }
 
