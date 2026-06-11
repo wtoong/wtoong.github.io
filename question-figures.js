@@ -213,14 +213,16 @@
         addTick(P[0], P[2]);
 
         // 각 꼭짓점별 레이블 설정
-        // apexGiven: [0]=a°, [1]=?, [2]=?
-        // baseGiven: [0]=?,  [1]=b°, [2]=b°
+        // apexGiven: [0]=a°(알려짐), [1]=?(구함), [2]=빈칸(이등변 성질로 유추)
+        // baseGiven: [0]=?(구함),    [1]=b°(알려짐), [2]=빈칸(이등변 성질로 유추)
         const cfg = apexGiven
-            ? [{ label: `${vars.a}°`, unk: false }, { label: '?', unk: true }, { label: '?', unk: true }]
-            : [{ label: '?', unk: true }, { label: `${vars.b}°`, unk: false }, { label: `${vars.b}°`, unk: false }];
+            ? [{ label: `${vars.a}°`, unk: false }, { label: '?', unk: true }, { label: '', unk: false }]
+            : [{ label: '?', unk: true }, { label: `${vars.b}°`, unk: false }, { label: '', unk: false }];
 
         const ARC_R = 18;
         P.forEach(([vx, vy], i) => {
+            if (!cfg[i].label) return; // 레이블 없는 꼭짓점은 건너뜀
+
             const [ax, ay] = P[(i + 1) % 3];
             const [bxp, byp] = P[(i + 2) % 3];
             const u1 = norm(ax - vx, ay - vy);
@@ -246,11 +248,19 @@
                 fill: 'none', stroke, 'stroke-width': unk ? '2.2' : '1.8'
             }));
 
-            // 레이블: 꼭짓점 → 무게중심 방향
+            // 레이블 위치: 꼭짓점 → 무게중심 방향
+            // 예외: 꼭지각이 좁을 때(≤30°)는 삼각형 바깥(꼭짓점 위)으로 뺌
             const distC = Math.hypot(cxT - vx, cyT - vy) || 1;
-            const labelD = Math.min(ARC_R + 16, distC * 0.68);
-            const lx = vx + (cxT - vx) / distC * labelD;
-            const ly = vy + (cyT - vy) / distC * labelD;
+            let lx, ly;
+            if (i === 0 && apexGiven && safeApex <= 30) {
+                const labelD = ARC_R + 14;
+                lx = vx + (vx - cxT) / distC * labelD;
+                ly = vy + (vy - cyT) / distC * labelD;
+            } else {
+                const labelD = Math.min(ARC_R + 16, distC * 0.68);
+                lx = vx + (cxT - vx) / distC * labelD;
+                ly = vy + (cyT - vy) / distC * labelD;
+            }
             svg.appendChild(svgEl('text', {
                 x: lx.toFixed(1), y: ly.toFixed(1),
                 'text-anchor': 'middle', 'dominant-baseline': 'middle',
