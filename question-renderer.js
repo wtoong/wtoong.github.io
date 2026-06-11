@@ -274,5 +274,64 @@
         },
     });
 
+    // ── 막대그래프 읽기 (완성된 그래프를 보고 값을 읽어 답하는 numeric 문제) ──
+    register('bar-graph-read', {
+        canRender(q) {
+            return !!(q.barGraph && q._vars && window.BarGraphWidget);
+        },
+        renderInput(q, ui) {
+            const bg = q.barGraph;
+            const scale = bg.scaleVar ? Number(q._vars[bg.scaleVar]) : (bg.scale || 1);
+            const correctVals = bg.valueVars.map(v => q._vars[v]);
+            const bgw = BarGraphWidget.create({
+                labels: bg.labels,
+                correctValues: correctVals,
+                unit: bg.unit || '',
+                scale: scale,
+                yMin: bg.yMin || 0,
+                belowRows: bg.belowRowsVar ? Number(q._vars[bg.belowRowsVar]) : (bg.belowRows || 1),
+                readMode: true,
+            });
+            ui.wrap.appendChild(bgw.element);
+            const inputRow = ui.el('div', 'q-input-row');
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.inputMode = 'decimal';
+            input.className = 'q-num-input';
+            input.placeholder = '답을 적어요';
+            const ok = ui.el('button', 'secondary', '확인 ✏️');
+            ok.type = 'button';
+            const submit = () => { if (input.value.trim() !== '') ui.submit(input.value); };
+            ok.addEventListener('click', submit);
+            input.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+            inputRow.appendChild(input);
+            inputRow.appendChild(ok);
+            ui.wrap.appendChild(inputRow);
+            setTimeout(() => input.focus(), 0);
+        },
+        grade(q, given) {
+            const val = parseFloat(String(given).replace(/\s/g, '').replace(',', '.'));
+            if (isNaN(val)) return false;
+            return Math.abs(val - q.answer) <= (q.tolerance || 0);
+        },
+        renderPreview(q, ui) {
+            const bg = q.barGraph;
+            const scale = bg.scaleVar ? Number(q._vars[bg.scaleVar]) : (bg.scale || 1);
+            const correctVals = bg.valueVars.map(v => q._vars[v]);
+            const bgw = BarGraphWidget.create({
+                labels: bg.labels,
+                correctValues: correctVals,
+                unit: bg.unit || '',
+                scale: scale,
+                yMin: bg.yMin || 0,
+                readMode: true,
+            });
+            ui.wrap.appendChild(bgw.element);
+            const ans = ui.el('div', 'q-answer-reveal');
+            ans.textContent = '정답: ' + q.answer + (bg.unit ? ' ' + bg.unit : '');
+            ui.wrap.appendChild(ans);
+        },
+    });
+
     window.QuestionRenderer = { register, grade, renderInto, renderPreview, prepare, loadKatex, renderLatex };
 })();

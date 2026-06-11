@@ -310,6 +310,7 @@
         const correctValues = opts.correctValues || [];
         const unit          = opts.unit          || '';
         const scale         = opts.scale         || 1;
+        const readMode      = opts.readMode      || false;
         const n             = labels.length;
 
         // y축 범위 계산
@@ -363,11 +364,13 @@
 
         tbl.appendChild(trLbl);
         tbl.appendChild(trVal);
-        widget.appendChild(tbl);
+        if (!readMode) widget.appendChild(tbl);
 
-        const instr = div('bg-instruction');
-        instr.textContent = '✏️ 막대를 눌러 높이를 맞춰보세요!';
-        widget.appendChild(instr);
+        if (!readMode) {
+            const instr = div('bg-instruction');
+            instr.textContent = '✏️ 막대를 눌러 높이를 맞춰보세요!';
+            widget.appendChild(instr);
+        }
 
         // ── 그래프 영역 ────────────────────────────────────────────
         const graphArea = div('bg-graph');
@@ -559,7 +562,7 @@
         }
 
         function handleClick(col, rIdx) {
-            if (widget.classList.contains('bg-checked')) return;
+            if (widget.classList.contains('bg-checked') || widget.classList.contains('bg-readonly')) return;
             var val = yMax - rIdx * scale;
             barHeights[col] = (barHeights[col] === val) ? 0 : val;
             redrawCol(col);
@@ -591,6 +594,11 @@
                 barHeights[i] = v;
                 redrawCol(i);
             });
+        }
+
+        if (readMode) {
+            prefill(correctValues);
+            widget.classList.add('bg-readonly');
         }
 
         return { element: widget, getValues: getValues, markAnswers: markAnswers, prefill: prefill };
