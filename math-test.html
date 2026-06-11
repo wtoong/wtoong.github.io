@@ -3,56 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🧮 수학 레벨 진단</title>
+    <title>🧮 수학 과제 풀기</title>
     <link rel="stylesheet" href="puzzle.css">
-    <link rel="stylesheet" href="math.css?v=7">
+    <link rel="stylesheet" href="math.css?v=8">
 </head>
 <body>
-    <h1 class="page-title">🧮 수학 레벨 진단</h1>
-    <p class="page-subtitle">고른 학년·학기까지 누적해서 풀고, 어떤 단원이 약한지 알려줄게요! 🌈</p>
+    <h1 class="page-title">🧮 수학 과제 풀기</h1>
+    <p class="page-subtitle">선생님이 보내준 문제를 풀어보자! 다 풀면 결과가 짠~ 하고 나와요 🌈</p>
 
-    <!-- ── 시작 화면 ── -->
-    <div id="start" class="screen">
+    <!-- ── 과제 링크가 아닐 때 ── -->
+    <div id="noAssign" class="screen hidden">
+        <div class="controls" style="text-align:center;">
+            <p class="level-hint" style="font-size:1.1rem;">
+                앗! 이 페이지는 <b>선생님이 보내준 과제 링크</b>로 들어와야 해요 🧩<br>
+                받은 링크를 콕 눌러서 다시 들어와 줄래요? ✨
+            </p>
+        </div>
+        <p class="page-subtitle home-link"><a href="index.html">🏠 놀이터 입구로 돌아가기</a></p>
+    </div>
+
+    <!-- ── 이름 입력 (과제일 때만 보임) ── -->
+    <div id="nameRow" class="screen hidden">
         <div class="controls">
             <div class="row">
-                <span class="control-label">이름 (선택)</span>
-                <input type="text" id="nameInput" placeholder="이름을 적어요 (안 적어도 돼요)">
-            </div>
-            <div class="row">
-                <span class="control-label">학년까지</span>
-                <button type="button" class="grade-btn" data-grade="1">1학년</button>
-                <button type="button" class="grade-btn" data-grade="2">2학년</button>
-                <button type="button" class="grade-btn" data-grade="3">3학년</button>
-                <button type="button" class="grade-btn" data-grade="4">4학년</button>
-                <button type="button" class="grade-btn" data-grade="5">5학년</button>
-                <button type="button" class="grade-btn" data-grade="6">6학년</button>
-            </div>
-            <div class="row">
-                <span class="control-label">학기까지</span>
-                <button type="button" class="sem-btn" data-sem="1">1학기</button>
-                <button type="button" class="sem-btn" data-sem="2">2학기</button>
-            </div>
-            <p class="level-hint">고른 학년·학기까지 <b>차곡차곡 누적</b>해서 나와요. (예: 4학년 · 1학기 → 1학년 1학기부터 4학년 1학기까지 ✨)</p>
-            <div class="row unit-row">
-                <span class="control-label">단원 (선택)</span>
-                <div id="unitButtons" class="unit-buttons"></div>
-            </div>
-            <p class="level-hint">한 단원만 콕 고르면 <b>그 단원만</b> 평가하고, 끝나면 세부 유형별로 어디가 약한지 알려줘요 🎯 (여러 개 골라도 돼요!)</p>
-            <p class="level-summary" id="levelSummary"></p>
-            <div class="row">
-                <span class="control-label">문제 수</span>
-                <button type="button" class="count-btn" data-count="20">20문제</button>
-                <button type="button" class="count-btn" data-count="30">30문제</button>
-                <button type="button" class="count-btn" data-count="40">40문제</button>
-            </div>
-            <div class="row import-box">
-                <label>📂 이전 결과 불러오기 (다시 평가할 때만)<br>
-                    <input type="file" id="importInput" accept="application/json,.json">
-                </label>
+                <span class="control-label">이름</span>
+                <input type="text" id="nameInput" placeholder="이름을 적어요 (선생님이 누구 결과인지 알 수 있어요)">
             </div>
         </div>
-        <button type="button" id="startBtn" class="start-big">진단 시작하기 🚀</button>
-        <div id="message" class="message"></div>
     </div>
 
     <!-- ── 문제 풀이 화면 ── -->
@@ -63,38 +40,44 @@
 
     <!-- ── 결과 화면 ── -->
     <div id="report" class="screen hidden">
-        <div class="report-body"></div>
-        <div class="row" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-            <button type="button" id="downloadBtn">결과 저장하기 💾</button>
-            <button type="button" id="restartBtn" class="secondary">다시 풀기 🔄</button>
+        <div id="reviewBanner" class="review-banner hidden">
+            🔁 이 과제는 전에 풀었어요! 지난 결과를 보여줄게요 (복습만 가능해요) ✨
         </div>
+        <div class="report-body" id="reportBody"></div>
+        <div class="controls" style="margin-top:16px;">
+            <p class="level-hint" style="text-align:center;">
+                아래 결과를 <b>통째로 복사해서</b> 선생님께 메신저로 보내주면 끝! 📨
+            </p>
+            <textarea id="resultBox" class="result-box hidden" readonly rows="9"></textarea>
+            <div class="row" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                <button type="button" id="copyBtn">결과 보내기 📋</button>
+            </div>
+        </div>
+        <p class="page-subtitle home-link"><a href="index.html">🏠 놀이터 입구로 돌아가기</a></p>
     </div>
 
-    <p class="page-subtitle home-link"><a href="index.html">🏠 놀이터 입구로 돌아가기</a></p>
+    <div id="message" class="message"></div>
 
     <script src="question-bank.js?v=1"></script>
     <script src="question-template.js?v=2"></script>
     <script src="question-figures.js?v=5"></script>
     <script src="question-renderer.js?v=1"></script>
-    <script src="math-diagnostic.js?v=8"></script>
+    <script src="assignment-core.js?v=1"></script>
+    <script src="math-assignment.js?v=1"></script>
     <script>
-        MathDiagnostic.init({
-            startEl:        document.getElementById('start'),
-            nameInput:      document.getElementById('nameInput'),
-            countButtons:   document.querySelectorAll('.count-btn'),
-            gradeButtons:   document.querySelectorAll('.grade-btn'),
-            semButtons:     document.querySelectorAll('.sem-btn'),
-            levelSummaryEl: document.getElementById('levelSummary'),
-            unitButtonsEl:  document.getElementById('unitButtons'),
-            importInput:    document.getElementById('importInput'),
-            startBtn:     document.getElementById('startBtn'),
-            quizEl:       document.getElementById('quiz'),
-            progressEl:   document.getElementById('progress'),
-            questionEl:   document.getElementById('question'),
-            reportEl:     document.getElementById('report'),
-            downloadBtn:  document.getElementById('downloadBtn'),
-            restartBtn:   document.getElementById('restartBtn'),
-            messageEl:    document.getElementById('message'),
+        AssignmentQuiz.init({
+            noAssignEl:    document.getElementById('noAssign'),
+            nameInput:     document.getElementById('nameInput'),
+            nameRowEl:     document.getElementById('nameRow'),
+            quizEl:        document.getElementById('quiz'),
+            progressEl:    document.getElementById('progress'),
+            questionEl:    document.getElementById('question'),
+            reportEl:      document.getElementById('report'),
+            reportBodyEl:  document.getElementById('reportBody'),
+            reviewBannerEl:document.getElementById('reviewBanner'),
+            copyBtn:       document.getElementById('copyBtn'),
+            resultBoxEl:   document.getElementById('resultBox'),
+            messageEl:     document.getElementById('message'),
         });
     </script>
 </body>
