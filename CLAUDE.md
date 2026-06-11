@@ -139,6 +139,13 @@
   고정 크기를 주지 마세요.
 - 빌드 도구가 없으므로 외부 라이브러리는 CDN으로 lazy load 합니다
   (예: HEIC 변환용 `libheif`).
+- **새 문제 type 추가는 `question-renderer.js` 핸들러 등록만으로 끝나지 않습니다.**
+  `data/math-verification.html`은 공용 렌더러를 안 쓰고 **자체 type 분기**가 3곳
+  (typeLabel · instanceHTML 미리보기 · 템플릿 일괄 점검)에 있어, 같이 안 고치면 검증
+  페이지에서 새 타입이 "단답형"으로 뭉개져 **그래프/위젯이 전혀 렌더되지 않습니다**
+  (실사례: bar-graph-read 추가 후 검증 페이지 미반영). `question-template.js`의
+  instantiate type 분기와 `data/math-llm-prompt.html`의 렌더링 능력 목록(§4)도 함께
+  갱신하세요. 누락 지점 찾기: `grep -rn "q.type ===" *.js data/*.html`
 - **공용 JS/CSS를 수정하면 캐시 버전(`?v=N`)을 반드시 올리세요.** HTML들이
   `question-figures.js?v=5`처럼 쿼리스트링으로 브라우저 캐시를 깨는데, 파일만 고치고
   버전을 안 올리면 방문자가 옛 파일을 계속 받아 **새 기능이 조용히 안 보이는** 버그가

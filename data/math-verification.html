@@ -190,7 +190,7 @@
   }
   function randSeed() { return (Math.random() * 0xffffffff) >>> 0; }
   function typeLabel(t) {
-    return t === 'mc' ? '객관식' : t === 'bar-graph' ? '막대그래프' : '단답형';
+    return t === 'mc' ? '객관식' : t === 'bar-graph' ? '막대그래프' : t === 'bar-graph-read' ? '막대그래프 읽기' : '단답형';
   }
 
   function semOf(unitId) {
@@ -359,7 +359,8 @@
       }).join('') + `</div>`;
       if (chs.indexOf(c.answer) < 0)
         body += `<div class="pv-fail">⚠️ 정답이 보기에 없음 (${renderDisplay(String(c.answer), isLatex)})</div>`;
-    } else if (q.type === 'bar-graph') {
+    } else {
+      // type 이름이 아니라 barGraph 필드 유무로 판단 — 막대그래프 계열 타입이 늘어도 자동 렌더
       const bg = c.barGraph || (q.template && q.template.barGraph);
       const vars = c._vars || {};
       if (bg && bg.labels && bg.valueVars && window.BarGraphWidget) {
@@ -367,19 +368,22 @@
         // 실제 위젯 렌더링 (정답 미리 채운 채로 markAnswers로 초록 표시)
         const bgw = BarGraphWidget.create({
           labels: bg.labels, correctValues: vals,
-          unit: bg.unit || '', scale: bg.scale || 1, yMin: bg.yMin || 0,
+          unit: bg.unit || '',
+          scale: bg.scaleVar ? Number(vars[bg.scaleVar]) : (bg.scale || 1),
+          yMin: bg.yMin || 0,
           belowRows: bg.belowRowsVar ? Number(vars[bg.belowRowsVar]) : (bg.belowRows || 1),
         });
         bgw.prefill(vals);
         bgw.markAnswers(vals, vals);
         bgw.element.classList.add('pv-bg-widget');
         body += bgw.element.outerHTML;
-      } else {
+      } else if (q.type === 'bar-graph') {
         body += `<div class="pv-num">막대그래프 문제 (barGraph 설정 없음)</div>`;
       }
-    } else {
-      body += `<div class="pv-num">정답: <b>${renderDisplay(String(c.answer), isLatex)}</b>` +
-        (c.tolerance ? ` <span class="pv-tol">±${c.tolerance}</span>` : '') + `</div>`;
+      if (c.answer != null) {
+        body += `<div class="pv-num">정답: <b>${renderDisplay(String(c.answer), isLatex)}</b>` +
+          (c.tolerance ? ` <span class="pv-tol">±${c.tolerance}</span>` : '') + `</div>`;
+      }
     }
     if (tmpl && seed != null) body += `<div class="pv-seed">seed ${seed}</div>`;
     return body;
@@ -463,7 +467,7 @@
           if (!Array.isArray(c.choices) || c.choices.length < 2) { issues.push(`${q.id}: 선택지 부족`); break; }
           if (c.choices.indexOf(c.answer) < 0) { issues.push(`${q.id}: 정답이 선택지에 없음 (${c.answer})`); break; }
           if (new Set(c.choices).size !== c.choices.length) { issues.push(`${q.id}: 선택지 중복 — ${JSON.stringify(c.choices)}`); break; }
-        } else if (q.type === 'bar-graph') {
+        } else if (q.type === 'bar-graph' || q.type === 'bar-graph-read') {
           if (!c.barGraph || !c._vars) { issues.push(`${q.id}: barGraph 설정 또는 _vars 없음`); break; }
           const bg = c.barGraph;
           if (!bg.labels || !bg.valueVars || bg.labels.length !== bg.valueVars.length) {
@@ -472,6 +476,10 @@
           const vals = bg.valueVars.map(v => c._vars[v]);
           if (vals.some(v => typeof v !== 'number' || !isFinite(v) || v < 0)) {
             issues.push(`${q.id}: _vars에 비정상 값 — ${JSON.stringify(vals)}`); break;
+          }
+          if (q.type === 'bar-graph-read' &&
+              (typeof c.answer !== 'number' || !isFinite(c.answer) || c.answer < 0)) {
+            issues.push(`${q.id}: 정답이 숫자가 아니거나 음수 (${c.answer})`); break;
           }
         } else {
           if (typeof c.answer !== 'number' || !isFinite(c.answer)) { issues.push(`${q.id}: 정답이 숫자가 아님 (${c.answer})`); break; }

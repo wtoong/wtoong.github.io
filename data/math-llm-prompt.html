@@ -299,8 +299,8 @@ ${F}
 렌더링은 question-renderer.js의 type별 핸들러 레지스트리(QuestionRenderer.register(type, {renderInput, grade, wrongFeedback?}))가 담당하며, 핸들러 하나를 등록하면 진단·별자리 게임 등 모든 페이지에 동시에 적용됩니다. 현재 등록된 능력:
 - 텍스트 문제(prompt) + 이모지, "latex": true일 때 $...$ KaTeX 인라인 수식 (CDN lazy load)
 - "figure" 필드 → question-figures.js가 데이터 기반 SVG 그림을 문제 영역에 렌더
-- type "mc" → 보기 버튼 4개, "numeric" → 숫자 입력칸 + 확인 버튼, "bar-graph" → 막대그래프 조작 위젯(barGraph 필드)
-- 채점은 핸들러별 grade(): mc는 문자열 완전 일치, numeric은 |입력−answer| ≤ tolerance, bar-graph는 위젯이 자체 판정
+- type "mc" → 보기 버튼 4개, "numeric" → 숫자 입력칸 + 확인 버튼, "bar-graph" → 막대그래프 조작 위젯(barGraph 필드), "bar-graph-read" → 완성된 막대그래프를 보여주고 값을 읽어 숫자로 답하기(barGraph + answer 식, 눈금 한 칸 값은 barGraph.scaleVar로 변수화 가능)
+- 채점은 핸들러별 grade(): mc는 문자열 완전 일치, numeric/bar-graph-read는 |입력−answer| ≤ tolerance, bar-graph는 위젯이 자체 판정
 표·시계 조작·도형 드래그 같은 다른 렌더러는 아직 없습니다.
 
 그러나 선생님 요청이 현재 능력으로 표현되지 않는다고 해서, **절대 "구현할 수 없습니다"라고 답하거나 그 문제를 조용히 빼먹으면 안 됩니다.** 반드시 다음 절차를 따르세요:
