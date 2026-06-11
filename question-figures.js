@@ -249,18 +249,10 @@
             }));
 
             // 레이블 위치: 꼭짓점 → 무게중심 방향
-            // 예외: 꼭지각이 좁을 때(≤30°)는 삼각형 바깥(꼭짓점 위)으로 뺌
             const distC = Math.hypot(cxT - vx, cyT - vy) || 1;
-            let lx, ly;
-            if (i === 0 && apexGiven && safeApex <= 30) {
-                const labelD = ARC_R + 14;
-                lx = vx + (vx - cxT) / distC * labelD;
-                ly = vy + (vy - cyT) / distC * labelD;
-            } else {
-                const labelD = Math.min(ARC_R + 16, distC * 0.68);
-                lx = vx + (cxT - vx) / distC * labelD;
-                ly = vy + (cyT - vy) / distC * labelD;
-            }
+            const labelD = Math.min(ARC_R + 16, distC * 0.68);
+            const lx = vx + (cxT - vx) / distC * labelD;
+            const ly = vy + (cyT - vy) / distC * labelD;
             svg.appendChild(svgEl('text', {
                 x: lx.toFixed(1), y: ly.toFixed(1),
                 'text-anchor': 'middle', 'dominant-baseline': 'middle',

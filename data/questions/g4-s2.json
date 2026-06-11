@@ -27,14 +27,14 @@
     {"id": "q-0266", "grade": 4, "unitId": "4-8", "skillId": "4-8-a", "difficulty": 3, "type": "numeric",
       "template": {
         "figure": "isosceles-apex",
-        "vars": {"a": {"min": 20, "max": 100, "step": 10}},
+        "vars": {"a": {"min": 40, "max": 100, "step": 10}},
         "prompt": "이등변삼각형에서 꼭지각(두 같은 변 사이의 각)이 {a}°예요. 밑각은 몇 도일까요?",
         "answer": "(180 - a) / 2"
       }},
     {"id": "q-0267", "grade": 4, "unitId": "4-8", "skillId": "4-8-a", "difficulty": 3, "type": "numeric",
       "template": {
         "figure": "isosceles-base",
-        "vars": {"b": {"min": 20, "max": 80, "step": 10}},
+        "vars": {"b": {"min": 30, "max": 70, "step": 10}},
         "prompt": "이등변삼각형에서 밑각이 {b}°예요. 꼭지각은 몇 도일까요?",
         "answer": "180 - 2 * b"
       }},
