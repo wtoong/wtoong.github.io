@@ -140,6 +140,37 @@
         card.appendChild(feedback);
     }
 
+    // ── 읽기 전용 미리보기/복기 렌더 (정답까지 보여줌) ──────────────
+    // 선생님 미리보기·학생 복기에서 쓴다. 프롬프트·그림은 renderInto와 동일하게 그리고,
+    // 답안 영역은 핸들러의 renderPreview(있으면)로 정답을 표시(없으면 "정답: ..." 텍스트).
+    function renderPreview(card, q) {
+        const handler = resolve(q);
+
+        const promptDiv = el('div', 'q-prompt');
+        richText(promptDiv, q.prompt, q.latex);
+        card.appendChild(promptDiv);
+
+        if (q.figure && q._vars && window.QuestionFigures) {
+            const fig = QuestionFigures.render(q.figure, q._vars);
+            if (fig) card.appendChild(fig);
+        }
+
+        const wrap = el('div', 'q-answers');
+        const ui = {
+            wrap, el, shuffle,
+            rich: (node, text) => richText(node, text, q.latex),
+        };
+        if (handler.renderPreview) {
+            handler.renderPreview(q, ui);
+        } else {
+            const ans = el('div', 'q-answer-reveal');
+            if (q.latex) ans.innerHTML = '정답: ' + renderLatex(q.answer);
+            else ans.textContent = '정답: ' + q.answer;
+            wrap.appendChild(ans);
+        }
+        card.appendChild(wrap);
+    }
+
     // latex 문항이 섞여 있으면 KaTeX를 미리 로드
     function prepare(list) {
         return (list || []).some(q => q.latex) ? loadKatex() : Promise.resolve();
@@ -158,6 +189,17 @@
         },
         grade(q, given) {
             return String(given).trim() === String(q.answer).trim();
+        },
+        renderPreview(q, ui) {
+            q.choices.forEach(choice => {
+                const b = ui.el('button', 'choice-btn');
+                ui.rich(b, choice);
+                b.type = 'button';
+                b.disabled = true;
+                if (String(choice).trim() === String(q.answer).trim())
+                    b.classList.add('choice-correct');
+                ui.wrap.appendChild(b);
+            });
         },
     });
 
@@ -215,7 +257,22 @@
         },
         grade(q, given) { return given === true; },
         wrongFeedback() { return '아쉬워요! 초록 점선이 정답 막대를 알려줘요 🌟'; },
+        renderPreview(q, ui) {
+            const bg = q.barGraph;
+            const correctVals = bg.valueVars.map(v => q._vars[v]);
+            const bgw = BarGraphWidget.create({
+                labels: bg.labels,
+                correctValues: correctVals,
+                unit: bg.unit || '',
+                scale: bg.scale || 1,
+                yMin: bg.yMin || 0,
+                belowRows: bg.belowRowsVar ? Number(q._vars[bg.belowRowsVar]) : (bg.belowRows || 1),
+            });
+            ui.wrap.appendChild(bgw.element);
+            // 정답 높이로 칠하고 잠금(bg-checked) — 학생이 만들 정답 그래프를 그대로 보여줌
+            bgw.markAnswers(correctVals, correctVals);
+        },
     });
 
-    window.QuestionRenderer = { register, grade, renderInto, prepare, loadKatex, renderLatex };
+    window.QuestionRenderer = { register, grade, renderInto, renderPreview, prepare, loadKatex, renderLatex };
 })();
