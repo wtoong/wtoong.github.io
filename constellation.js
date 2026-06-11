@@ -23,30 +23,7 @@
 
     const SVG_NS = 'http://www.w3.org/2000/svg';
 
-    // ── KaTeX 지연 로드 (math-diagnostic.js와 동일) ──────────────
-    let _katexPromise = null;
-    function loadKatex() {
-        if (_katexPromise) return _katexPromise;
-        _katexPromise = new Promise(resolve => {
-            if (window.katex) { resolve(); return; }
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css';
-            document.head.appendChild(link);
-            const s = document.createElement('script');
-            s.src = 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js';
-            s.onload = resolve;
-            document.head.appendChild(s);
-        });
-        return _katexPromise;
-    }
-
-    function renderLatex(text) {
-        if (!window.katex) return String(text);
-        return String(text).replace(/\$([^$]+)\$/g, (_, math) =>
-            katex.renderToString(math, { throwOnError: false, displayMode: false })
-        );
-    }
+    // 문제 카드 렌더링·채점·KaTeX는 question-renderer.js(QuestionRenderer)가 담당.
 
     // ── 작은 유틸 (memory.js / math-diagnostic.js와 동일) ──────────
     function shuffle(arr) { // Fisher–Yates
@@ -313,27 +290,10 @@
             answers = [];
             cursor = 0;
             goScreen(quizEl);
-            if (quizList.some(q => q.latex)) {
-                loadKatex().then(renderQuestion);
-            } else {
-                renderQuestion();
-            }
+            QuestionRenderer.prepare(quizList).then(renderQuestion);
         }
 
-        // ── 채점 (math-diagnostic.js와 동일) ─────────────────────
-        function gradeAnswer(q, given) {
-            if (given == null || given === '') return false;
-            if (q.type === 'bar-graph') return given === true;
-            if (q.type === 'numeric') {
-                const val = parseFloat(String(given).replace(/\s/g, '').replace(',', '.'));
-                if (isNaN(val)) return false;
-                const tol = q.tolerance || 0;
-                return Math.abs(val - q.answer) <= tol;
-            }
-            return String(given).trim() === String(q.answer).trim();
-        }
-
-        // ── 문제 렌더링 (math-diagnostic.js 패턴) ────────────────
+        // ── 문제 렌더링 (입력·채점·피드백은 QuestionRenderer가 처리) ──
         function renderQuestion() {
             const q = quizList[cursor];
             progressEl.textContent = `${cursor + 1} / ${quizList.length}`;
@@ -342,90 +302,17 @@
             const card = el('div', 'q-card');
             card.appendChild(el('div', 'q-grade-badge',
                 `${currentC.name} · ${currentUnitName}`));
-            const promptDiv = el('div', 'q-prompt');
-            if (q.latex) promptDiv.innerHTML = renderLatex(q.prompt);
-            else promptDiv.textContent = q.prompt;
-            card.appendChild(promptDiv);
 
-            if (q.figure && q._vars && window.QuestionFigures) {
-                const fig = QuestionFigures.render(q.figure, q._vars);
-                if (fig) card.appendChild(fig);
-            }
-
-            const answersWrap = el('div', 'q-answers');
-            const feedback = el('div', 'q-feedback');
             const nextBtn = el('button', '', cursor === quizList.length - 1 ? '결과 보기 🎉' : '다음 문제 ➡️');
             nextBtn.classList.add('hidden');
 
-            function finishQuestion(given) {
-                const correct = gradeAnswer(q, given);
-                answers.push({ qId: q.id, correct });
-                answersWrap.querySelectorAll('button, input').forEach(n => n.disabled = true);
-                if (q.type === 'bar-graph') {
-                    feedback.textContent = correct
-                        ? '정답이에요! 🎉'
-                        : '아쉬워요! 초록 점선이 정답 막대를 알려줘요 🌟';
-                } else if (q.latex) {
-                    feedback.innerHTML = correct
-                        ? '정답이에요! 🎉'
-                        : '아쉬워요! 정답은 ' + renderLatex(q.answer) + ' 예요.';
-                } else {
-                    feedback.textContent = correct
-                        ? '정답이에요! 🎉'
-                        : `아쉬워요! 정답은 "${q.answer}" 예요.`;
-                }
-                feedback.classList.add(correct ? 'ok' : 'no');
-                show(nextBtn);
-                nextBtn.focus();
-            }
-
-            if (q.type === 'mc') {
-                shuffle(q.choices).forEach(choice => {
-                    const b = el('button', 'choice-btn');
-                    if (q.latex) b.innerHTML = renderLatex(choice);
-                    else b.textContent = choice;
-                    b.type = 'button';
-                    b.addEventListener('click', () => finishQuestion(choice));
-                    answersWrap.appendChild(b);
-                });
-            } else if (q.type === 'bar-graph' && q.barGraph && q._vars && window.BarGraphWidget) {
-                const bg = q.barGraph;
-                const correctVals = bg.valueVars.map(v => q._vars[v]);
-                const bgw = BarGraphWidget.create({
-                    labels: bg.labels,
-                    correctValues: correctVals,
-                    unit: bg.unit || '',
-                    scale: bg.scale || 1,
-                    yMin: bg.yMin || 0,
-                });
-                answersWrap.appendChild(bgw.element);
-                const checkBtn = el('button', 'secondary', '정답 확인 ✏️');
-                checkBtn.type = 'button';
-                checkBtn.addEventListener('click', () => {
-                    const userVals = bgw.getValues();
-                    const isCorrect = correctVals.every((v, i) => userVals[i] === v);
-                    bgw.markAnswers(userVals, correctVals);
-                    checkBtn.disabled = true;
-                    finishQuestion(isCorrect);
-                });
-                answersWrap.appendChild(checkBtn);
-            } else { // numeric
-                const inputRow = el('div', 'q-input-row');
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.inputMode = 'decimal';
-                input.className = 'q-num-input';
-                input.placeholder = '답을 적어요';
-                const ok = el('button', 'secondary', '확인 ✏️');
-                ok.type = 'button';
-                const submit = () => { if (input.value.trim() !== '') finishQuestion(input.value); };
-                ok.addEventListener('click', submit);
-                input.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
-                inputRow.appendChild(input);
-                inputRow.appendChild(ok);
-                answersWrap.appendChild(inputRow);
-                setTimeout(() => input.focus(), 0);
-            }
+            QuestionRenderer.renderInto(card, q, {
+                onAnswered({ correct }) {
+                    answers.push({ qId: q.id, correct });
+                    show(nextBtn);
+                    nextBtn.focus();
+                },
+            });
 
             nextBtn.addEventListener('click', () => {
                 cursor++;
@@ -433,8 +320,6 @@
                 else finishUnit();
             });
 
-            card.appendChild(answersWrap);
-            card.appendChild(feedback);
             card.appendChild(nextBtn);
             questionEl.appendChild(card);
         }

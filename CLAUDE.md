@@ -26,6 +26,7 @@
 | `math-test.html` | **학생** | 수학 레벨 진단 페이지 (학년·학기 누적 또는 단원별 평가 → 레포트 → 결과 JSON 저장/불러오기) |
 | `math-diagnostic.js` | 수학 진단 | 진단 엔진 (`window.MathDiagnostic.init(...)`) — 출제·채점·약점분석·세부유형분석·레포트 |
 | `question-bank.js` | 공통 | 문제 은행 로더 (`window.QuestionBank`) — 매니페스트를 읽어 필요한 (학년·학기) 샤드만 fetch |
+| `question-renderer.js` | 공통 | 문제 렌더러 레지스트리 (`window.QuestionRenderer`) — 문제 카드의 문제 영역(텍스트/KaTeX/figure)과 **답안 입력 영역**(mc 보기 버튼·numeric 입력·bar-graph 위젯)을 type별 핸들러로 그리고 채점. 진단·별자리가 공유. 새 문제 유형은 `QuestionRenderer.register(type, {renderInput(q,ui), grade(q,given), wrongFeedback?, canRender?})` 핸들러 1개 등록으로 모든 페이지에 동시 추가됨 |
 | `question-template.js` | 공통 | 생성형(템플릿) 문제 엔진 (`window.QuestionTemplate.instantiate(q)`) — `template`이 있는 문항을 출제 시점에 "숫자만 바뀐" 구체 문항으로 인스턴스화. 자체 안전 식 계산기(eval 미사용)·제약(거부 표집)·포맷(소수/분수). 템플릿 없으면 원본 그대로 반환 |
 | `math.css` | 수학 진단 | 시작화면·문제카드·결과막대·단원칩·세부유형표 전용 스타일 (puzzle.css 위에 얹음) |
 | `data/math-curriculum.json` | 공통 | 학년/단원/세부기능 구조 (1~6학년 전 단원). 4학년은 1학기·2학기 각 6단원 모두 수록 |
@@ -102,7 +103,7 @@
   `≥40%`=⭐, `≥70%`=⭐⭐, `≥90%`=⭐⭐⭐. 등급이 오를수록 별 색이 화려해짐
   (0 점선 빈별 → 1 하늘색 → 2 황금 → 3 분홍↔보라 무지개). **최고기록 갱신만** 저장.
 - **출제**: `QuestionBank.loadByUnits([unitId])`로 그 단원 샤드를 불러와 문제를 섞어 최대 `QUESTIONS_PER_PLAY`(=5)개.
-  채점·문제카드는 진단(`math-diagnostic.js`)과 동일 로직/스타일(`.q-card` 등) 재사용.
+  채점·문제카드는 공용 렌더러(`question-renderer.js`)를 진단과 함께 사용(스타일 `.q-card` 등 동일).
 - **기록 저장**: `localStorage`(키 `constellation-progress-v1`)에 단원별 최고 별등급 저장.
   "내 별 내보내기"로 JSON 다운로드, "별 불러오기"로 업로드(더 높은 등급 우선 병합).
   진단 레포트와 파일 형식이 다름(`_meta.kind: 'constellation-progress'`).
