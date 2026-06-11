@@ -39,6 +39,14 @@
     {"id": "q-0148", "grade": 4, "unitId": "4-2", "skillId": "4-2-c", "difficulty": 1, "type": "numeric", "prompt": "사각형의 네 각의 크기의 합은 몇 도일까요?", "answer": 360},
     {"id": "q-0149", "grade": 4, "unitId": "4-2", "skillId": "4-2-c", "difficulty": 2, "type": "numeric", "prompt": "삼각형에서 두 각이 50°, 60°일 때 나머지 한 각은 몇 도일까요?", "answer": 70},
     {"id": "q-0150", "grade": 4, "unitId": "4-2", "skillId": "4-2-c", "difficulty": 3, "type": "numeric", "prompt": "사각형에서 세 각이 90°, 80°, 100°일 때 나머지 한 각은 몇 도일까요?", "answer": 90},
+    {"id": "q-0085", "grade": 4, "unitId": "4-2", "skillId": "4-2-c", "difficulty": 3, "type": "numeric",
+      "template": {
+        "figure": "triangle-angles",
+        "vars": {"a": {"min": 30, "max": 90, "step": 10}, "b": {"min": 30, "max": 90, "step": 10}},
+        "constraints": ["a + b <= 140"],
+        "prompt": "한 각이 {a}°, 다른 한 각이 {b}°인 삼각형의 나머지 한 각은 몇 도일까요?",
+        "answer": "180 - a - b"
+      }},
     {"id": "q-0151", "grade": 4, "unitId": "4-2", "skillId": "4-2-d", "difficulty": 1, "type": "numeric", "prompt": "평각(일직선)은 몇 도일까요?", "answer": 180},
     {"id": "q-0152", "grade": 4, "unitId": "4-2", "skillId": "4-2-d", "difficulty": 2, "type": "numeric", "prompt": "일직선 위에서 한 각이 110°이면 옆의 각은 몇 도일까요?", "answer": 70},
     {"id": "q-0153", "grade": 4, "unitId": "4-2", "skillId": "4-2-d", "difficulty": 2, "type": "numeric", "prompt": "30°와 45°를 합하면 몇 도일까요?", "answer": 75},
