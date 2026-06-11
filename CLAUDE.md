@@ -23,16 +23,19 @@
 | `data/constellations.json` | 공통 | 학년·학기별 별자리 도형(별 좌표·연결선) 데이터 |
 | `puzzle.js` | 공통 | 퍼즐 엔진 (`window.JigsawPuzzle.init(...)`) |
 | `puzzle.css` | 공통 | maker·study 페이지가 함께 쓰는 스타일 |
-| `math-test.html` | **학생** | 수학 레벨 진단 페이지 (학년·학기 누적 또는 단원별 평가 → 레포트 → 결과 JSON 저장/불러오기) |
-| `math-diagnostic.js` | 수학 진단 | 진단 엔진 (`window.MathDiagnostic.init(...)`) — 출제·채점·약점분석·세부유형분석·레포트 |
+| `math-test.html` | **학생** | 수학 과제 풀기 페이지 — 선생님이 보낸 **과제 링크(범위·seed가 박힌 URL)**로 들어와 바로 풀고, 결과(요약+복원코드)를 메신저로 회신. 선택 화면 없음 |
+| `math-assignment.js` | 수학 과제 | 학생 풀이 엔진 (`window.AssignmentQuiz.init(...)`) — URL 과제 파싱·출제·채점·결과/복기·결과코드·로컬캐시(하루 TTL, 같은 seed 재방문 시 복습만) |
+| `math-assign.html` | 선생님 | 수학 **과제 만들기** 도구 — 범위(from~to)·단원 빼기·문제 수·seed를 정해 미리보고 학생 링크 복사. 학생 결과코드 붙여넣어 문항별 복원 |
+| `math-assign.js` | 수학 과제 | 출제 도구 엔진 (`window.AssignmentMaker.init(...)`) |
+| `assignment-core.js` | 공통 | 과제 공용 코어 (`window.Assignment`) — 시드 RNG로 **문제 선택+템플릿 인스턴스화를 결정적**으로(같은 seed→같은 시험지). 범위/단원 필터·라운드로빈 균등 출제·URL파라미터/결과코드 인코딩. 선생님 미리보기와 학생 풀이가 공유 |
 | `question-bank.js` | 공통 | 문제 은행 로더 (`window.QuestionBank`) — 매니페스트를 읽어 필요한 (학년·학기) 샤드만 fetch |
-| `question-renderer.js` | 공통 | 문제 렌더러 레지스트리 (`window.QuestionRenderer`) — 문제 카드의 문제 영역(텍스트/KaTeX/figure)과 **답안 입력 영역**(mc 보기 버튼·numeric 입력·bar-graph 위젯)을 type별 핸들러로 그리고 채점. 진단·별자리가 공유. 새 문제 유형은 `QuestionRenderer.register(type, {renderInput(q,ui), grade(q,given), wrongFeedback?, canRender?})` 핸들러 1개 등록으로 모든 페이지에 동시 추가됨 |
+| `question-renderer.js` | 공통 | 문제 렌더러 레지스트리 (`window.QuestionRenderer`) — 문제 카드의 문제 영역(텍스트/KaTeX/figure)과 **답안 입력 영역**(mc 보기 버튼·numeric 입력·bar-graph 위젯)을 type별 핸들러로 그리고 채점. 과제·별자리가 공유. 새 문제 유형은 `QuestionRenderer.register(type, {renderInput(q,ui), grade(q,given), wrongFeedback?, canRender?})` 핸들러 1개 등록으로 모든 페이지에 동시 추가됨 |
 | `question-template.js` | 공통 | 생성형(템플릿) 문제 엔진 (`window.QuestionTemplate.instantiate(q)`) — `template`이 있는 문항을 출제 시점에 "숫자만 바뀐" 구체 문항으로 인스턴스화. 자체 안전 식 계산기(eval 미사용)·제약(거부 표집)·포맷(소수/분수). 템플릿 없으면 원본 그대로 반환 |
-| `math.css` | 수학 진단 | 시작화면·문제카드·결과막대·단원칩·세부유형표 전용 스타일 (puzzle.css 위에 얹음) |
+| `math.css` | 수학 과제 | 문제카드·결과막대·단원칩·복기리스트·결과상자·출제도구 전용 스타일 (puzzle.css 위에 얹음) |
 | `data/math-curriculum.json` | 공통 | 학년/단원/세부기능 구조 (1~6학년 전 단원). 4학년은 1학기·2학기 각 6단원 모두 수록 |
 | `data/questions/index.json` | 공통 | 문제 은행 샤드 매니페스트 (샤드 파일·포함 unitId·문항 수) |
 | `data/questions/g{학년}-s{학기}.json` | 공통 | (학년·학기)별 문제 은행 샤드 (mc·numeric, grade/unitId/skillId 태깅) |
-| `data/math-question-builder.html` | 선생님 | 진단 문제를 추가해 샤드(`gX-sY.json`) 생성/편집 |
+| `data/math-question-builder.html` | 선생님 | 문제를 추가해 샤드(`gX-sY.json`) 생성/편집 |
 | `data/math-llm-prompt.html` | 선생님 | 채팅형 LLM(Claude·ChatGPT 등)에 붙여넣을 **출제 프롬프트 생성기**. 학년·학기·단원·원하는 문제를 적으면 문제 은행 JSON 포맷·템플릿 명세·교육과정(unitId/skillId) 컨텍스트가 담긴 프롬프트를 생성. 현재 렌더러(mc/numeric/latex)로 표현 안 되는 문제는 "불가" 대신 **새 type 설계 + 렌더링 구현 명세(클로드코드 요청문 포함)**를 내놓도록 강제 |
 | `data/math-verification.html` | 선생님 | 단원·세부기능별 문제 수와 빠진 유형(0개)·orphan 문항을 점검하는 검증 페이지 |
 | `data/dataset-builder.html` | 선생님 | 교과 이미지 URL을 모아 `curriculum-images.json` 생성 |
@@ -44,33 +47,29 @@
 - 학생은 그 링크를 열어 `study.html`에서 퍼즐을 풂 (locked 모드).
 - 빌드/번들러 없음. 파일을 직접 열거나 정적 서버로 서빙.
 
-### 수학 레벨 진단 동작 방식
-- **DB 없음**: 결과 영속화는 레포트 JSON 파일(다운로드/업로드)이 전부. 학생이 파일을 들고 다님.
-- 학생/선생님이 `math-test.html`에서 **목표 학년·학기**(예: 4학년 1학기)를 고르면,
-  **1학년 1학기부터 그 레벨까지 누적**한 범위에서만 출제. 시작화면 버튼 또는
-  URL 파라미터(`?grade=4&sem=1`)로 범위 고정. 기본값은 6학년 2학기(전체).
+### 수학 과제(시험지) 동작 방식
+- **DB 없음**: 결과 영속화는 학생→선생님 **메신저 회신**(요약+복원코드)과 학생 로컬캐시(하루)뿐.
+- **선생님이 과제를 고정**: `math-assign.html`에서 **범위(from~to)**(예: 1학년1학기~4학년1학기)를
+  고르고, 학기를 펼쳐 **빼고 싶은 단원만 제거**(기본=범위 전체 포함). 문제 수(5~30)와
+  **seed**(🎲 랜덤 또는 직접 입력)를 정함. "미리보기"로 그 seed의 실제 문제 구성을 확인 →
+  맘에 들면 **링크 복사**(`math-test.html?from=1-1&to=4-1&drop=2-3,3-1&n=10&seed=837261`)해 배포.
+- **seed = 시험지 한 장**: `assignment-core.js`(`window.Assignment`)가 시드 RNG(mulberry32)로
+  **문제 선택과 템플릿 인스턴스화를 모두 결정적**으로 만들어, 같은 (범위·제외·문제수·seed)면
+  선생님 미리보기와 모든 학생이 **똑같은 문제**를 본다. 선택은 단원별로 묶어 **라운드로빈**으로
+  골고루 뽑음(한 단원이 독점하지 않음).
 - 누적 순위는 `(학년-1)×2 + 학기`로 매김(1학년1학기=1 … 6학년2학기=12).
-  단원의 학기는 `math-curriculum.json`의 `semester` 필드로 정함(없으면 단원번호로 추정:
-  1~2번=1학기, 3번 이상=2학기).
-- **최근 학기 가중 + 학기별 최소 보장**: 선택한 학기에 가까울수록 더 자주 나옴
-  (한 학기 멀어질 때마다 가중치 ×`RECENCY_DECAY`=0.6). 단, 범위 안 각 학기는
-  최소 `MIN_PER_LEVEL`(=1)개 보장(1학년 1학기가 0개로 묻히지 않게). 약점 단원
-  가중치는 그 위에 곱해 함께 반영. 단원은 균등 배분하지 않고 랜덤.
-  최소 보장은 "남은 뽑기 수 = 남은 보장분 합"이 되는 순간부터 보장분만 채워 달성.
-  학년 수준 자동 역추정은 하지 않음(레벨을 직접 고르므로).
-- **단원별(세분화) 평가**: 시작화면에서 학년·학기를 고르면 그 학기 **단원 칩**이 뜨고,
-  단원을 콕 고르면(다중 선택 가능) 누적 대신 **그 단원만** 균등 출제. URL `?unit=4-3`
-  (콤마로 여러 개)으로도 고정. 단원 평가 결과에는 **세부 유형(skill)별 정답률** 표가 떠
-  어느 유형이 약한지 콕 집어줌. 단원 미선택이면 기존 누적 출제 그대로.
-- 레포트는 **선택 범위 내 정답률**(전체·학년별)과 **약점 단원**(오답률 ≥50%, 2문항 이상),
-  단원 평가일 때 **세부 유형별 정답률**을 보여줌.
-- 평가 끝 → "결과 저장하기"로 누적 이력이 담긴 레포트 JSON 다운로드.
-- 재평가 때 그 파일을 업로드하면 누적 오답률로 약한 단원에 가중치(`1 + 3×오답률`)를 줘
-  그 단원 문제가 더 자주 나옴(적응형). 레포트 업로드 유무로 자동 전환.
+  단원의 학기는 `math-curriculum.json`의 `semester` 필드(없으면 1~2번=1학기, 3번 이상=2학기 추정).
+- **학생 흐름**: 받은 링크 열기 → (선택 화면 없이) 바로 풀기 → 결과 화면(정답률·약점 단원·문제 복기).
+  `math-test.html`은 과제 파라미터가 없으면 "선생님 링크로 들어와줘" 안내만 띄움.
+- **결과 회신**: 결과 화면의 "결과 보내기 📋"가 **요약 + 복원코드(base64)**를 클립보드로 복사.
+  학생이 메신저로 붙여 보내면, 선생님은 `math-assign.html` 하단에 붙여넣어 **문항별로
+  무엇을 풀었고 맞았는지 복원**(같은 seed로 시험지 재생성 후 학생 답 zip).
+- **로컬 캐시**: `localStorage`(키 `math-assignment-cache-v1`)에 seed별 결과 저장. 읽을 때
+  **24시간 지난 항목 자동 삭제**. 같은 seed 링크를 다시 열면 새로 풀지 않고 **이전 결과+복습만** 보여줌.
 - **문제 은행 샤딩**: 문제는 `data/questions/g{학년}-s{학기}.json` 샤드로 나뉘고
   `data/questions/index.json`(매니페스트)에 목록이 있음. `question-bank.js`(`QuestionBank`)가
-  매니페스트를 먼저 읽고 **필요한 샤드만** fetch(누적=범위 내 샤드, 단원평가=그 단원 샤드).
-  진단·별자리 게임·빌더·검증 페이지가 모두 이 로더를 공유.
+  매니페스트를 먼저 읽고 **필요한 샤드만** fetch(과제 범위 안 단원 샤드).
+  과제·별자리 게임·빌더·검증 페이지가 모두 이 로더를 공유.
   (`data/` 안의 페이지는 `QuestionBank.basePath='questions/'`로 설정.)
 - 단원/세부기능 구조는 `data/math-curriculum.json`. 선생님이 `data/math-question-builder.html`(GUI)로
   문제를 추가해 샤드로 저장하고, `data/math-verification.html`로 빠진 유형(0개 세부기능)·orphan을 점검.
@@ -78,7 +77,7 @@
 - **생성형(템플릿) 문항**: 학생이 답을 외우지 못하게, 포맷은 같고 숫자만 매번 바뀌는 문항을
   지원. 문항에 `template`을 넣으면(고정 문항과 한 샤드에 자유롭게 섞임) 출제 시점에
   `question-template.js`가 변수를 범위에서 뽑아 **구체값으로 인스턴스화**한다. `template`이
-  없으면 기존 고정 문항과 100% 동일하게 동작(하위호환). 진단·별자리 모두 문제를 뽑아
+  없으면 기존 고정 문항과 100% 동일하게 동작(하위호환). 과제·별자리 모두 문제를 뽑아
   `quizList`에 넣는 순간 `QuestionTemplate.instantiate(q)`를 거친다.
   - `template` 필드: `vars`(정수 변수 `{min,max,step?}`), `constraints`(불리언 식 배열 —
     모두 참이어야 채택, 음수 방지 `a >= b`·정확한 나눗셈 등을 표현), `derived`(파생값),
@@ -103,10 +102,10 @@
   `≥40%`=⭐, `≥70%`=⭐⭐, `≥90%`=⭐⭐⭐. 등급이 오를수록 별 색이 화려해짐
   (0 점선 빈별 → 1 하늘색 → 2 황금 → 3 분홍↔보라 무지개). **최고기록 갱신만** 저장.
 - **출제**: `QuestionBank.loadByUnits([unitId])`로 그 단원 샤드를 불러와 문제를 섞어 최대 `QUESTIONS_PER_PLAY`(=5)개.
-  채점·문제카드는 공용 렌더러(`question-renderer.js`)를 진단과 함께 사용(스타일 `.q-card` 등 동일).
+  채점·문제카드는 공용 렌더러(`question-renderer.js`)를 과제와 함께 사용(스타일 `.q-card` 등 동일).
 - **기록 저장**: `localStorage`(키 `constellation-progress-v1`)에 단원별 최고 별등급 저장.
   "내 별 내보내기"로 JSON 다운로드, "별 불러오기"로 업로드(더 높은 등급 우선 병합).
-  진단 레포트와 파일 형식이 다름(`_meta.kind: 'constellation-progress'`).
+  과제 결과코드와 형식이 다름(`_meta.kind: 'constellation-progress'`).
 
 ## 디자인 원칙 — 아기자기하게 (초등학생 대상)
 

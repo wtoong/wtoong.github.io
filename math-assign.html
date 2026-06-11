@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👩‍🏫 수학 과제 만들기</title>
+    <link rel="stylesheet" href="puzzle.css">
+    <link rel="stylesheet" href="math.css?v=8">
+</head>
+<body>
+    <h1 class="page-title">👩‍🏫 수학 과제 만들기</h1>
+    <p class="page-subtitle">범위와 seed를 정해 미리보고, 학생에게 링크만 톡 보내면 끝! 🎯</p>
+
+    <!-- ① 범위 정하기 -->
+    <div class="assign-section">
+        <h2>① 어디부터 어디까지 낼까요? 📚</h2>
+        <div class="assign-row">
+            <span class="control-label">시작</span>
+            <select id="fromSelect" class="assign-select"></select>
+            <span class="control-label" style="min-width:auto;">부터</span>
+            <select id="toSelect" class="assign-select"></select>
+            <span class="control-label" style="min-width:auto;">까지</span>
+        </div>
+        <p class="level-hint">학기를 펼치면 단원이 나와요. <b>빼고 싶은 단원</b>을 콕 누르면 제외돼요 (다시 누르면 포함) ✂️</p>
+        <div id="levelBlocks"></div>
+    </div>
+
+    <!-- ② 문제 수 · seed -->
+    <div class="assign-section">
+        <h2>② 문제 수와 seed 🎲</h2>
+        <div class="assign-row">
+            <span class="control-label">문제 수</span>
+            <button type="button" class="count-btn" data-count="5">5문제</button>
+            <button type="button" class="count-btn" data-count="10">10문제</button>
+            <button type="button" class="count-btn" data-count="15">15문제</button>
+            <button type="button" class="count-btn" data-count="20">20문제</button>
+            <button type="button" class="count-btn" data-count="25">25문제</button>
+            <button type="button" class="count-btn" data-count="30">30문제</button>
+        </div>
+        <div class="assign-row">
+            <span class="control-label">seed</span>
+            <input type="number" id="seedInput" class="seed-input" min="1">
+            <button type="button" id="rollSeedBtn">🎲 seed 뽑기</button>
+        </div>
+        <p class="level-hint">같은 seed면 학생도 <b>똑같은 문제</b>를 풀어요. 나중에 복기할 때도 이 seed로 그대로 볼 수 있어요 ✨</p>
+    </div>
+
+    <!-- ③ 미리보기 -->
+    <div class="assign-section">
+        <h2>③ 문제 미리보기 🔍</h2>
+        <div class="assign-row">
+            <button type="button" id="previewBtn">이 seed로 문제 만들어 보기 ✨</button>
+        </div>
+        <div id="previewMeta" class="preview-meta"></div>
+        <div id="preview"></div>
+    </div>
+
+    <!-- ④ 링크 배포 -->
+    <div class="assign-section">
+        <h2>④ 학생에게 링크 보내기 🔗</h2>
+        <textarea id="linkBox" class="link-box" readonly rows="2"></textarea>
+        <div class="assign-row">
+            <button type="button" id="copyLinkBtn">🔗 링크 복사</button>
+        </div>
+        <p class="level-hint">이 링크를 메신저로 보내면 학생은 바로 문제를 풀고, 끝나면 결과를 다시 보내줘요 📨</p>
+    </div>
+
+    <!-- ⑤ 학생 결과 확인 -->
+    <div class="assign-section">
+        <h2>⑤ 학생이 보낸 결과 보기 📋</h2>
+        <textarea id="decodeInput" class="link-box" rows="4" placeholder="학생이 보낸 결과(요약 + 코드)를 통째로 붙여 넣어요"></textarea>
+        <div class="assign-row">
+            <button type="button" id="decodeBtn">결과 펼쳐보기 🔎</button>
+        </div>
+        <div id="decode"></div>
+    </div>
+
+    <div id="message" class="message"></div>
+    <p class="page-subtitle home-link"><a href="index.html">🏠 놀이터 입구로 돌아가기</a></p>
+
+    <script src="question-bank.js?v=1"></script>
+    <script src="question-template.js?v=2"></script>
+    <script src="question-figures.js?v=5"></script>
+    <script src="question-renderer.js?v=1"></script>
+    <script src="assignment-core.js?v=1"></script>
+    <script src="math-assign.js?v=1"></script>
+    <script>
+        AssignmentMaker.init({
+            fromSelect:    document.getElementById('fromSelect'),
+            toSelect:      document.getElementById('toSelect'),
+            levelBlocksEl: document.getElementById('levelBlocks'),
+            countButtons:  document.querySelectorAll('.count-btn'),
+            seedInput:     document.getElementById('seedInput'),
+            rollSeedBtn:   document.getElementById('rollSeedBtn'),
+            previewBtn:    document.getElementById('previewBtn'),
+            previewMetaEl: document.getElementById('previewMeta'),
+            previewEl:     document.getElementById('preview'),
+            linkBox:       document.getElementById('linkBox'),
+            copyLinkBtn:   document.getElementById('copyLinkBtn'),
+            decodeInput:   document.getElementById('decodeInput'),
+            decodeBtn:     document.getElementById('decodeBtn'),
+            decodeEl:      document.getElementById('decode'),
+            messageEl:     document.getElementById('message'),
+        });
+    </script>
+</body>
+</html>
