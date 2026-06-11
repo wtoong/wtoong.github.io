@@ -97,7 +97,7 @@
             previewEl.appendChild(renderQuestionList(built.quizList));
         }
 
-        // 문항 읽기 전용 리스트 (프롬프트 + 정답 + 단원)
+        // 문항 읽기 전용 리스트 (프롬프트 + 그림/막대그래프 + 정답). answers가 있으면 학생 답도.
         function renderQuestionList(quizList, answers) {
             const wrap = el('div', 'review-list');
             quizList.forEach((q, i) => {
@@ -110,16 +110,11 @@
                 head.appendChild(el('span', 'review-unit',
                     `${A.unitGrade(q.unitId)}학년 · ${A.unitName(q.unitId)}`));
                 row.appendChild(head);
-                const prompt = el('div', 'review-prompt');
-                if (q.latex && window.QuestionRenderer) prompt.innerHTML = window.QuestionRenderer.renderLatex(q.prompt);
-                else prompt.textContent = q.prompt;
-                row.appendChild(prompt);
+                // 프롬프트·그림·정답(막대그래프 포함)을 공용 렌더러로 그린다
+                window.QuestionRenderer.renderPreview(row, q);
                 if (a) {
                     const my = (a.given === '' || a.given == null) ? '(안 풂)' : a.given;
-                    row.appendChild(el('div', 'review-answer',
-                        a.correct ? `학생 답: ${my} ✅` : `학생 답: ${my}  ·  정답: ${q.answer}`));
-                } else {
-                    row.appendChild(el('div', 'review-answer', `정답: ${q.answer}`));
+                    row.appendChild(el('div', 'review-answer', `학생 답: ${my} ${a.correct ? '✅' : '❌'}`));
                 }
                 wrap.appendChild(row);
             });

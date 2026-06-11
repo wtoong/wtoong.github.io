@@ -660,3 +660,27 @@
     resize: vertical;
 }
 .preview-meta { font-family: 'Jua', sans-serif; color: #7a4fd0; margin: 6px 0 10px; }
+
+/* ── 읽기 전용 정답 표시 (미리보기·복기) ── */
+.q-answer-reveal {
+    font-family: 'Jua', sans-serif;
+    font-size: 1.1rem;
+    color: #1c5847;
+    background: rgba(127, 216, 190, 0.22);
+    border: 2px dashed var(--candy-mint, #7fd8be);
+    border-radius: 12px;
+    padding: 8px 14px;
+}
+/* 객관식 정답 보기 강조 */
+.choice-btn.choice-correct {
+    background: var(--candy-mint, #7fd8be);
+    box-shadow: 0 5px 0 #55c9a8;
+    color: #14503f;
+    font-weight: 700;
+}
+.choice-btn:disabled { opacity: 0.85; cursor: default; }
+.choice-btn.choice-correct:disabled { opacity: 1; }
+
+/* 복기 행 안에서는 프롬프트·답안을 조금 작게/왼쪽 정렬해 촘촘하게 */
+.review-row .q-prompt { font-size: 1.15rem; text-align: left; margin: 6px 0 4px; }
+.review-row .q-answers { max-width: 100%; align-self: stretch; }
